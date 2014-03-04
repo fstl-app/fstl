@@ -8,6 +8,7 @@
 
 class GLMesh;
 class Mesh;
+class Backdrop;
 
 class Canvas : public QGLWidget
 {
@@ -40,6 +41,7 @@ private:
     QGLShaderProgram quad_shader;
 
     GLMesh* mesh;
+    Backdrop* backdrop;
 
     QVector3D center;
     float scale;

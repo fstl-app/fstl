@@ -9,14 +9,16 @@ SOURCES += \
     mesh.cpp \
     glmesh.cpp \
     loader.cpp \
-    window.cpp
+    window.cpp \
+    backdrop.cpp
 
 HEADERS  += \
     canvas.h \
     mesh.h \
     glmesh.h \
     loader.h \
-    window.h
+    window.h \
+    backdrop.h
 
 CONFIG += c++11
 

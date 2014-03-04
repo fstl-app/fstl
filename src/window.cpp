@@ -13,6 +13,8 @@ Window::Window(QWidget *parent) :
 
     canvas = new Canvas(format, this);
     setCentralWidget(canvas);
+
+    resize(600, 400);
 }
 
 void Window::load_stl(const QString &filename)

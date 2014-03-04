@@ -2,6 +2,7 @@
 #include <QDebug>
 
 #include "canvas.h"
+#include "backdrop.h"
 #include "glmesh.h"
 #include "mesh.h"
 
@@ -39,6 +40,8 @@ void Canvas::initializeGL()
     mesh_shader.addShaderFromSourceFile(QGLShader::Fragment, ":/gl/mesh.frag");
     mesh_shader.link();
 
+    backdrop = new Backdrop();
+
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glEnable(GL_DEPTH_TEST);
 }
@@ -47,6 +50,7 @@ void Canvas::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    backdrop->draw();
     if (mesh)  draw_mesh();
 }
 
