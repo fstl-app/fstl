@@ -22,7 +22,5 @@ HEADERS  += \
 
 CONFIG += c++11
 
-INCLUDEPATH += /usr/local/include/eigen3
-
 RESOURCES += \
     resources.qrc
