@@ -17,12 +17,12 @@ Window::Window(QWidget *parent) :
     canvas = new Canvas(format, this);
     setCentralWidget(canvas);
 
-    QAction* open_action = new QAction("Open", this);
+    open_action = new QAction("Open", this);
     open_action->setShortcut(QKeySequence::Open);
     QObject::connect(open_action, SIGNAL(triggered()),
                      this, SLOT(on_open()));
 
-    QAction* quit_action = new QAction("Quit", this);
+    quit_action = new QAction("Quit", this);
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, SIGNAL(triggered()),
                      this, SLOT(close()));
@@ -44,12 +44,29 @@ void Window::on_open()
     }
 }
 
+
+void Window::enable_open_action()
+{
+    open_action->setEnabled(true);
+}
+
+
+void Window::disable_open_action()
+{
+
+    open_action->setEnabled(false);
+}
+
+
 void Window::load_stl(const QString &filename)
 {
+    disable_open_action();
     Loader* loader = new Loader(this, filename);
     connect(loader, SIGNAL(got_mesh(Mesh*)),
             canvas, SLOT(load_mesh(Mesh*)));
     connect(loader, SIGNAL(finished()),
             loader, SLOT(deleteLater()));
+    connect(loader, SIGNAL(finished()),
+            this, SLOT(enable_open_action()));
     loader->start();
 }
