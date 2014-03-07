@@ -70,7 +70,6 @@ void Window::enable_open_action()
 
 void Window::disable_open_action()
 {
-
     open_action->setEnabled(false);
 }
 
