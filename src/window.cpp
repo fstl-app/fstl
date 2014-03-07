@@ -21,8 +21,15 @@ Window::Window(QWidget *parent) :
     open_action->setShortcut(QKeySequence::Open);
     QObject::connect(open_action, SIGNAL(triggered()),
                      this, SLOT(on_open()));
+
+    QAction* quit_action = new QAction("Quit", this);
+    quit_action->setShortcut(QKeySequence::Quit);
+    QObject::connect(quit_action, SIGNAL(triggered()),
+                     this, SLOT(close()));
+
     auto file_menu = menuBar()->addMenu("File");
     file_menu->addAction(open_action);
+    file_menu->addAction(quit_action);
 
     resize(600, 400);
 }
