@@ -9,4 +9,5 @@ Loader::Loader(QObject* parent, const QString& filename)
 void Loader::run()
 {
     emit got_mesh(Mesh::load_stl(filename));
+    emit loaded_file(filename);
 }

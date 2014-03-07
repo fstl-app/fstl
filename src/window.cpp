@@ -77,13 +77,16 @@ void Window::disable_open_action()
 
 void Window::load_stl(const QString &filename)
 {
-    disable_open_action();
     Loader* loader = new Loader(this, filename);
+    connect(loader, SIGNAL(started()),
+            this, SLOT(disable_open_action()));
     connect(loader, SIGNAL(got_mesh(Mesh*)),
             canvas, SLOT(load_mesh(Mesh*)));
     connect(loader, SIGNAL(finished()),
             loader, SLOT(deleteLater()));
     connect(loader, SIGNAL(finished()),
             this, SLOT(enable_open_action()));
+    connect(loader, SIGNAL(loaded_file(QString)),
+            this, SLOT(setWindowTitle(QString)));
     loader->start();
 }

@@ -13,6 +13,7 @@ public:
     void run();
 
 signals:
+    void loaded_file(QString filename);
     void got_mesh(Mesh* m);
 
 private:
