@@ -12,6 +12,9 @@ public:
     explicit Window(QWidget* parent=0);
     void load_stl(const QString& filename);
 
+public slots:
+    void on_open();
+
 private:
     Canvas* canvas;
 };

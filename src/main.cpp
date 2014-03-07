@@ -11,6 +11,5 @@ int main(int argc, char *argv[])
     Window window;
     window.show();
 
-    window.load_stl("../../splitter/cayman.stl");
     return a.exec();
 }
