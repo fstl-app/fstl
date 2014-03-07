@@ -1,4 +1,5 @@
 #include <QMenuBar>
+#include <QMessageBox>
 #include <QFileDialog>
 
 #include "window.h"
@@ -27,9 +28,16 @@ Window::Window(QWidget *parent) :
     QObject::connect(quit_action, SIGNAL(triggered()),
                      this, SLOT(close()));
 
+    about_action = new QAction("About", this);
+    QObject::connect(about_action, SIGNAL(triggered()),
+                     this, SLOT(on_about()));
+
     auto file_menu = menuBar()->addMenu("File");
     file_menu->addAction(open_action);
     file_menu->addAction(quit_action);
+
+    auto help_menu = menuBar()->addMenu("Help");
+    help_menu->addAction(about_action);
 
     resize(600, 400);
 }
@@ -42,6 +50,15 @@ void Window::on_open()
     {
         load_stl(filename);
     }
+}
+
+void Window::on_about()
+{
+    QMessageBox::about(this, "About fstl", "<b>fstl</b><br><br>"
+                       "A fast viewer for <code>.stl</code> files.<br>"
+                       "<a href=\"https://github.com/mkeeter/fstl\">https://github.com/mkeeter/fstl</a><br><br>"
+                       "© 2014 Matthew Keeter<br>"
+                       "<a href=\"mailto:matt.j.keeter@gmail.com\">matt.j.keeter@gmail.com</a><br>");
 }
 
 
