@@ -2,25 +2,29 @@
 #define MESH_H
 
 #include <QString>
+#include <QtOpenGL/QtOpenGL>
 
-#include <Eigen/Dense>
+#include <vector>
 
 class Mesh
 {
 public:
-    Mesh(const Eigen::Matrix3Xf &vertices, const Eigen::Matrix3Xi &indices);
+    Mesh(std::vector<GLfloat> vertices, std::vector<GLuint> indices);
     static Mesh* load_stl(const QString& filename);
 
-    float xmin() const { return vertices.row(0).minCoeff(); }
-    float xmax() const { return vertices.row(0).maxCoeff(); }
-    float ymin() const { return vertices.row(1).minCoeff(); }
-    float ymax() const { return vertices.row(1).maxCoeff(); }
-    float zmin() const { return vertices.row(2).minCoeff(); }
-    float zmax() const { return vertices.row(2).maxCoeff(); }
+    float min(size_t start) const;
+    float max(size_t start) const;
+
+    float xmin() const { return min(0); }
+    float ymin() const { return min(1); }
+    float zmin() const { return min(2); }
+    float xmax() const { return max(0); }
+    float ymax() const { return max(1); }
+    float zmax() const { return max(2); }
 
 private:
-    const Eigen::Matrix3Xf vertices;
-    const Eigen::Matrix3Xi indices;
+    std::vector<GLfloat> vertices;
+    std::vector<GLuint> indices;
 
     friend class GLMesh;
 };

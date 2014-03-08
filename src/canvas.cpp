@@ -1,6 +1,8 @@
 #include <QMouseEvent>
 #include <QDebug>
 
+#include <cmath>
+
 #include "canvas.h"
 #include "backdrop.h"
 #include "glmesh.h"
@@ -28,7 +30,6 @@ void Canvas::load_mesh(Mesh* m)
                 pow(m->xmax() - m->xmin(), 2) +
                 pow(m->ymax() - m->ymin(), 2) +
                 pow(m->zmax() - m->zmin(), 2));
-
     update();
 
     delete m;
