@@ -11,6 +11,10 @@ Window::Window(QWidget *parent) :
 {
     setWindowTitle("fstl");
 
+    QFile styleFile( ":/style.qss" );
+    styleFile.open( QFile::ReadOnly );
+    setStyleSheet(styleFile.readAll());
+
     QGLFormat format;
     format.setVersion(2, 1);
     format.setSampleBuffers(true);
@@ -54,11 +58,11 @@ void Window::on_open()
 
 void Window::on_about()
 {
-    QMessageBox::about(this, "About fstl", "<b>fstl</b><br><br>"
-                       "A fast viewer for <code>.stl</code> files.<br>"
-                       "<a href=\"https://github.com/mkeeter/fstl\">https://github.com/mkeeter/fstl</a><br><br>"
-                       "© 2014 Matthew Keeter<br>"
-                       "<a href=\"mailto:matt.j.keeter@gmail.com\">matt.j.keeter@gmail.com</a><br>");
+    QMessageBox::about(this, "", "<p align=\"center\"><b>fstl</b></p>"
+                       "<p>A fast viewer for <code>.stl</code> files.<br>"
+                       "<a href=\"https://github.com/mkeeter/fstl\">https://github.com/mkeeter/fstl</a></p>"
+                       "<p>© 2014 Matthew Keeter<br>"
+                       "<a href=\"mailto:matt.j.keeter@gmail.com\">matt.j.keeter@gmail.com</a></p>");
 }
 
 
