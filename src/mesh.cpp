@@ -3,8 +3,38 @@
 #include <QVector3D>
 
 #include <algorithm>
+#include <cmath>
 
 #include "mesh.h"
+
+////////////////////////////////////////////////////////////////////////////////
+
+Mesh::Mesh(std::vector<GLfloat> v, std::vector<GLuint> i)
+    : vertices(v), indices(i)
+{
+    // Nothing to do here
+}
+
+float Mesh::min(size_t start) const
+{
+    float v = vertices[start];
+    for (size_t i=start; i < vertices.size(); i += 3)
+    {
+        v = fmin(v, vertices[i]);
+    }
+    return v;
+}
+
+float Mesh::max(size_t start) const
+{
+    float v = vertices[start];
+    for (size_t i=start; i < vertices.size(); i += 3)
+    {
+        v = fmax(v, vertices[i]);
+    }
+    return v;
+}
+////////////////////////////////////////////////////////////////////////////////
 
 struct Vec3
 {
@@ -22,12 +52,9 @@ struct Vec3
     }
 };
 
+typedef std::pair<Vec3, GLuint> Vec3i;
 
-Mesh::Mesh(std::vector<GLfloat> v, std::vector<GLuint> i)
-    : vertices(v), indices(i)
-{
-    // Nothing to do here
-}
+////////////////////////////////////////////////////////////////////////////////
 
 Mesh* Mesh::load_stl(const QString& filename)
 {
@@ -46,7 +73,7 @@ Mesh* Mesh::load_stl(const QString& filename)
     data >> tri_count;
 
     // Extract vertices into an array of xyz, unsigned pairs
-    QVector<std::pair<Vec3, GLuint>> verts(tri_count*3);
+    QVector<Vec3i> verts(tri_count*3);
 
     // Store vertices in the array, processing one triangle at a time.
     for (auto v=verts.begin(); v != verts.end(); v += 3)
@@ -89,15 +116,16 @@ Mesh* Mesh::load_stl(const QString& filename)
         }
         indices[v.second] = vertex_count - 1;
     }
+    verts.resize(vertex_count);
 
-    // Finally, pack unique vertices into a flat array.
-    std::vector<GLfloat> unique_verts(vertex_count*3);
-    for (size_t i=0; i < vertex_count; ++i)
+    std::vector<float> flat_verts;
+    flat_verts.reserve(vertex_count*3);
+    for (auto v : verts)
     {
-        unique_verts[3*i]     = verts[i].first.x;
-        unique_verts[3*i + 1] = verts[i].first.y;
-        unique_verts[3*i + 2] = verts[i].first.z;
+        flat_verts.push_back(v.first.x);
+        flat_verts.push_back(v.first.y);
+        flat_verts.push_back(v.first.z);
     }
 
-    return new Mesh(unique_verts, indices);
+    return new Mesh(flat_verts, indices);
 }

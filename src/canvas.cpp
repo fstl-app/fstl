@@ -23,7 +23,6 @@ Canvas::~Canvas()
 void Canvas::load_mesh(Mesh* m)
 {
     mesh = new GLMesh(m);
-    /*
     center = QVector3D(m->xmin() + m->xmax(),
                        m->ymin() + m->ymax(),
                        m->zmin() + m->zmax()) / 2;
@@ -31,7 +30,6 @@ void Canvas::load_mesh(Mesh* m)
                 pow(m->xmax() - m->xmin(), 2) +
                 pow(m->ymax() - m->ymin(), 2) +
                 pow(m->zmax() - m->zmin(), 2));
-    */
     update();
 
     delete m;
