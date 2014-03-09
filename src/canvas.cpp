@@ -35,6 +35,12 @@ void Canvas::load_mesh(Mesh* m)
     delete m;
 }
 
+void Canvas::set_status(const QString &s)
+{
+    status = s;
+    update();
+}
+
 void Canvas::initializeGL()
 {
     mesh_shader.addShaderFromSourceFile(QGLShader::Vertex, ":/gl/mesh.vert");
@@ -42,18 +48,24 @@ void Canvas::initializeGL()
     mesh_shader.link();
 
     backdrop = new Backdrop();
-
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-    glEnable(GL_DEPTH_TEST);
 }
 
-void Canvas::paintGL()
+void Canvas::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
+
+    glClearColor(0.0, 0.0, 0.0, 0.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
 
     backdrop->draw();
     if (mesh)  draw_mesh();
+
+    QPainter painter(this);
+    if (!status.isNull())
+        painter.drawText(10, height() - 10, status);
 }
+
 
 void Canvas::draw_mesh()
 {

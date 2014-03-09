@@ -18,10 +18,11 @@ public:
     Canvas(const QGLFormat& format, QWidget* parent=0);
 
     void initializeGL();
-    void paintGL();
+    void paintEvent(QPaintEvent* event);
     ~Canvas();
 
 public slots:
+    void set_status(const QString& s);
     void load_mesh(Mesh* m);
 
 
@@ -49,6 +50,7 @@ private:
     float yaw;
 
     QPoint mouse_pos;
+    QString status;
 };
 
 #endif // CANVAS_H
