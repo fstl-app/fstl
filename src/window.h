@@ -15,8 +15,6 @@ public:
 public slots:
     void on_open();
     void on_about();
-    void disable_open_action();
-    void enable_open_action();
 
 private:
     QAction* open_action;

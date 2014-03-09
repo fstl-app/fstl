@@ -24,17 +24,17 @@ Window::Window(QWidget *parent) :
 
     open_action = new QAction("Open", this);
     open_action->setShortcut(QKeySequence::Open);
-    QObject::connect(open_action, SIGNAL(triggered()),
-                     this, SLOT(on_open()));
+    QObject::connect(open_action, &QAction::triggered,
+                     this, &Window::on_open);
 
     quit_action = new QAction("Quit", this);
     quit_action->setShortcut(QKeySequence::Quit);
-    QObject::connect(quit_action, SIGNAL(triggered()),
-                     this, SLOT(close()));
+    QObject::connect(quit_action, &QAction::triggered,
+                     this, &Window::on_open);
 
     about_action = new QAction("About", this);
-    QObject::connect(about_action, SIGNAL(triggered()),
-                     this, SLOT(on_about()));
+    QObject::connect(about_action, &QAction::triggered,
+                     this, &Window::on_open);
 
     auto file_menu = menuBar()->addMenu("File");
     file_menu->addAction(open_action);
@@ -68,31 +68,18 @@ void Window::on_about()
         "   style=\"color: #93a1a1;\">matt.j.keeter@gmail.com</a></p>");
 }
 
-
-void Window::enable_open_action()
-{
-    open_action->setEnabled(true);
-}
-
-
-void Window::disable_open_action()
-{
-    open_action->setEnabled(false);
-}
-
-
 void Window::load_stl(const QString &filename)
 {
     Loader* loader = new Loader(this, filename);
-    connect(loader, SIGNAL(started()),
-            this, SLOT(disable_open_action()));
-    connect(loader, SIGNAL(got_mesh(Mesh*)),
-            canvas, SLOT(load_mesh(Mesh*)));
-    connect(loader, SIGNAL(finished()),
-            loader, SLOT(deleteLater()));
-    connect(loader, SIGNAL(finished()),
-            this, SLOT(enable_open_action()));
-    connect(loader, SIGNAL(loaded_file(QString)),
-            this, SLOT(setWindowTitle(QString)));
+    connect(loader, &Loader::started,
+            [=](){ open_action->setEnabled(false); });
+    connect(loader, &Loader::got_mesh,
+            canvas, &Canvas::load_mesh);
+    connect(loader, &Loader::finished,
+            loader, &Loader::deleteLater);
+    connect(loader, &Loader::finished,
+            [=](){ open_action->setEnabled(true); });
+    connect(loader, &Loader::loaded_file,
+            this, &Window::setWindowTitle);
     loader->start();
 }
