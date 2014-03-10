@@ -70,16 +70,24 @@ void Window::on_about()
 
 void Window::load_stl(const QString &filename)
 {
+    canvas->set_status("Loading " + filename);
+
     Loader* loader = new Loader(this, filename);
     connect(loader, &Loader::started,
             [=](){ open_action->setEnabled(false); });
+
     connect(loader, &Loader::got_mesh,
             canvas, &Canvas::load_mesh);
+
     connect(loader, &Loader::finished,
             loader, &Loader::deleteLater);
     connect(loader, &Loader::finished,
             [=](){ open_action->setEnabled(true); });
+    connect(loader, &Loader::finished,
+            [=](){ canvas->set_status(""); });
+
     connect(loader, &Loader::loaded_file,
             this, &Window::setWindowTitle);
+
     loader->start();
 }

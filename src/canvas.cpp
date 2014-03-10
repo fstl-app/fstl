@@ -62,6 +62,7 @@ void Canvas::paintEvent(QPaintEvent *event)
     if (mesh)  draw_mesh();
 
     QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
     if (!status.isNull())
         painter.drawText(10, height() - 10, status);
 }
