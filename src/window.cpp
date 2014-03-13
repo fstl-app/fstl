@@ -30,11 +30,11 @@ Window::Window(QWidget *parent) :
     quit_action = new QAction("Quit", this);
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, &QAction::triggered,
-                     this, &Window::on_open);
+                     this, &Window::close);
 
     about_action = new QAction("About", this);
     QObject::connect(about_action, &QAction::triggered,
-                     this, &Window::on_open);
+                     this, &Window::on_about);
 
     auto file_menu = menuBar()->addMenu("File");
     file_menu->addAction(open_action);
