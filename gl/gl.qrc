@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="gl/">
+        <file>mesh.frag</file>
+        <file>mesh.vert</file>
+        <file>quad.frag</file>
+        <file>quad.vert</file>
+    </qresource>
+</RCC>
