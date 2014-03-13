@@ -24,3 +24,7 @@ CONFIG += c++11
 
 RESOURCES += \
     resources.qrc
+
+QMAKE_INFO_PLIST = ../misc/Info.plist
+
+ICON = ../misc/fstl.icns
