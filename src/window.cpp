@@ -68,8 +68,10 @@ void Window::on_about()
         "   style=\"color: #93a1a1;\">matt.j.keeter@gmail.com</a></p>");
 }
 
-void Window::load_stl(const QString &filename)
+bool Window::load_stl(const QString& filename)
 {
+    if (!open_action->isEnabled())  return false;
+
     canvas->set_status("Loading " + filename);
 
     Loader* loader = new Loader(this, filename);
@@ -90,4 +92,5 @@ void Window::load_stl(const QString &filename)
             this, &Window::setWindowTitle);
 
     loader->start();
+    return true;
 }
