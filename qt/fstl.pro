@@ -4,6 +4,7 @@ TARGET = fstl
 TEMPLATE = app
 
 SOURCES += \
+    ../src/app.cpp\
     ../src/main.cpp\
     ../src/canvas.cpp \
     ../src/mesh.cpp \
@@ -13,6 +14,7 @@ SOURCES += \
     ../src/backdrop.cpp
 
 HEADERS  += \
+    ../src/app.h\
     ../src/canvas.h \
     ../src/mesh.h \
     ../src/glmesh.h \
