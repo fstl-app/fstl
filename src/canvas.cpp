@@ -107,11 +107,11 @@ QMatrix4x4 Canvas::view_matrix() const
     QMatrix4x4 m;
     if (width() > height())
     {
-        m.scale(height() / float(width()), 1, 0.5);
+        m.scale(-height() / float(width()), 1, 0.5);
     }
     else
     {
-        m.scale(1, width() / float(height()), 0.5);
+        m.scale(-1, width() / float(height()), 0.5);
     }
     return m;
 }
@@ -139,7 +139,7 @@ void Canvas::mouseMoveEvent(QMouseEvent* event)
     {
         auto p = event->pos();
         auto d = p - mouse_pos;
-        yaw = fmod(yaw + d.x(), 360);
+        yaw = fmod(yaw - d.x(), 360);
         tilt = fmax(0, fmin(180, tilt - d.y()));
         mouse_pos = p;
         update();
