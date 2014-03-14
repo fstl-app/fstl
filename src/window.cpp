@@ -11,7 +11,7 @@ Window::Window(QWidget *parent) :
 {
     setWindowTitle("fstl");
 
-    QFile styleFile( ":/qt/style.qss" );
+    QFile styleFile(":/qt/style.qss");
     styleFile.open( QFile::ReadOnly );
     setStyleSheet(styleFile.readAll());
 

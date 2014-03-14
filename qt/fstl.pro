@@ -26,6 +26,6 @@ RESOURCES += \
     qt.qrc \
     ../gl/gl.qrc
 
-QMAKE_INFO_PLIST = ../misc/Info.plist
+QMAKE_INFO_PLIST = ../app/Info.plist
 
-ICON = ../misc/fstl.icns
+ICON = ../app/fstl.icns
