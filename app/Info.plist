@@ -10,8 +10,6 @@
 	<string>APPL</string>
 	<key>CFBundleGetInfoString</key>
 	<string>A minimal fast STL viewer</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
 	<key>CFBundleExecutable</key>
 	<string>fstl</string>
 	<key>CFBundleIdentifier</key>
