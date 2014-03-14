@@ -14,7 +14,8 @@ bool App::event(QEvent* e)
 {
     if (e->type() == QEvent::FileOpen)
     {
-        qDebug() << static_cast<QFileOpenEvent*>(e)->file();
+        window->load_stl(static_cast<QFileOpenEvent*>(e)->file());
+        return true;
     }
     else
     {
