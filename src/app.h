@@ -10,13 +10,10 @@ class App : public QApplication
     Q_OBJECT
 public:
     explicit App(int argc, char *argv[]);
-
-signals:
-
-public slots:
-
+protected:
+    bool event(QEvent* e);
 private:
-    Window* window;
+    Window* const window;
 
 };
 
