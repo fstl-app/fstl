@@ -88,8 +88,11 @@ bool Window::load_stl(const QString& filename)
     connect(loader, &Loader::finished,
             [=](){ canvas->set_status(""); });
 
-    connect(loader, &Loader::loaded_file,
-            this, &Window::setWindowTitle);
+    if (filename[0] != ':')
+    {
+        connect(loader, &Loader::loaded_file,
+                this, &Window::setWindowTitle);
+    }
 
     loader->start();
     return true;
