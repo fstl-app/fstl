@@ -10,7 +10,7 @@
 
 Canvas::Canvas(const QGLFormat& format, QWidget *parent)
     : QGLWidget(format, parent), mesh(NULL),
-      scale(1), tilt(90), yaw(0)
+      scale(1), tilt(90), yaw(0), status(" ")
 {
     // Nothing to do here
 }
