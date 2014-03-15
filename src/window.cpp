@@ -7,7 +7,11 @@
 #include "loader.h"
 
 Window::Window(QWidget *parent) :
-    QMainWindow(parent)
+    QMainWindow(parent),
+    open_action(new QAction("Open", this)),
+    about_action(new QAction("About", this)),
+    quit_action(new QAction("Quit", this))
+
 {
     setWindowTitle("fstl");
 
@@ -22,17 +26,14 @@ Window::Window(QWidget *parent) :
     canvas = new Canvas(format, this);
     setCentralWidget(canvas);
 
-    open_action = new QAction("Open", this);
     open_action->setShortcut(QKeySequence::Open);
     QObject::connect(open_action, &QAction::triggered,
                      this, &Window::on_open);
 
-    quit_action = new QAction("Quit", this);
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, &QAction::triggered,
                      this, &Window::close);
 
-    about_action = new QAction("About", this);
     QObject::connect(about_action, &QAction::triggered,
                      this, &Window::on_about);
 

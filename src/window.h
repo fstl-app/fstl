@@ -17,9 +17,9 @@ public slots:
     void on_about();
 
 private:
-    QAction* open_action;
-    QAction* about_action;
-    QAction* quit_action;
+    QAction* const open_action;
+    QAction* const about_action;
+    QAction* const quit_action;
 
     Canvas* canvas;
 };
