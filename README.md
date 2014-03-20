@@ -14,6 +14,13 @@ the project is under 1K lines of code and should be fairly approachable.
 
 --------------------------------------------------------------------------------
 
+License
+-------
+(c) 2014 Matt Keeter
+
+This work may be reproduced, modified, distributed, performed, and displayed for any purpose. Copyright is retained and must be preserved. The work is provided as is; no warranty is provided, and users accept all liability.
+
+--------------------------------------------------------------------------------
 *p.s.* In my day job, I'm an engineer at [Formlabs](http://formlabs.com).
 If you think `fstl` is cool, you should check out our
 [jobs page](http://formlabs.com/jobs) -- we're hiring software developers

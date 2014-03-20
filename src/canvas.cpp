@@ -61,10 +61,11 @@ void Canvas::paintEvent(QPaintEvent *event)
     backdrop->draw();
     if (mesh)  draw_mesh();
 
+    if (status.isNull())    return;
+
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    if (!status.isNull())
-        painter.drawText(10, height() - 10, status);
+    painter.drawText(10, height() - 10, status);
 }
 
 
