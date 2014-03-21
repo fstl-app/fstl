@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QtOpenGL/QGLWidget>
+#include <QtOpenGL/QGLFunctions>
 #include <QtOpenGL/QGLShaderProgram>
 #include <QMatrix4x4>
 
@@ -10,7 +11,7 @@ class GLMesh;
 class Mesh;
 class Backdrop;
 
-class Canvas : public QGLWidget
+class Canvas : public QGLWidget, protected QGLFunctions
 {
     Q_OBJECT
 

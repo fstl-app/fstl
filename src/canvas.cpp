@@ -49,6 +49,8 @@ void Canvas::clear_status()
 
 void Canvas::initializeGL()
 {
+    initializeGLFunctions();
+
     mesh_shader.addShaderFromSourceFile(QGLShader::Vertex, ":/gl/mesh.vert");
     mesh_shader.addShaderFromSourceFile(QGLShader::Fragment, ":/gl/mesh.frag");
     mesh_shader.link();
