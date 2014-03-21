@@ -32,6 +32,11 @@ RESOURCES += \
     qt.qrc \
     ../gl/gl.qrc
 
-QMAKE_INFO_PLIST = ../app/Info.plist
+macx {
+    QMAKE_INFO_PLIST = ../app/Info.plist
+    ICON = ../app/fstl.icns
+}
 
-ICON = ../app/fstl.icns
+win32 {
+    RC_FILE = ../exe/fstl.rc
+}
