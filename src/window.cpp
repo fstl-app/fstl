@@ -69,6 +69,16 @@ void Window::on_about()
         "   style=\"color: #93a1a1;\">matt.j.keeter@gmail.com</a></p>");
 }
 
+void Window::enable_open()
+{
+    open_action->setEnabled(true);
+}
+
+void Window::disable_open()
+{
+    open_action->setEnabled(false);
+}
+
 bool Window::load_stl(const QString& filename)
 {
     if (!open_action->isEnabled())  return false;
@@ -77,7 +87,7 @@ bool Window::load_stl(const QString& filename)
 
     Loader* loader = new Loader(this, filename);
     connect(loader, &Loader::started,
-            [=](){ open_action->setEnabled(false); });
+              this, &Window::disable_open);
 
     connect(loader, &Loader::got_mesh,
             canvas, &Canvas::load_mesh);
@@ -85,14 +95,14 @@ bool Window::load_stl(const QString& filename)
     connect(loader, &Loader::finished,
             loader, &Loader::deleteLater);
     connect(loader, &Loader::finished,
-            [=](){ open_action->setEnabled(true); });
+              this, &Window::enable_open);
     connect(loader, &Loader::finished,
-            [=](){ canvas->set_status(""); });
+            canvas, &Canvas::clear_status);
 
     if (filename[0] != ':')
     {
         connect(loader, &Loader::loaded_file,
-                this, &Window::setWindowTitle);
+                  this, &Window::setWindowTitle);
     }
 
     loader->start();
