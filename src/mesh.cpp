@@ -56,6 +56,59 @@ typedef std::pair<Vec3, GLuint> Vec3i;
 
 ////////////////////////////////////////////////////////////////////////////////
 
+Mesh* Mesh::load_stl_hash(const QString& filename)
+{
+    QFile file(filename);
+    file.open(QIODevice::ReadOnly);
+
+    QDataStream data(&file);
+    data.setByteOrder(QDataStream::LittleEndian);
+    data.setFloatingPointPrecision(QDataStream::SinglePrecision);
+
+    // Skip .stl file header
+    data.skipRawData(80);
+
+    // Load the triangle count from the .stl file
+    uint32_t tri_count;
+    data >> tri_count;
+
+    // This vector will store triangles as sets of 3 indices
+    std::vector<GLuint> indices(tri_count * 3);
+
+    std::vector<GLfloat> verts;
+    verts.reserve(tri_count * 9);
+
+    QHash<QByteArray, GLuint> map;
+    map.reserve(tri_count * 3);
+
+    float xyz[3];
+    QByteArray v(sizeof(xyz), 0);
+    for (unsigned i=0; i < tri_count; ++i)
+    {
+        // Skip face's normal vector
+        data.skipRawData(3*sizeof(float));
+
+        for (int j=0; j < 3; ++j)
+        {
+            data >> xyz[0] >> xyz[1] >> xyz[2];
+            memcpy(v.data(), xyz, sizeof(xyz));
+            if (!map.contains(v))
+            {
+                map[v] = verts.size() / 3;
+                verts.push_back(xyz[0]);
+                verts.push_back(xyz[1]);
+                verts.push_back(xyz[2]);
+            }
+            indices[i*3 + j] = map[v];
+        }
+
+        // Skip face attribute
+        data.skipRawData(sizeof(uint16_t));
+    }
+
+    return new Mesh(verts, indices);
+}
+
 Mesh* Mesh::load_stl(const QString& filename)
 {
     QFile file(filename);
