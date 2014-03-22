@@ -41,8 +41,16 @@ void Canvas::set_status(const QString &s)
     update();
 }
 
+void Canvas::clear_status()
+{
+    status = "";
+    update();
+}
+
 void Canvas::initializeGL()
 {
+    initializeGLFunctions();
+
     mesh_shader.addShaderFromSourceFile(QGLShader::Vertex, ":/gl/mesh.vert");
     mesh_shader.addShaderFromSourceFile(QGLShader::Fragment, ":/gl/mesh.frag");
     mesh_shader.link();

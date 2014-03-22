@@ -2,10 +2,11 @@
 #define GLMESH_H
 
 #include <QtOpenGL/QGLBuffer>
+#include <QtOpenGL/QGLFunctions>
 
 class Mesh;
 
-class GLMesh
+class GLMesh : protected QGLFunctions
 {
 public:
     GLMesh(const Mesh* const mesh);

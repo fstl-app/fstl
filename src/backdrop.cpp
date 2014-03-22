@@ -2,6 +2,8 @@
 
 Backdrop::Backdrop()
 {
+    initializeGLFunctions();
+
     shader.addShaderFromSourceFile(QGLShader::Vertex, ":/gl/quad.vert");
     shader.addShaderFromSourceFile(QGLShader::Fragment, ":/gl/quad.frag");
     shader.link();
