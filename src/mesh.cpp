@@ -86,7 +86,7 @@ Mesh* Mesh::load_stl_hash(const QString& filename)
     for (unsigned i=0; i < tri_count; ++i)
     {
         // Skip face's normal vector
-        data.skipRawData(3*sizeof(float));
+        data.readRawData(reinterpret_cast<char*>(xyz), 3*sizeof(float));
 
         for (int j=0; j < 3; ++j)
         {
@@ -103,7 +103,7 @@ Mesh* Mesh::load_stl_hash(const QString& filename)
         }
 
         // Skip face attribute
-        data.skipRawData(sizeof(uint16_t));
+        data.readRawData(reinterpret_cast<char*>(xyz), sizeof(uint16_t));
     }
 
     return new Mesh(verts, indices);
@@ -127,12 +127,12 @@ Mesh* Mesh::load_stl(const QString& filename)
 
     // Extract vertices into an array of xyz, unsigned pairs
     QVector<Vec3i> verts(tri_count*3);
-
+    float xyz[3];
     // Store vertices in the array, processing one triangle at a time.
     for (auto v=verts.begin(); v != verts.end(); v += 3)
     {
         // Skip face's normal vector
-        data.skipRawData(3*sizeof(float));
+        data.readRawData(reinterpret_cast<char*>(xyz), 3*sizeof(float));
 
         // Load vertex data from .stl file into vertices
         data >> v[0].first.x >> v[0].first.y >> v[0].first.z;
@@ -140,7 +140,7 @@ Mesh* Mesh::load_stl(const QString& filename)
         data >> v[2].first.x >> v[2].first.y >> v[2].first.z;
 
         // Skip face attribute
-        data.skipRawData(sizeof(uint16_t));
+        data.readRawData(reinterpret_cast<char*>(xyz), sizeof(uint16_t));
     }
 
     // Save indicies as the second element in the array
