@@ -11,11 +11,7 @@ void Loader::run()
     QTime timer;
     timer.start();
     emit got_mesh(Mesh::load_stl(filename));
-    qDebug() << "Sorted:" << timer.elapsed();
-
-    timer.start();
-    emit got_mesh(Mesh::load_stl_hash(filename));
-    qDebug() << "Hash:" << timer.elapsed();
+    qDebug() << "Time taken:" << timer.elapsed();
 
     emit loaded_file(filename);
 }

@@ -11,7 +11,6 @@ class Mesh
 public:
     Mesh(std::vector<GLfloat> vertices, std::vector<GLuint> indices);
     static Mesh* load_stl(const QString& filename);
-    static Mesh* load_stl_hash(const QString& filename);
 
     float min(size_t start) const;
     float max(size_t start) const;
