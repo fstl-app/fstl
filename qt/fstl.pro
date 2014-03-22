@@ -40,3 +40,7 @@ macx {
 win32 {
     RC_FILE = ../exe/fstl.rc
 }
+
+static {
+    CONFIG += static
+}
