@@ -30,6 +30,12 @@ void Canvas::load_mesh(Mesh* m)
                 pow(m->xmax() - m->xmin(), 2) +
                 pow(m->ymax() - m->ymin(), 2) +
                 pow(m->zmax() - m->zmin(), 2));
+
+    // Reset other camera parameters
+    zoom = 1;
+    yaw = 0;
+    tilt = 90;
+
     update();
 
     delete m;
