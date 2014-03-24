@@ -10,7 +10,7 @@
 
 Canvas::Canvas(const QGLFormat& format, QWidget *parent)
     : QGLWidget(format, parent), mesh(NULL),
-      scale(1), tilt(90), yaw(0), status(" ")
+      scale(1), zoom(1), tilt(90), yaw(0), status(" ")
 {
     // Nothing to do here
 }
@@ -30,6 +30,12 @@ void Canvas::load_mesh(Mesh* m)
                 pow(m->xmax() - m->xmin(), 2) +
                 pow(m->ymax() - m->ymin(), 2) +
                 pow(m->zmax() - m->zmin(), 2));
+
+    // Reset other camera parameters
+    zoom = 1;
+    yaw = 0;
+    tilt = 90;
+
     update();
 
     delete m;
@@ -89,6 +95,9 @@ void Canvas::draw_mesh()
                 mesh_shader.uniformLocation("view_matrix"),
                 1, GL_FALSE, view_matrix().data());
 
+    // Compensate for z-flattening when zooming
+    glUniform1f(mesh_shader.uniformLocation("zoom"), 1/zoom);
+
     // Find and enable the attribute location for vertex position
     const GLuint vp = mesh_shader.attributeLocation("vertex_position");
     glEnableVertexAttribArray(vp);
@@ -122,12 +131,14 @@ QMatrix4x4 Canvas::view_matrix() const
     {
         m.scale(-1, width() / float(height()), 0.5);
     }
+    m.scale(zoom, zoom, 1);
     return m;
 }
 
 void Canvas::mousePressEvent(QMouseEvent* event)
 {
-    if (event->button() == Qt::LeftButton)
+    if (event->button() == Qt::LeftButton ||
+        event->button() == Qt::RightButton)
     {
         mouse_pos = event->pos();
         setCursor(Qt::ClosedHandCursor);
@@ -136,7 +147,8 @@ void Canvas::mousePressEvent(QMouseEvent* event)
 
 void Canvas::mouseReleaseEvent(QMouseEvent* event)
 {
-    if (event->button() == Qt::LeftButton)
+    if (event->button() == Qt::LeftButton ||
+        event->button() == Qt::RightButton)
     {
         unsetCursor();
     }
@@ -144,13 +156,50 @@ void Canvas::mouseReleaseEvent(QMouseEvent* event)
 
 void Canvas::mouseMoveEvent(QMouseEvent* event)
 {
+    auto p = event->pos();
+    auto d = p - mouse_pos;
+
     if (event->buttons() & Qt::LeftButton)
     {
-        auto p = event->pos();
-        auto d = p - mouse_pos;
         yaw = fmod(yaw - d.x(), 360);
         tilt = fmax(0, fmin(180, tilt - d.y()));
-        mouse_pos = p;
         update();
     }
+    else if (event->buttons() & Qt::RightButton)
+    {
+        center = transform_matrix().inverted() *
+                 view_matrix().inverted() *
+                 QVector3D(-d.x() / (0.5*width()),
+                            d.y() / (0.5*height()), 0);
+        update();
+    }
+    mouse_pos = p;
+}
+
+void Canvas::wheelEvent(QWheelEvent *event)
+{
+    // Find GL position before the zoom operation
+    // (to zoom about mouse cursor)
+    auto p = event->pos();
+    QVector3D v(1 - p.x() / (0.5*width()),
+                p.y() / (0.5*height()) - 1, 0);
+    QVector3D a = transform_matrix().inverted() *
+                  view_matrix().inverted() * v;
+
+    if (event->delta() < 0)
+    {
+        for (int i=0; i > event->delta(); --i)
+            zoom *= 1.001;
+    }
+    else if (event->delta() > 0)
+    {
+        for (int i=0; i < event->delta(); ++i)
+            zoom /= 1.001;
+    }
+
+    // Then find the cursor's GL position post-zoom and adjust center.
+    QVector3D b = transform_matrix().inverted() *
+                  view_matrix().inverted() * v;
+    center += b - a;
+    update();
 }
