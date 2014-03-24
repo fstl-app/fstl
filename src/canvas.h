@@ -32,6 +32,7 @@ protected:
     void mousePressEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
+    void wheelEvent(QWheelEvent* event);
 
 
 private:
@@ -48,6 +49,7 @@ private:
 
     QVector3D center;
     float scale;
+    float zoom;
     float tilt;
     float yaw;
 

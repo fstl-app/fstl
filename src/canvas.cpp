@@ -10,7 +10,7 @@
 
 Canvas::Canvas(const QGLFormat& format, QWidget *parent)
     : QGLWidget(format, parent), mesh(NULL),
-      scale(1), tilt(90), yaw(0), status(" ")
+      scale(1), zoom(1), tilt(90), yaw(0), status(" ")
 {
     // Nothing to do here
 }
@@ -122,12 +122,14 @@ QMatrix4x4 Canvas::view_matrix() const
     {
         m.scale(-1, width() / float(height()), 0.5);
     }
+    m.scale(zoom, zoom, 1);
     return m;
 }
 
 void Canvas::mousePressEvent(QMouseEvent* event)
 {
-    if (event->button() == Qt::LeftButton)
+    if (event->button() == Qt::LeftButton ||
+        event->button() == Qt::RightButton)
     {
         mouse_pos = event->pos();
         setCursor(Qt::ClosedHandCursor);
@@ -136,7 +138,8 @@ void Canvas::mousePressEvent(QMouseEvent* event)
 
 void Canvas::mouseReleaseEvent(QMouseEvent* event)
 {
-    if (event->button() == Qt::LeftButton)
+    if (event->button() == Qt::LeftButton ||
+        event->button() == Qt::RightButton)
     {
         unsetCursor();
     }
@@ -144,13 +147,38 @@ void Canvas::mouseReleaseEvent(QMouseEvent* event)
 
 void Canvas::mouseMoveEvent(QMouseEvent* event)
 {
+    auto p = event->pos();
+    auto d = p - mouse_pos;
+
     if (event->buttons() & Qt::LeftButton)
     {
-        auto p = event->pos();
-        auto d = p - mouse_pos;
         yaw = fmod(yaw - d.x(), 360);
         tilt = fmax(0, fmin(180, tilt - d.y()));
-        mouse_pos = p;
         update();
     }
+    else if (event->buttons() & Qt::RightButton)
+    {
+        qDebug() << d;
+        center = transform_matrix().inverted() *
+                 view_matrix().inverted() *
+                 QVector3D(-d.x() / (0.5*width()),
+                            d.y() / (0.5*height()), 0);
+        update();
+    }
+    mouse_pos = p;
+}
+
+void Canvas::wheelEvent(QWheelEvent *event)
+{
+    if (event->delta() < 0)
+    {
+        for (int i=0; i > event->delta(); --i)
+            zoom *= 1.001;
+    }
+    else if (event->delta() > 0)
+    {
+        for (int i=0; i < event->delta(); ++i)
+            zoom /= 1.001;
+    }
+    update();
 }
