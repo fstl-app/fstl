@@ -89,6 +89,9 @@ void Canvas::draw_mesh()
                 mesh_shader.uniformLocation("view_matrix"),
                 1, GL_FALSE, view_matrix().data());
 
+    // Compensate for z-flattening when zooming
+    glUniform1f(mesh_shader.uniformLocation("zoom"), 1/zoom);
+
     // Find and enable the attribute location for vertex position
     const GLuint vp = mesh_shader.attributeLocation("vertex_position");
     glEnableVertexAttribArray(vp);
