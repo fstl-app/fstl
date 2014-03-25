@@ -77,6 +77,14 @@ void Window::on_ascii_stl()
                           "Please convert to binary <code>.stl</code> and retry");
 }
 
+void Window::on_bad_stl()
+{
+    QMessageBox::critical(this, "Error",
+                          "<b>Error:</b><br>"
+                          "This <code>.stl</code> file is invalid or corrupted.<br>"
+                          "Please export it from the original source, verify, and retry.");
+}
+
 void Window::enable_open()
 {
     open_action->setEnabled(true);
@@ -101,6 +109,8 @@ bool Window::load_stl(const QString& filename)
             canvas, &Canvas::load_mesh);
     connect(loader, &Loader::error_ascii_stl,
               this, &Window::on_ascii_stl);
+    connect(loader, &Loader::error_bad_stl,
+              this, &Window::on_bad_stl);
 
     connect(loader, &Loader::finished,
             loader, &Loader::deleteLater);
