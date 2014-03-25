@@ -7,4 +7,8 @@ cd ../Frameworks
 rm -rf QtDeclarative.framework QtMultimedia.framework QtMultimediaWidgets.framework QtNetwork.framework QtPositioning.framework QtQml.framework QtQuick.framework QtScript.framework QtSensors.framework QtSql.framework QtXmlPatterns.framework
 cd ../Resources
 rm empty.lproj
+cd ../../..
+cp -r fstl.app ..
+cd ..
+zip -r fstl.zip fstl.app README.md
 
