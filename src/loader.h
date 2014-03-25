@@ -15,6 +15,7 @@ public:
 signals:
     void loaded_file(QString filename);
     void got_mesh(Mesh* m);
+    void error_ascii_stl();
 
 private:
     const QString filename;
