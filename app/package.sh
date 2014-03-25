@@ -10,5 +10,5 @@ rm empty.lproj
 cd ../../..
 cp -r fstl.app ..
 cd ..
-zip -r fstl.zip fstl.app README.md
+zip -r fstl_mac.zip fstl.app README.md
 
