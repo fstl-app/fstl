@@ -12,9 +12,13 @@ public:
     explicit Loader(QObject* parent, const QString& filename);
     void run();
 
+protected:
+    Mesh* load_stl();
+
 signals:
     void loaded_file(QString filename);
     void got_mesh(Mesh* m);
+
     void error_ascii_stl();
     void error_bad_stl();
 
