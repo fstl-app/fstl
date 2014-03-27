@@ -14,6 +14,7 @@ Window::Window(QWidget *parent) :
 
 {
     setWindowTitle("fstl");
+    setAcceptDrops(true);
 
     QFile styleFile(":/qt/style.qss");
     styleFile.open( QFile::ReadOnly );
@@ -127,4 +128,19 @@ bool Window::load_stl(const QString& filename)
 
     loader->start();
     return true;
+}
+
+void Window::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasUrls())
+    {
+        auto urls = event->mimeData()->urls();
+        if (urls.size() == 1 && urls.front().path().endsWith(".stl"))
+            event->acceptProposedAction();
+    }
+}
+
+void Window::dropEvent(QDropEvent *event)
+{
+    load_stl(event->mimeData()->urls().front().toLocalFile());
 }
