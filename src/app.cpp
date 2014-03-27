@@ -8,7 +8,10 @@ App::App(int argc, char *argv[]) :
     QApplication(argc, argv), window(new Window())
 {
     window->show();
-    window->load_stl(":gl/sphere.stl");
+    if (argc > 1)
+        window->load_stl(argv[1]);
+    else
+        window->load_stl(":gl/sphere.stl");
 }
 
 bool App::event(QEvent* e)
