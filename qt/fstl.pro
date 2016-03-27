@@ -44,3 +44,6 @@ win32 {
 static {
     CONFIG += static
 }
+
+target.path = /usr/bin
+INSTALLS += target
