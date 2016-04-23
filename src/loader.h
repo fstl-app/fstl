@@ -14,6 +14,7 @@ public:
 
 protected:
     Mesh* load_stl();
+    Mesh* load_ascii_stl();
 
 signals:
     void loaded_file(QString filename);

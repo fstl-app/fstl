@@ -36,8 +36,92 @@ struct Vec3
 };
 
 typedef std::pair<Vec3, GLuint> Vec3i;
+typedef std::pair<Vec3, GLuint> Vec3f;
 
 ////////////////////////////////////////////////////////////////////////////////
+
+Mesh* Loader::load_ascii_stl() {
+    QFile file(filename);
+    file.open(QIODevice::ReadOnly);
+    if(file.read(5) != "solid" || file.size() < 84) {
+        emit error_bad_stl();
+        return NULL;
+    }
+    QString line;
+    QTextStream in(&file);
+    // Extract vertices into an array of xyz, unsigned pairs
+    QVector<Vec3f> verts;
+
+    //Store vertices in the array, processing one vertex at a time.
+    while(!in.atEnd()){
+        line = in.readLine().trimmed();
+        QString substring = line.left(6);
+        if(substring == "facet") {
+
+        }
+        else if(substring == "outer") {
+
+        }
+        else if(substring == "vertex") {
+            QStringList l = line.split(" ");
+            if(l.size() == 4) {
+                Vec3f vec;
+                QString xS = l.at(1);
+                QString yS = l.at(2);
+                QString zS = l.at(3);
+                vec.first.x = xS.toFloat();
+                vec.first.y = yS.toFloat();
+                vec.first.z = zS.toFloat();
+                verts.append(vec);
+            }
+        }
+    }
+
+    //check if the verticies were actually set.
+    if(verts.length() == 0) {
+        emit error_bad_stl();
+        return NULL;
+    }
+
+    // Save indicies as the second element in the array
+    // (so that we can reconstruct triangle order after sorting)
+    for(size_t i = 0; i < verts.length(); ++i) {
+        verts[i].second = i;
+    }
+
+    // Sort the set of vertices (to deduplicate)
+    std::sort(verts.begin(), verts.end());
+
+    // This vector will store triangles as sets of 3 indices
+    //should be the length of verts beause we went through each vertex seperately.
+    std::vector<GLuint> indices(verts.length());
+
+    // Go through the sorted vertex list, deduplicating and creating
+    // an indexed geometry representation for the triangles.
+    // Unique vertices are moved so that they occupy the first vertex_count
+    // positions in the verts array.
+    size_t vertex_count = 0;
+    for (auto v : verts)
+    {
+        if (!vertex_count || v.first != verts[vertex_count-1].first)
+        {
+            verts[vertex_count++] = v;
+        }
+        indices[v.second] = vertex_count - 1;
+    }
+    verts.resize(vertex_count);
+
+    std::vector<GLfloat> flat_verts;
+    flat_verts.reserve(vertex_count*3);
+    for (auto v : verts)
+    {
+        flat_verts.push_back(v.first.x);
+        flat_verts.push_back(v.first.y);
+        flat_verts.push_back(v.first.z);
+    }
+
+    return new Mesh(flat_verts, indices);
+}
 
 Mesh* Loader::load_stl()
 {
@@ -45,8 +129,8 @@ Mesh* Loader::load_stl()
     file.open(QIODevice::ReadOnly);
     if (file.read(5) == "solid")
     {
-        emit error_ascii_stl();
-        return NULL;
+        //assume that this is an ascii stl file.
+        return load_ascii_stl();
     }
     // Skip the rest of the header material
     file.read(75);

@@ -32,6 +32,8 @@ RESOURCES += \
     qt.qrc \
     ../gl/gl.qrc
 
+LIBS += opengl32.lib
+
 macx {
     QMAKE_INFO_PLIST = ../app/Info.plist
     ICON = ../app/fstl.icns

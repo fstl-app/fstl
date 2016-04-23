@@ -52,7 +52,7 @@ void Window::on_open()
 {
     QString filename = QFileDialog::getOpenFileName(
                 this, "Load .stl file", QString(), "*.stl");
-    if (not filename.isNull())
+    if (!filename.isNull())
     {
         load_stl(filename);
     }
@@ -67,7 +67,8 @@ void Window::on_about()
         "   style=\"color: #93a1a1;\">https://github.com/mkeeter/fstl</a></p>"
         "<p>© 2014 Matthew Keeter<br>"
         "<a href=\"mailto:matt.j.keeter@gmail.com\""
-        "   style=\"color: #93a1a1;\">matt.j.keeter@gmail.com</a></p>");
+        "   style=\"color: #93a1a1;\">matt.j.keeter@gmail.com</a></p><br>"
+        "<p>© 2016 Paul Tsouchlos<br>");
 }
 
 void Window::on_ascii_stl()
