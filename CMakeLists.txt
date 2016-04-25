@@ -1,5 +1,6 @@
 #### Fast .stl viewer #####
 # Copyright 2016
+# Original Project Author: Matt Keeter 2014
 # Author: Paul Tsouchlos
 
 cmake_minimum_required(VERSION 3.3)
@@ -7,18 +8,21 @@ cmake_minimum_required(VERSION 3.3)
 # Set the version number
 set (FSTL_VERSION_MAJOR "0")
 set (FSTL_VERSION_MINOR "9")
-set (FSTL_VERSION_PATCH "2")
+set (FSTL_VERSION_PATCH "9")
 set (FSTL_VERSION "${FSTL_VERSION_MAJOR}.${FSTL_VERSION_MINOR}.${FSTL_VERSION_PATCH}")
 
+# Add version definitions to use within the code. 
 add_definitions(-DFSTL_VERSION="${FSTL_VERSION}")
 project(fstl)
 
+# Prefix path with qt directory. Change this if different for your machine.
 set(CMAKE_PREFIX_PATH "C:/Qt/5.5/msvc2013_64/lib/cmake")
 set(CMAKE_PREFIX_PATH "C:/Qt5/5.5/msvc2013_64/lib/cmake" ${CMAKE_PREFIX_PATH})
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOUIC ON)
 
+#set project sources
 set(Project_Sources src/app.cpp
 src/backdrop.cpp
 src/canvas.cpp
@@ -28,6 +32,7 @@ src/main.cpp
 src/mesh.cpp
 src/window.cpp)
 
+#set project headers. 
 set(Project_Headers src/app.h
 src/backdrop.h
 src/canvas.h
@@ -36,13 +41,11 @@ src/loader.h
 src/mesh.h
 src/window.h)
 
+#set project resources and icon resource
 set(Project_Resources qt/qt.qrc gl/gl.qrc)
 set(Icon_Resource exe/fstl.rc)
 
-message("Project sources: " ${Project_Sources})
-message("Project headers: " ${Project_Headers})
-message("Project resources: " ${Project_Resources})
-
+#find required packages. 
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED)
@@ -51,8 +54,10 @@ find_package(Qt5OpenGl REQUIRED)
 find_package(OpenGL REQUIRED)
 set(LIBRARIES ${LIBRARIES} ${OPENGL_LIBRARIES})
 
+#add resources to RCC
 QT5_ADD_RESOURCES(Project_Resources_RCC ${Project_Resources})
 
+#include opengl files. 
 include_directories(${QT_QTOPENGL_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} )
 
 add_executable(fstl WIN32 ${Project_Sources} ${Project_Headers} ${Project_Resources_RCC} ${Icon_Resource})

@@ -1,11 +1,38 @@
 #include "loader.h"
 
+/**
+* Simple 3D vector structure. 
+*/
+struct Vec3
+{
+	GLfloat x, y, z;
+	bool operator!=(const Vec3& rhs) const
+	{
+		return x != rhs.x || y != rhs.y || z != rhs.z;
+	}
+	bool operator<(const Vec3& rhs) const
+	{
+		if (x != rhs.x)    return x < rhs.x;
+		else if (y != rhs.y)    return y < rhs.y;
+		else if (z != rhs.z)    return z < rhs.z;
+		else                    return false;
+	}
+};
+
+typedef std::pair<Vec3, GLuint> Vec3i;
+
+/**
+* Create the loader object on a new thread. 
+*/
 Loader::Loader(QObject* parent, const QString& filename)
     : QThread(parent), filename(filename)
 {
     // Nothing to do here
 }
 
+/**
+* Runs the loader and reads the mesh from the stl file. 
+*/
 void Loader::run()
 {
     Mesh* mesh = load_stl();
@@ -16,30 +43,10 @@ void Loader::run()
     }
 }
 
-
-////////////////////////////////////////////////////////////////////////////////
-
-struct Vec3
-{
-    GLfloat x, y, z;
-    bool operator!=(const Vec3& rhs) const
-    {
-        return x != rhs.x || y != rhs.y || z != rhs.z;
-    }
-    bool operator<(const Vec3& rhs) const
-    {
-        if      (x != rhs.x)    return x < rhs.x;
-        else if (y != rhs.y)    return y < rhs.y;
-        else if (z != rhs.z)    return z < rhs.z;
-        else                    return false;
-    }
-};
-
-typedef std::pair<Vec3, GLuint> Vec3i;
-typedef std::pair<Vec3, GLuint> Vec3f;
-
-////////////////////////////////////////////////////////////////////////////////
-
+/**
+* Loads an ascii stl file. 
+* @return Mesh* pointer to a new mesh. 
+*/
 Mesh* Loader::load_ascii_stl() {
     QFile file(filename);
     file.open(QIODevice::ReadOnly);
@@ -50,7 +57,7 @@ Mesh* Loader::load_ascii_stl() {
     QString line;
     QTextStream in(&file);
     // Extract vertices into an array of xyz, unsigned pairs
-    QVector<Vec3f> verts;
+    QVector<Vec3i> verts;
 
     //Store vertices in the array, processing one vertex at a time.
     while(!in.atEnd()){
@@ -65,7 +72,7 @@ Mesh* Loader::load_ascii_stl() {
         else if(substring == "vertex") {
             QStringList l = line.split(" ");
             if(l.size() == 4) {
-                Vec3f vec;
+                Vec3i vec;
                 QString xS = l.at(1);
                 QString yS = l.at(2);
                 QString zS = l.at(3);
@@ -123,6 +130,11 @@ Mesh* Loader::load_ascii_stl() {
     return new Mesh(flat_verts, indices);
 }
 
+/**
+* Loads an stl file as a mesh. If an ascii stl is detected, it will automatically switch to loading
+* an ascii stl file instead of binary. Note that any file that begins with "solid" will be assumed to
+* be an ascii stl file. Binary stl files should not contain this key word. 
+*/
 Mesh* Loader::load_stl()
 {
     QFile file(filename);
