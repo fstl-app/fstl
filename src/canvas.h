@@ -33,6 +33,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
     void wheelEvent(QWheelEvent* event);
+    void resizeGL(int width, int height);
 
 
 private:

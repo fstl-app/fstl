@@ -203,3 +203,8 @@ void Canvas::wheelEvent(QWheelEvent *event)
     center += b - a;
     update();
 }
+
+void Canvas::resizeGL(int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
