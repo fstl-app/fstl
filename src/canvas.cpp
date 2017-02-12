@@ -115,7 +115,7 @@ QMatrix4x4 Canvas::transform_matrix() const
     QMatrix4x4 m;
     m.rotate(tilt, QVector3D(1, 0, 0));
     m.rotate(yaw,  QVector3D(0, 0, 1));
-    m.scale(scale);
+    m.scale(-scale, scale, -scale);
     m.translate(-center);
     return m;
 }
