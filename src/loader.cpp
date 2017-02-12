@@ -83,6 +83,12 @@ Mesh* Loader::load_stl()
         data >> v[1].first.x >> v[1].first.y >> v[1].first.z;
         data >> v[2].first.x >> v[2].first.y >> v[2].first.z;
 
+        // Flip x-axis
+        v[0].first.x = -v[0].first.x;
+        v[1].first.x = -v[1].first.x;
+        v[2].first.x = -v[2].first.x;
+
+        // Flip z-axis
         v[0].first.z = -v[0].first.z;
         v[1].first.z = -v[1].first.z;
         v[2].first.z = -v[2].first.z;
