@@ -115,7 +115,7 @@ QMatrix4x4 Canvas::transform_matrix() const
     QMatrix4x4 m;
     m.rotate(tilt, QVector3D(1, 0, 0));
     m.rotate(yaw,  QVector3D(0, 0, 1));
-    m.scale(scale);
+    m.scale(-scale, scale, -scale);
     m.translate(-center);
     return m;
 }
@@ -159,10 +159,12 @@ void Canvas::mouseMoveEvent(QMouseEvent* event)
     auto p = event->pos();
     auto d = p - mouse_pos;
 
+
     if (event->buttons() & Qt::LeftButton)
     {
-		yaw = yaw + d.x();
-		tilt = tilt - d.y();
+
+        yaw = fmod(yaw - d.x(), 360);
+        tilt = fmod(tilt - d.y(), 360);
         update();
     }
     else if (event->buttons() & Qt::RightButton)
@@ -202,4 +204,9 @@ void Canvas::wheelEvent(QWheelEvent *event)
                   view_matrix().inverted() * v;
     center += b - a;
     update();
+}
+
+void Canvas::resizeGL(int width, int height)
+{
+    glViewport(0, 0, width, height);
 }

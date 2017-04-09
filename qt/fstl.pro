@@ -43,6 +43,11 @@ win32 {
     RC_FILE = ../exe/fstl.rc
 }
 
+linux {
+    target.path = /usr/bin
+    INSTALLS += target
+}
+
 static {
     CONFIG += static
 }

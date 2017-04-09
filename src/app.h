@@ -9,7 +9,7 @@ class App : public QApplication
 {
     Q_OBJECT
 public:
-    explicit App(int argc, char *argv[]);
+    explicit App(int& argc, char *argv[]);
 protected:
     bool event(QEvent* e);
 private:
