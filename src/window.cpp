@@ -6,6 +6,10 @@
 #include "canvas.h"
 #include "loader.h"
 
+/**
+* Main window of the application.
+* @param parent the QWidget parent of the window.
+*/
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
     open_action(new QAction("Open", this)),
@@ -13,7 +17,8 @@ Window::Window(QWidget *parent) :
     quit_action(new QAction("Quit", this))
 
 {
-    setWindowTitle("fstl");
+	QString title("fstl-%1");
+    setWindowTitle(title.arg(FSTL_VERSION));
     setAcceptDrops(true);
 
     QFile styleFile(":/qt/style.qss");
@@ -48,16 +53,22 @@ Window::Window(QWidget *parent) :
     resize(600, 400);
 }
 
+/**
+* Slot for when File->Open is clicked. 
+*/
 void Window::on_open()
 {
     QString filename = QFileDialog::getOpenFileName(
                 this, "Load .stl file", QString(), "*.stl");
-    if (not filename.isNull())
+    if (!filename.isNull())
     {
         load_stl(filename);
     }
 }
 
+/**
+* Slot for when Help->About is clicked. 
+*/
 void Window::on_about()
 {
     QMessageBox::about(this, "",
@@ -67,17 +78,13 @@ void Window::on_about()
         "   style=\"color: #93a1a1;\">https://github.com/mkeeter/fstl</a></p>"
         "<p>© 2014 Matthew Keeter<br>"
         "<a href=\"mailto:matt.j.keeter@gmail.com\""
-        "   style=\"color: #93a1a1;\">matt.j.keeter@gmail.com</a></p>");
+        "   style=\"color: #93a1a1;\">matt.j.keeter@gmail.com</a></p><br>"
+        "<p>© 2016 Paul Tsouchlos<br>");
 }
 
-void Window::on_ascii_stl()
-{
-    QMessageBox::critical(this, "Error",
-                          "<b>Error:</b><br>"
-                          "Cannot open ASCII <code>.stl</code> file<br>"
-                          "Please convert to binary <code>.stl</code> and retry");
-}
-
+/**
+* Slot for the loader class when a mal-formed stl file is used. 
+*/
 void Window::on_bad_stl()
 {
     QMessageBox::critical(this, "Error",
@@ -86,16 +93,26 @@ void Window::on_bad_stl()
                           "Please export it from the original source, verify, and retry.");
 }
 
+/**
+* Enables the open action. 
+*/
 void Window::enable_open()
 {
     open_action->setEnabled(true);
 }
 
+/**
+* Disables the open action. 
+*/
 void Window::disable_open()
 {
     open_action->setEnabled(false);
 }
 
+/**
+* Creates a new loader and loads a .stl file given a filename (full path)
+* @param filename the full path to the .stl file. 
+*/
 bool Window::load_stl(const QString& filename)
 {
     if (!open_action->isEnabled())  return false;
@@ -108,8 +125,6 @@ bool Window::load_stl(const QString& filename)
 
     connect(loader, &Loader::got_mesh,
             canvas, &Canvas::load_mesh);
-    connect(loader, &Loader::error_ascii_stl,
-              this, &Window::on_ascii_stl);
     connect(loader, &Loader::error_bad_stl,
               this, &Window::on_bad_stl);
 
@@ -130,6 +145,10 @@ bool Window::load_stl(const QString& filename)
     return true;
 }
 
+/**
+* Called when the user drags and drops a file onto the window. 
+* @param event the drag enter event. 
+*/
 void Window::dragEnterEvent(QDragEnterEvent *event)
 {
     if (event->mimeData()->hasUrls())
@@ -140,6 +159,10 @@ void Window::dragEnterEvent(QDragEnterEvent *event)
     }
 }
 
+/**
+* Called when something is dropped onto the window. 
+* @param event the DropEvent. 
+*/
 void Window::dropEvent(QDropEvent *event)
 {
     load_stl(event->mimeData()->urls().front().toLocalFile());

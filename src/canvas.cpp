@@ -162,6 +162,7 @@ void Canvas::mouseMoveEvent(QMouseEvent* event)
 
     if (event->buttons() & Qt::LeftButton)
     {
+
         yaw = fmod(yaw - d.x(), 360);
         tilt = fmod(tilt - d.y(), 360);
         update();

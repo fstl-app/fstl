@@ -19,7 +19,7 @@ public:
     Canvas(const QGLFormat& format, QWidget* parent=0);
 
     void initializeGL();
-    void paintEvent(QPaintEvent* event);
+
     ~Canvas();
 
 public slots:
@@ -33,6 +33,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
     void wheelEvent(QWheelEvent* event);
+    void paintEvent(QPaintEvent* event);
     void resizeGL(int width, int height);
 
 
