@@ -15,6 +15,9 @@ Window::Window(QWidget *parent) :
     orthogonal_action(new QAction("Orthographic", this)),
     reload_action(new QAction("Reload", this)),
     autoreload_action(new QAction("Autoreload", this)),
+    recent_files(new QMenu("Open recent", this)),
+    recent_files_group(new QActionGroup(this)),
+    recent_files_clear_action(new QAction("Clear recent files", this)),
     watcher(new QFileSystemWatcher(this))
 
 {
@@ -55,8 +58,17 @@ Window::Window(QWidget *parent) :
     QObject::connect(about_action, &QAction::triggered,
                      this, &Window::on_about);
 
+    QObject::connect(recent_files_clear_action, &QAction::triggered,
+                     this, &Window::on_clear_recent);
+    QObject::connect(recent_files_group, &QActionGroup::triggered,
+                     this, &Window::on_load_recent);
+
+    rebuild_recent_files();
+
     auto file_menu = menuBar()->addMenu("File");
     file_menu->addAction(open_action);
+    file_menu->addMenu(recent_files);
+    file_menu->addSeparator();
     file_menu->addAction(reload_action);
     file_menu->addAction(autoreload_action);
     file_menu->addAction(quit_action);
@@ -145,6 +157,17 @@ void Window::set_watched(const QString& filename)
         watcher->removePaths(watcher->files());
     }
     watcher->addPath(filename);
+
+    QSettings settings;
+    auto recent = settings.value("recentFileList").toStringList();
+    recent.removeAll(filename);
+    recent.prepend(filename);
+    while (recent.size() > MAX_RECENT_FILES)
+    {
+        recent.pop_back();
+    }
+    settings.setValue("recentFileList", recent);
+    rebuild_recent_files();
 }
 
 void Window::on_projection(QAction* proj)
@@ -173,6 +196,47 @@ void Window::on_autoreload_triggered(bool b)
     {
         on_reload();
     }
+}
+
+void Window::on_clear_recent()
+{
+    QSettings settings;
+    settings.setValue("recentFileList", QStringList());
+    rebuild_recent_files();
+}
+
+void Window::on_load_recent(QAction* a)
+{
+    load_stl(a->data().toString());
+}
+
+void Window::rebuild_recent_files()
+{
+    QSettings settings;
+    QStringList files = settings.value("recentFileList").toStringList();
+
+    const auto actions = recent_files_group->actions();
+    for (auto a : actions)
+    {
+        recent_files_group->removeAction(a);
+    }
+    recent_files->clear();
+
+    for (auto f : files)
+    {
+        const auto a = new QAction(f, recent_files);
+        a->setData(f);
+        recent_files_group->addAction(a);
+        recent_files->addAction(a);
+    }
+    if (files.size() == 0)
+    {
+        auto a = new QAction("No recent files", recent_files);
+        recent_files->addAction(a);
+        a->setEnabled(false);
+    }
+    recent_files->addSeparator();
+    recent_files->addAction(recent_files_clear_action);
 }
 
 void Window::on_reload()

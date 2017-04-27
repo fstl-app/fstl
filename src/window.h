@@ -2,6 +2,7 @@
 #define WINDOW_H
 
 #include <QMainWindow>
+#include <QActionGroup>
 #include <QFileSystemWatcher>
 
 class Canvas;
@@ -34,8 +35,12 @@ private slots:
     void on_watched_change(const QString& filename);
     void on_reload();
     void on_autoreload_triggered(bool r);
+    void on_clear_recent();
+    void on_load_recent(QAction* a);
 
 private:
+    void rebuild_recent_files();
+
     QAction* const open_action;
     QAction* const about_action;
     QAction* const quit_action;
@@ -43,6 +48,11 @@ private:
     QAction* const orthogonal_action;
     QAction* const reload_action;
     QAction* const autoreload_action;
+
+    QMenu* const recent_files;
+    QActionGroup* const recent_files_group;
+    QAction* const recent_files_clear_action;
+    const static int MAX_RECENT_FILES=8;
 
     QFileSystemWatcher* watcher;
 
