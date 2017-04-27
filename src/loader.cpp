@@ -1,3 +1,5 @@
+#include <future>
+
 #include "loader.h"
 
 Loader::Loader(QObject* parent, const QString& filename, bool is_reload)
@@ -36,6 +38,32 @@ struct Vec3
 
 typedef std::pair<Vec3, GLuint> Vec3i;
 
+void parallel_sort(Vec3i* begin, Vec3i* end, int threads)
+{
+    if (threads < 2 || end - begin < 2)
+    {
+        std::sort(begin, end);
+    }
+    else
+    {
+        const auto mid = begin + (end - begin) / 2;
+        if (threads == 2)
+        {
+            auto future = std::async(parallel_sort, begin, mid, threads / 2);
+            std::sort(mid, end);
+            future.wait();
+        }
+        else
+        {
+            auto a = std::async(std::launch::async, parallel_sort, begin, mid, threads / 2);
+            auto b = std::async(std::launch::async, parallel_sort, mid, end, threads / 2);
+            a.wait();
+            b.wait();
+        }
+        std::inplace_merge(begin, mid, end);
+    }
+}
+
 Mesh* mesh_from_verts(uint32_t tri_count, QVector<Vec3i>& verts)
 {
     // Save indicies as the second element in the array
@@ -46,7 +74,7 @@ Mesh* mesh_from_verts(uint32_t tri_count, QVector<Vec3i>& verts)
     }
 
     // Sort the set of vertices (to deduplicate)
-    std::sort(verts.begin(), verts.end());
+    parallel_sort(verts.begin(), verts.end(), 8);
 
     // This vector will store triangles as sets of 3 indices
     std::vector<GLuint> indices(tri_count*3);
