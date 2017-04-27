@@ -2,6 +2,7 @@
 #define CANVAS_H
 
 #include <QWidget>
+#include <QPropertyAnimation>
 #include <QtOpenGL/QGLWidget>
 #include <QtOpenGL/QGLFunctions>
 #include <QtOpenGL/QGLShaderProgram>
@@ -22,11 +23,13 @@ public:
     void paintEvent(QPaintEvent* event);
     ~Canvas();
 
+    void view_orthographic();
+    void view_perspective();
+
 public slots:
     void set_status(const QString& s);
     void clear_status();
     void load_mesh(Mesh* m);
-    void set_perspective(bool o);
 
 
 protected:
@@ -35,6 +38,8 @@ protected:
     void mouseMoveEvent(QMouseEvent* event);
     void wheelEvent(QWheelEvent* event);
     void resizeGL(int width, int height);
+    void set_perspective(float p);
+    void view_anim(float v);
 
 
 private:
@@ -54,7 +59,10 @@ private:
     float zoom;
     float tilt;
     float yaw;
-    bool perspective;
+
+    float perspective;
+    Q_PROPERTY(float perspective WRITE set_perspective);
+    QPropertyAnimation anim;
 
     QPoint mouse_pos;
     QString status;

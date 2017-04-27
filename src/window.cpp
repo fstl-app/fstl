@@ -136,7 +136,14 @@ void Window::set_watched(const QString& filename)
 
 void Window::on_projection(QAction* proj)
 {
-    canvas->set_perspective(proj == perspective_action);
+    if (proj == perspective_action)
+    {
+        canvas->view_perspective();
+    }
+    else
+    {
+        canvas->view_orthographic();
+    }
 }
 
 void Window::on_watched_change(const QString& filename)

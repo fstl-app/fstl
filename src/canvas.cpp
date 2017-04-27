@@ -10,14 +10,32 @@
 
 Canvas::Canvas(const QGLFormat& format, QWidget *parent)
     : QGLWidget(format, parent), mesh(NULL),
-      scale(1), zoom(1), tilt(90), yaw(0), perspective(true), status(" ")
+      scale(1), zoom(1), tilt(90), yaw(0),
+      perspective(0.25), anim(this, "perspective"), status(" ")
 {
-    // Nothing to do here
+    anim.setDuration(100);
 }
 
 Canvas::~Canvas()
 {
     delete mesh;
+}
+
+void Canvas::view_anim(float v)
+{
+    anim.setStartValue(perspective);
+    anim.setEndValue(v);
+    anim.start();
+}
+
+void Canvas::view_orthographic()
+{
+    view_anim(0);
+}
+
+void Canvas::view_perspective()
+{
+    view_anim(0.25);
 }
 
 void Canvas::load_mesh(Mesh* m)
@@ -47,9 +65,9 @@ void Canvas::set_status(const QString &s)
     update();
 }
 
-void Canvas::set_perspective(bool b)
+void Canvas::set_perspective(float p)
 {
-    perspective = b;
+    perspective = p;
     update();
 }
 
@@ -138,7 +156,7 @@ QMatrix4x4 Canvas::view_matrix() const
         m.scale(-1, width() / float(height()), 0.5);
     }
     m.scale(zoom, zoom, 1);
-    m(3, 2) = perspective ? 0.25 : 0;
+    m(3, 2) = perspective;
     return m;
 }
 
