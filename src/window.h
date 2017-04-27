@@ -32,6 +32,8 @@ public slots:
 private slots:
     void on_projection(QAction* proj);
     void on_watched_change(const QString& filename);
+    void on_reload();
+    void on_autoreload_triggered(bool r);
 
 private:
     QAction* const open_action;
@@ -39,6 +41,8 @@ private:
     QAction* const quit_action;
     QAction* const perspective_action;
     QAction* const orthogonal_action;
+    QAction* const reload_action;
+    QAction* const autoreload_action;
 
     QFileSystemWatcher* watcher;
 

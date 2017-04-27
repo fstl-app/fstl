@@ -13,6 +13,8 @@ Window::Window(QWidget *parent) :
     quit_action(new QAction("Quit", this)),
     perspective_action(new QAction("Perspective", this)),
     orthogonal_action(new QAction("Orthographic", this)),
+    reload_action(new QAction("Reload", this)),
+    autoreload_action(new QAction("Autoreload", this)),
     watcher(new QFileSystemWatcher(this))
 
 {
@@ -41,11 +43,22 @@ Window::Window(QWidget *parent) :
     QObject::connect(quit_action, &QAction::triggered,
                      this, &Window::close);
 
+    autoreload_action->setCheckable(true);
+    autoreload_action->setChecked(true);
+    QObject::connect(autoreload_action, &QAction::triggered,
+            this, &Window::on_autoreload_triggered);
+
+    reload_action->setShortcut(QKeySequence::Refresh);
+    QObject::connect(reload_action, &QAction::triggered,
+                     this, &Window::on_reload);
+
     QObject::connect(about_action, &QAction::triggered,
                      this, &Window::on_about);
 
     auto file_menu = menuBar()->addMenu("File");
     file_menu->addAction(open_action);
+    file_menu->addAction(reload_action);
+    file_menu->addAction(autoreload_action);
     file_menu->addAction(quit_action);
 
     auto help_menu = menuBar()->addMenu("Help");
@@ -148,7 +161,27 @@ void Window::on_projection(QAction* proj)
 
 void Window::on_watched_change(const QString& filename)
 {
-    load_stl(filename, true);
+    if (autoreload_action->isChecked())
+    {
+        load_stl(filename, true);
+    }
+}
+
+void Window::on_autoreload_triggered(bool b)
+{
+    if (b)
+    {
+        on_reload();
+    }
+}
+
+void Window::on_reload()
+{
+    auto fs = watcher->files();
+    if (fs.size() == 1)
+    {
+        load_stl(fs[0], true);
+    }
 }
 
 bool Window::load_stl(const QString& filename, bool is_reload)
