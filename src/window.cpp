@@ -12,7 +12,7 @@ Window::Window(QWidget *parent) :
     about_action(new QAction("About", this)),
     quit_action(new QAction("Quit", this)),
     perspective_action(new QAction("Perspective", this)),
-    orthogonal_action(new QAction("Orthogonal", this)),
+    orthogonal_action(new QAction("Orthographic", this)),
     watcher(new QFileSystemWatcher(this))
 
 {
