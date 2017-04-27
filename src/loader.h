@@ -21,6 +21,7 @@ signals:
 
     void error_ascii_stl();
     void error_bad_stl();
+    void error_missing_file();
 
 private:
     const QString filename;

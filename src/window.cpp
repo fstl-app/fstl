@@ -107,6 +107,13 @@ void Window::on_bad_stl()
                           "Please export it from the original source, verify, and retry.");
 }
 
+void Window::on_missing_file()
+{
+    QMessageBox::critical(this, "Error",
+                          "<b>Error:</b><br>"
+                          "The target file is missing.<br>");
+}
+
 void Window::enable_open()
 {
     open_action->setEnabled(true);
@@ -153,6 +160,8 @@ bool Window::load_stl(const QString& filename)
               this, &Window::on_ascii_stl);
     connect(loader, &Loader::error_bad_stl,
               this, &Window::on_bad_stl);
+    connect(loader, &Loader::error_missing_file,
+              this, &Window::on_missing_file);
 
     connect(loader, &Loader::finished,
             loader, &Loader::deleteLater);

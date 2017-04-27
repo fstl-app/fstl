@@ -42,8 +42,12 @@ typedef std::pair<Vec3, GLuint> Vec3i;
 Mesh* Loader::load_stl()
 {
     QFile file(filename);
-    file.open(QIODevice::ReadOnly);
-    if (file.read(5) == "solid")
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        emit error_missing_file();
+        return NULL;
+    }
+    else if (file.read(5) == "solid")
     {
         emit error_ascii_stl();
         return NULL;
