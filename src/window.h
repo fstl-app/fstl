@@ -2,6 +2,7 @@
 #define WINDOW_H
 
 #include <QMainWindow>
+#include <QFileSystemWatcher>
 
 class Canvas;
 
@@ -25,8 +26,11 @@ public slots:
     void enable_open();
     void disable_open();
 
+    void set_watched(const QString& filename);
+
 private slots:
     void on_projection(QAction* proj);
+    void on_watched_change(const QString& filename);
 
 private:
     QAction* const open_action;
@@ -34,6 +38,8 @@ private:
     QAction* const quit_action;
     QAction* const perspective_action;
     QAction* const orthogonal_action;
+
+    QFileSystemWatcher* watcher;
 
     Canvas* canvas;
 };

@@ -12,7 +12,8 @@ Window::Window(QWidget *parent) :
     about_action(new QAction("About", this)),
     quit_action(new QAction("Quit", this)),
     perspective_action(new QAction("Perspective", this)),
-    orthogonal_action(new QAction("Orthogonal", this))
+    orthogonal_action(new QAction("Orthogonal", this)),
+    watcher(new QFileSystemWatcher(this))
 
 {
     setWindowTitle("fstl");
@@ -28,6 +29,9 @@ Window::Window(QWidget *parent) :
 
     canvas = new Canvas(format, this);
     setCentralWidget(canvas);
+
+    QObject::connect(watcher, &QFileSystemWatcher::fileChanged,
+                     this, &Window::on_watched_change);
 
     open_action->setShortcut(QKeySequence::Open);
     QObject::connect(open_action, &QAction::triggered,
@@ -113,9 +117,24 @@ void Window::disable_open()
     open_action->setEnabled(false);
 }
 
+void Window::set_watched(const QString& filename)
+{
+    const auto files = watcher->files();
+    if (files.size())
+    {
+        watcher->removePaths(watcher->files());
+    }
+    watcher->addPath(filename);
+}
+
 void Window::on_projection(QAction* proj)
 {
     canvas->set_perspective(proj == perspective_action);
+}
+
+void Window::on_watched_change(const QString& filename)
+{
+    load_stl(filename);
 }
 
 bool Window::load_stl(const QString& filename)
@@ -146,6 +165,8 @@ bool Window::load_stl(const QString& filename)
     {
         connect(loader, &Loader::loaded_file,
                   this, &Window::setWindowTitle);
+        connect(loader, &Loader::loaded_file,
+                  this, &Window::set_watched);
     }
 
     loader->start();
