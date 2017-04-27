@@ -99,6 +99,14 @@ void Window::on_bad_stl()
                           "Please export it from the original source, verify, and retry.");
 }
 
+void Window::on_confusing_stl()
+{
+    QMessageBox::warning(this, "Warning",
+                         "<b>Warning:</b><br>"
+                         "This <code>.stl</code> file begins with <code>solid </code>but appears to be a binary file.<br>"
+                         "<code>fstl</code> loaded it, but other programs may be confused by this file.");
+}
+
 void Window::on_missing_file()
 {
     QMessageBox::critical(this, "Error",
@@ -150,6 +158,8 @@ bool Window::load_stl(const QString& filename)
             canvas, &Canvas::load_mesh);
     connect(loader, &Loader::error_bad_stl,
               this, &Window::on_bad_stl);
+    connect(loader, &Loader::warning_confusing_stl,
+              this, &Window::on_confusing_stl);
     connect(loader, &Loader::error_missing_file,
               this, &Window::on_missing_file);
 

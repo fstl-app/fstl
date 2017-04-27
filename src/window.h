@@ -22,6 +22,7 @@ public slots:
     void on_about();
     void on_bad_stl();
     void on_missing_file();
+    void on_confusing_stl();
 
     void enable_open();
     void disable_open();

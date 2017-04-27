@@ -100,10 +100,15 @@ Mesh* Loader::load_stl()
             file.seek(0);
             return read_stl_ascii(file);
         }
+        confusing_stl = true;
+    }
+    else
+    {
+        confusing_stl = false;
     }
 
     // Otherwise, skip the rest of the header material and read as binary
-    file.read(74);
+    file.seek(0);
     return read_stl_binary(file);
 }
 
@@ -114,6 +119,7 @@ Mesh* Loader::read_stl_binary(QFile& file)
     data.setFloatingPointPrecision(QDataStream::SinglePrecision);
 
     // Load the triangle count from the .stl file
+    file.seek(80);
     uint32_t tri_count;
     data >> tri_count;
 
@@ -144,6 +150,12 @@ Mesh* Loader::read_stl_binary(QFile& file)
         // Skip face attribute
         data.readRawData(buffer, sizeof(uint16_t));
     }
+
+    if (confusing_stl)
+    {
+        emit warning_confusing_stl();
+    }
+
     return mesh_from_verts(tri_count, verts);
 }
 

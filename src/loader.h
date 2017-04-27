@@ -25,10 +25,14 @@ signals:
     void got_mesh(Mesh* m);
 
     void error_bad_stl();
+    void warning_confusing_stl();
     void error_missing_file();
 
 private:
     const QString filename;
+
+    /*  Used to warn on binary STLs that begin with the word 'solid'" */
+    bool confusing_stl;
 
 };
 
