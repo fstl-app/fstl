@@ -91,14 +91,6 @@ void Window::on_about()
         "   style=\"color: #93a1a1;\">matt.j.keeter@gmail.com</a></p>");
 }
 
-void Window::on_ascii_stl()
-{
-    QMessageBox::critical(this, "Error",
-                          "<b>Error:</b><br>"
-                          "Cannot open ASCII <code>.stl</code> file<br>"
-                          "Please convert to binary <code>.stl</code> and retry");
-}
-
 void Window::on_bad_stl()
 {
     QMessageBox::critical(this, "Error",
@@ -156,8 +148,6 @@ bool Window::load_stl(const QString& filename)
 
     connect(loader, &Loader::got_mesh,
             canvas, &Canvas::load_mesh);
-    connect(loader, &Loader::error_ascii_stl,
-              this, &Window::on_ascii_stl);
     connect(loader, &Loader::error_bad_stl,
               this, &Window::on_bad_stl);
     connect(loader, &Loader::error_missing_file,

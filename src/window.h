@@ -20,7 +20,6 @@ protected:
 public slots:
     void on_open();
     void on_about();
-    void on_ascii_stl();
     void on_bad_stl();
     void on_missing_file();
 
