@@ -11,7 +11,7 @@ class Window : public QMainWindow
     Q_OBJECT
 public:
     explicit Window(QWidget* parent=0);
-    bool load_stl(const QString& filename);
+    bool load_stl(const QString& filename, bool is_reload=false);
 
 protected:
     void dragEnterEvent(QDragEnterEvent* event);

@@ -1,7 +1,7 @@
 #include "loader.h"
 
-Loader::Loader(QObject* parent, const QString& filename)
-    : QThread(parent), filename(filename)
+Loader::Loader(QObject* parent, const QString& filename, bool is_reload)
+    : QThread(parent), filename(filename), is_reload(is_reload)
 {
     // Nothing to do here
 }
@@ -11,7 +11,7 @@ void Loader::run()
     Mesh* mesh = load_stl();
     if (mesh)
     {
-        emit got_mesh(mesh);
+        emit got_mesh(mesh, is_reload);
         emit loaded_file(filename);
     }
 }

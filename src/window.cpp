@@ -148,16 +148,16 @@ void Window::on_projection(QAction* proj)
 
 void Window::on_watched_change(const QString& filename)
 {
-    load_stl(filename);
+    load_stl(filename, true);
 }
 
-bool Window::load_stl(const QString& filename)
+bool Window::load_stl(const QString& filename, bool is_reload)
 {
     if (!open_action->isEnabled())  return false;
 
     canvas->set_status("Loading " + filename);
 
-    Loader* loader = new Loader(this, filename);
+    Loader* loader = new Loader(this, filename, is_reload);
     connect(loader, &Loader::started,
               this, &Window::disable_open);
 

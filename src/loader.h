@@ -9,7 +9,7 @@ class Loader : public QThread
 {
     Q_OBJECT
 public:
-    explicit Loader(QObject* parent, const QString& filename);
+    explicit Loader(QObject* parent, const QString& filename, bool is_reload);
     void run();
 
 protected:
@@ -22,7 +22,7 @@ protected:
 
 signals:
     void loaded_file(QString filename);
-    void got_mesh(Mesh* m);
+    void got_mesh(Mesh* m, bool is_reload);
 
     void error_bad_stl();
     void warning_confusing_stl();
@@ -30,6 +30,7 @@ signals:
 
 private:
     const QString filename;
+    bool is_reload;
 
     /*  Used to warn on binary STLs that begin with the word 'solid'" */
     bool confusing_stl;

@@ -38,21 +38,26 @@ void Canvas::view_perspective()
     view_anim(0.25);
 }
 
-void Canvas::load_mesh(Mesh* m)
+void Canvas::load_mesh(Mesh* m, bool is_reload)
 {
     mesh = new GLMesh(m);
-    center = QVector3D(m->xmin() + m->xmax(),
-                       m->ymin() + m->ymax(),
-                       m->zmin() + m->zmax()) / 2;
-    scale = 2 / sqrt(
-                pow(m->xmax() - m->xmin(), 2) +
-                pow(m->ymax() - m->ymin(), 2) +
-                pow(m->zmax() - m->zmin(), 2));
 
-    // Reset other camera parameters
-    zoom = 1;
-    yaw = 0;
-    tilt = 90;
+    if (!is_reload)
+    {
+        center = QVector3D(m->xmin() + m->xmax(),
+                           m->ymin() + m->ymax(),
+                           m->zmin() + m->zmax()) / 2;
+
+        scale = 2 / sqrt(
+                    pow(m->xmax() - m->xmin(), 2) +
+                    pow(m->ymax() - m->ymin(), 2) +
+                    pow(m->zmax() - m->zmin(), 2));
+
+        // Reset other camera parameters
+        zoom = 1;
+        yaw = 0;
+        tilt = 90;
+    }
 
     update();
 
