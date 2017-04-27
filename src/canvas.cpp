@@ -10,7 +10,7 @@
 
 Canvas::Canvas(const QGLFormat& format, QWidget *parent)
     : QGLWidget(format, parent), mesh(NULL),
-      scale(1), zoom(1), tilt(90), yaw(0), status(" ")
+      scale(1), zoom(1), tilt(90), yaw(0), perspective(true), status(" ")
 {
     // Nothing to do here
 }
@@ -44,6 +44,12 @@ void Canvas::load_mesh(Mesh* m)
 void Canvas::set_status(const QString &s)
 {
     status = s;
+    update();
+}
+
+void Canvas::set_perspective(bool b)
+{
+    perspective = b;
     update();
 }
 
@@ -132,6 +138,7 @@ QMatrix4x4 Canvas::view_matrix() const
         m.scale(-1, width() / float(height()), 0.5);
     }
     m.scale(zoom, zoom, 1);
+    m(3, 2) = perspective ? 0.25 : 0;
     return m;
 }
 

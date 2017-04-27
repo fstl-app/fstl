@@ -10,7 +10,9 @@ Window::Window(QWidget *parent) :
     QMainWindow(parent),
     open_action(new QAction("Open", this)),
     about_action(new QAction("About", this)),
-    quit_action(new QAction("Quit", this))
+    quit_action(new QAction("Quit", this)),
+    perspective_action(new QAction("Perspective", this)),
+    orthogonal_action(new QAction("Orthogonal", this))
 
 {
     setWindowTitle("fstl");
@@ -44,6 +46,21 @@ Window::Window(QWidget *parent) :
 
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);
+
+    auto view_menu = menuBar()->addMenu("View");
+    auto projection_menu = view_menu->addMenu("Projection");
+    projection_menu->addAction(perspective_action);
+    projection_menu->addAction(orthogonal_action);
+    auto projections = new QActionGroup(projection_menu);
+    for (auto p : {perspective_action, orthogonal_action})
+    {
+        projections->addAction(p);
+        p->setCheckable(true);
+    }
+    perspective_action->setChecked(true);
+    projections->setExclusive(true);
+    QObject::connect(projections, &QActionGroup::triggered,
+                     this, &Window::on_projection);
 
     resize(600, 400);
 }
@@ -94,6 +111,11 @@ void Window::enable_open()
 void Window::disable_open()
 {
     open_action->setEnabled(false);
+}
+
+void Window::on_projection(QAction* proj)
+{
+    canvas->set_perspective(proj == perspective_action);
 }
 
 bool Window::load_stl(const QString& filename)

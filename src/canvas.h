@@ -26,6 +26,7 @@ public slots:
     void set_status(const QString& s);
     void clear_status();
     void load_mesh(Mesh* m);
+    void set_perspective(bool o);
 
 
 protected:
@@ -53,6 +54,7 @@ private:
     float zoom;
     float tilt;
     float yaw;
+    bool perspective;
 
     QPoint mouse_pos;
     QString status;

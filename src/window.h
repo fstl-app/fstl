@@ -25,10 +25,15 @@ public slots:
     void enable_open();
     void disable_open();
 
+private slots:
+    void on_projection(QAction* proj);
+
 private:
     QAction* const open_action;
     QAction* const about_action;
     QAction* const quit_action;
+    QAction* const perspective_action;
+    QAction* const orthogonal_action;
 
     Canvas* canvas;
 };
