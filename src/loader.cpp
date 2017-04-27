@@ -162,27 +162,32 @@ Mesh* Loader::read_stl_binary(QFile& file)
     QVector<Vec3i> verts(tri_count*3);
 
     // Dummy array, because readRawData is faster than skipRawData
-    char buffer[sizeof(float)*3];
+    uint8_t* buffer = (uint8_t*)malloc(tri_count * 50);
+    data.readRawData((char*)buffer, tri_count * 50);
 
     // Store vertices in the array, processing one triangle at a time.
+    auto b = buffer;
     for (auto v=verts.begin(); v != verts.end(); v += 3)
     {
         // Skip face's normal vector
-        data.readRawData(buffer, 3*sizeof(float));
+        b += 3 * sizeof(float);
 
         // Load vertex data from .stl file into vertices
-        data >> v[0].first.x >> v[0].first.y >> v[0].first.z;
-        data >> v[1].first.x >> v[1].first.y >> v[1].first.z;
-        data >> v[2].first.x >> v[2].first.y >> v[2].first.z;
+        for (unsigned i=0; i < 3; ++i)
+        {
+            memcpy(&v[i].first, b, 3*sizeof(float));
+            b += 3 * sizeof(float);
+        }
 
         // Skip face attribute
-        data.readRawData(buffer, sizeof(uint16_t));
+        b += sizeof(uint16_t);
     }
 
     if (confusing_stl)
     {
         emit warning_confusing_stl();
     }
+    free(buffer);
 
     return mesh_from_verts(tri_count, verts);
 }
