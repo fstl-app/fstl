@@ -73,9 +73,6 @@ Window::Window(QWidget *parent) :
     file_menu->addAction(autoreload_action);
     file_menu->addAction(quit_action);
 
-    auto help_menu = menuBar()->addMenu("Help");
-    help_menu->addAction(about_action);
-
     auto view_menu = menuBar()->addMenu("View");
     auto projection_menu = view_menu->addMenu("Projection");
     projection_menu->addAction(perspective_action);
@@ -90,6 +87,9 @@ Window::Window(QWidget *parent) :
     projections->setExclusive(true);
     QObject::connect(projections, &QActionGroup::triggered,
                      this, &Window::on_projection);
+
+    auto help_menu = menuBar()->addMenu("Help");
+    help_menu->addAction(about_action);
 
     resize(600, 400);
 }
