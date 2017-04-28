@@ -13,8 +13,16 @@ void Loader::run()
     Mesh* mesh = load_stl();
     if (mesh)
     {
-        emit got_mesh(mesh, is_reload);
-        emit loaded_file(filename);
+        if (mesh->empty())
+        {
+            emit error_empty_mesh();
+            delete mesh;
+        }
+        else
+        {
+            emit got_mesh(mesh, is_reload);
+            emit loaded_file(filename);
+        }
     }
 }
 

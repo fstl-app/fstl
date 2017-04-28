@@ -21,6 +21,8 @@ public:
     float ymax() const { return max(1); }
     float zmax() const { return max(2); }
 
+    bool empty() const;
+
 private:
     std::vector<GLfloat> vertices;
     std::vector<GLuint> indices;

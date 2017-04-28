@@ -124,6 +124,13 @@ void Window::on_bad_stl()
                           "Please export it from the original source, verify, and retry.");
 }
 
+void Window::on_empty_mesh()
+{
+    QMessageBox::critical(this, "Error",
+                          "<b>Error:</b><br>"
+                          "This file is syntactically correct<br>but contains no triangles.");
+}
+
 void Window::on_confusing_stl()
 {
     QMessageBox::warning(this, "Warning",
@@ -262,6 +269,8 @@ bool Window::load_stl(const QString& filename, bool is_reload)
             canvas, &Canvas::load_mesh);
     connect(loader, &Loader::error_bad_stl,
               this, &Window::on_bad_stl);
+    connect(loader, &Loader::error_empty_mesh,
+              this, &Window::on_empty_mesh);
     connect(loader, &Loader::warning_confusing_stl,
               this, &Window::on_confusing_stl);
     connect(loader, &Loader::error_missing_file,

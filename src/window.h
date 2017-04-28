@@ -22,6 +22,7 @@ public slots:
     void on_open();
     void on_about();
     void on_bad_stl();
+    void on_empty_mesh();
     void on_missing_file();
     void on_confusing_stl();
 

@@ -25,6 +25,7 @@ signals:
     void got_mesh(Mesh* m, bool is_reload);
 
     void error_bad_stl();
+    void error_empty_mesh();
     void warning_confusing_stl();
     void error_missing_file();
 

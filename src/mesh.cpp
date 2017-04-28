@@ -41,3 +41,8 @@ float Mesh::max(size_t start) const
     }
     return v;
 }
+
+bool Mesh::empty() const
+{
+    return vertices.size() == 0;
+}
