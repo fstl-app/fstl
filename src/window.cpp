@@ -6,6 +6,8 @@
 #include "canvas.h"
 #include "loader.h"
 
+const QString Window::RECENT_FILE_KEY = "recentFiles";
+
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
     open_action(new QAction("Open", this)),
@@ -166,14 +168,14 @@ void Window::set_watched(const QString& filename)
     watcher->addPath(filename);
 
     QSettings settings;
-    auto recent = settings.value("recentFileList").toStringList();
+    auto recent = settings.value(RECENT_FILE_KEY).toStringList();
     recent.removeAll(filename);
     recent.prepend(filename);
     while (recent.size() > MAX_RECENT_FILES)
     {
         recent.pop_back();
     }
-    settings.setValue("recentFileList", recent);
+    settings.setValue(RECENT_FILE_KEY, recent);
     rebuild_recent_files();
 }
 
@@ -208,7 +210,7 @@ void Window::on_autoreload_triggered(bool b)
 void Window::on_clear_recent()
 {
     QSettings settings;
-    settings.setValue("recentFileList", QStringList());
+    settings.setValue(RECENT_FILE_KEY, QStringList());
     rebuild_recent_files();
 }
 
@@ -220,7 +222,7 @@ void Window::on_load_recent(QAction* a)
 void Window::rebuild_recent_files()
 {
     QSettings settings;
-    QStringList files = settings.value("recentFileList").toStringList();
+    QStringList files = settings.value(RECENT_FILE_KEY).toStringList();
 
     const auto actions = recent_files_group->actions();
     for (auto a : actions)

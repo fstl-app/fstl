@@ -54,6 +54,7 @@ private:
     QActionGroup* const recent_files_group;
     QAction* const recent_files_clear_action;
     const static int MAX_RECENT_FILES=8;
+    const static QString RECENT_FILE_KEY;
 
     QFileSystemWatcher* watcher;
 
