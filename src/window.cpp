@@ -26,10 +26,6 @@ Window::Window(QWidget *parent) :
     setWindowTitle("fstl");
     setAcceptDrops(true);
 
-    QFile styleFile(":/qt/style.qss");
-    styleFile.open( QFile::ReadOnly );
-    setStyleSheet(styleFile.readAll());
-
     QGLFormat format;
     format.setVersion(2, 1);
     format.setSampleBuffers(true);

@@ -13,6 +13,10 @@ Canvas::Canvas(const QGLFormat& format, QWidget *parent)
       scale(1), zoom(1), tilt(90), yaw(0),
       perspective(0.25), anim(this, "perspective"), status(" ")
 {
+    QFile styleFile(":/qt/style.qss");
+    styleFile.open( QFile::ReadOnly );
+    setStyleSheet(styleFile.readAll());
+
     anim.setDuration(100);
 }
 
