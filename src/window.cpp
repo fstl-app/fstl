@@ -46,10 +46,12 @@ Window::Window(QWidget *parent) :
 
     autoreload_action->setCheckable(true);
     autoreload_action->setChecked(true);
+    autoreload_action->setEnabled(false);
     QObject::connect(autoreload_action, &QAction::triggered,
             this, &Window::on_autoreload_triggered);
 
     reload_action->setShortcut(QKeySequence::Refresh);
+    reload_action->setEnabled(false);
     QObject::connect(reload_action, &QAction::triggered,
                      this, &Window::on_reload);
 
@@ -287,6 +289,8 @@ bool Window::load_stl(const QString& filename, bool is_reload)
                   this, &Window::setWindowTitle);
         connect(loader, &Loader::loaded_file,
                   this, &Window::set_watched);
+        autoreload_action->setEnabled(true);
+        reload_action->setEnabled(true);
     }
 
     loader->start();
