@@ -44,14 +44,10 @@ void Canvas::load_mesh(Mesh* m, bool is_reload)
 
     if (!is_reload)
     {
-        center = QVector3D(m->xmin() + m->xmax(),
-                           m->ymin() + m->ymax(),
-                           m->zmin() + m->zmax()) / 2;
-
-        scale = 2 / sqrt(
-                    pow(m->xmax() - m->xmin(), 2) +
-                    pow(m->ymax() - m->ymin(), 2) +
-                    pow(m->zmax() - m->zmin(), 2));
+        QVector3D lower(m->xmin(), m->ymin(), m->zmin());
+        QVector3D upper(m->xmax(), m->ymax(), m->zmax());
+        center = (lower + upper) / 2;
+        scale = 2 / (upper - lower).length();
 
         // Reset other camera parameters
         zoom = 1;
