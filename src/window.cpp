@@ -170,7 +170,7 @@ void Window::set_watched(const QString& filename)
     QSettings settings;
     auto recent = settings.value(RECENT_FILE_KEY).toStringList();
     recent.removeAll(filename);
-    recent.prepend(filename);
+    recent.prepend(QFileInfo(filename).absoluteFilePath());
     while (recent.size() > MAX_RECENT_FILES)
     {
         recent.pop_back();
