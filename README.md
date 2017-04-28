@@ -1,60 +1,49 @@
 # fstl
 
-`fstl` is a viewer for [.stl files](http://en.wikipedia.org/wiki/STL_\(file_format\)).
+`fstl` is the fastest [.stl file](http://en.wikipedia.org/wiki/STL_\(file_format\)) viewer.
 
 It is designed to quickly load and render very high-polygon models;
 showing 2 million triangles at 60+ FPS on a mid-range laptop.
 
 For more details, see the [project page](http://mattkeeter.com/projects/fstl).
 
-Issues and pull requests are welcome;
+Issues and minor pull requests are welcome;
 the project is under 1K lines of code and should be fairly approachable.
 
 ## Screenshot
-![Eiffel tower](http://mattkeeter.com/projects/fstl/eiffel.png)
+![Eiffel tower](http://mattkeeter.com/projects/fstl/eiffel.png)  
 (credit to [Pranav Panchal](https://grabcad.com/pranav.panchal))
 
 ## Building
 
-You need to have Qt installed to build the application.
+The only dependency for `fstl` is [Qt](https://www.qt.io).
 
 ### macOS
 
-Install [Qt](https://www.qt.io/developers/) and add the Qt binaries to your path.
+Install Qt from their website or [Homebrew](brew.sh),
+making sure `qmake` is on your shell's path.
 
-To build, first create the build directory and enter it:
-
+Then, run through the following set of commands in a shell:
 ```
+git clone https://github.com/mkeeter/fstl
+cd fstl
 mkdir build
 cd build
-```
-
-Then run `qmake`:
-
-```
 qmake ../qt/fstl.pro
-```
-
-Now you can build a binary with `make`:
-
-```
-make
-```
-
-If you got no errors, you can run the binary:
-
-```
+make -j8
 ./fstl.app/Contents/MacOS/fstl
 ```
 
-To build the app, go to the app directory and run the `package.sh`
+To package a standalone app, go to the app directory and run `package.sh`
 
 ```
 cd ../app
 ./package.sh
 ```
 
-Now you have a brand new fstl.app in the project root directory, which you put to /Applications/
+This should produce two new files in the root directory:
+- `fstl.app` is a standalone application that can be copied to `/Applications`
+- `fstl_mac.zip` is a zipped up bundle that can be given to a friend
 
 --------------------------------------------------------------------------------
 
