@@ -6,9 +6,11 @@ make clean
 rm -rf fstl.app
 make -j8
 
-# Pull out framework paths info with otool
 APP=fstl
+
+# Pull out framework paths info with otool
 MACDEPLOYQT=`otool -L $APP.app/Contents/MacOS/fstl | sed -n -e "s:\(.*\)lib/QtCore.*:\1/bin/macdeployqt:gp"`
+
 $MACDEPLOYQT $APP.app
 
 # Delete unused Qt plugins
@@ -41,7 +43,11 @@ done
 cd ../Resources
 rm empty.lproj
 
+# Create a disk image
 cd ../../..
-cp -r fstl.app ..
-cd ..
-zip -r fstl_mac.zip fstl.app README.md
+mkdir $APP
+cp ../README.md ./$APP/README.txt
+cp -R $APP.app ./$APP
+hdiutil create $APP.dmg -volname "$APP" -srcfolder $APP
+rm -rf $APP
+mv $APP.dmg ..
