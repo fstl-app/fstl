@@ -98,7 +98,7 @@ void Window::on_open()
 {
     QString filename = QFileDialog::getOpenFileName(
                 this, "Load .stl file", QString(), "*.stl");
-    if (not filename.isNull())
+    if (!filename.isNull())
     {
         load_stl(filename);
     }
