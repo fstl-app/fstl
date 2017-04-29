@@ -43,7 +43,7 @@ cd ../app
 
 This should produce two new files in the root directory:
 - `fstl.app` is a standalone application that can be copied to `/Applications`
-- `fstl_mac.zip` is a zipped up bundle that can be given to a friend
+- `fstl.dmg` is a disk image that can be given to a friend
 
 --------------------------------------------------------------------------------
 
