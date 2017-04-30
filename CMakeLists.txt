@@ -1,7 +1,6 @@
 #### Fast .stl viewer #####
-# Copyright 2016
-# Original Project Author: Matt Keeter 2014
-# Author: Paul Tsouchlos
+# Original Project Author: Matt Keeter Copyright 2014 -2017
+# Author: Paul Tsouchlos Copyright 2017
 
 cmake_minimum_required(VERSION 3.3)
 
