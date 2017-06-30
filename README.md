@@ -11,7 +11,7 @@ Issues and minor pull requests are welcome;
 the project is under 1K lines of code and should be fairly approachable.
 
 ## Screenshot
-![Eiffel tower](http://mattkeeter.com/projects/fstl/eiffel.png)  
+![Eiffel tower](http://mattkeeter.com/projects/fstl/eiffel.png)
 (credit to [Pranav Panchal](https://grabcad.com/pranav.panchal))
 
 ## Building
@@ -44,6 +44,25 @@ cd ../app
 This should produce two new files in the root directory:
 - `fstl.app` is a standalone application that can be copied to `/Applications`
 - `fstl.dmg` is a disk image that can be given to a friend
+
+### Linux
+
+Install Qt with your distro's package manager (required libraries are Core, Gui,
+Widgets and OpenGL).
+
+You can build fstl with qmake (in some distros qmake-qt5) or with CMake:
+```
+git clone https://github.com/mkeeter/fstl
+cd fstl
+mkdir build
+cd build
+
+qmake ../qt/fstl.pro  # For qmake build
+cmake ..              # For CMake build
+
+make -j8
+./fstl
+```
 
 --------------------------------------------------------------------------------
 
