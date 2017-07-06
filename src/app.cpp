@@ -15,6 +15,7 @@ App::App(int& argc, char *argv[]) :
         window->load_stl(argv[1]);
     else
         window->load_stl(":gl/sphere.stl");
+    window->show();
 }
 
 bool App::event(QEvent* e)
