@@ -165,12 +165,9 @@ Mesh* Loader::read_stl_binary(QFile& file)
     data.readRawData((char*)buffer.get(), tri_count * 50);
 
     // Store vertices in the array, processing one triangle at a time.
-    auto b = buffer.get();
+    auto b = buffer.get() + 3 * sizeof(float);
     for (auto v=verts.begin(); v != verts.end(); v += 3)
     {
-        // Skip face's normal vector
-        b += 3 * sizeof(float);
-
         // Load vertex data from .stl file into vertices
         for (unsigned i=0; i < 3; ++i)
         {
@@ -178,8 +175,8 @@ Mesh* Loader::read_stl_binary(QFile& file)
             b += 3 * sizeof(float);
         }
 
-        // Skip face attribute
-        b += sizeof(uint16_t);
+        // Skip face attribute and next face's normal vector
+        b += 3 * sizeof(float) + sizeof(uint16_t);
     }
 
     if (confusing_stl)
