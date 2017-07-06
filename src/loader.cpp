@@ -119,7 +119,7 @@ Mesh* mesh_from_verts(uint32_t tri_count, QVector<Vec3i>& verts)
         flat_verts.push_back(v.first.z);
     }
 
-    return new Mesh(flat_verts, indices);
+    return new Mesh(std::move(flat_verts), std::move(indices));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

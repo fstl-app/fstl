@@ -9,7 +9,7 @@
 class Mesh
 {
 public:
-    Mesh(std::vector<GLfloat> vertices, std::vector<GLuint> indices);
+    Mesh(std::vector<GLfloat>&& vertices, std::vector<GLuint>&& indices);
 
     float min(size_t start) const;
     float max(size_t start) const;
