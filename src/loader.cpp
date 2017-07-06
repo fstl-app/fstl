@@ -81,13 +81,13 @@ Mesh* mesh_from_verts(uint32_t tri_count, QVector<Vec3i>& verts)
         verts[i].second = i;
     }
 
-	// Check how many threads the hardware can safely support. This may return 
-	// 0 if the property can't be read so we shoud check for that too.
-	auto threads = std::thread::hardware_concurrency();
-	if (threads == 0)
-	{
-		threads = 8;
-	}
+    // Check how many threads the hardware can safely support. This may return
+    // 0 if the property can't be read so we shoud check for that too.
+    auto threads = std::thread::hardware_concurrency();
+    if (threads == 0)
+    {
+        threads = 8;
+    }
 
     // Sort the set of vertices (to deduplicate)
     parallel_sort(verts.begin(), verts.end(), threads);
