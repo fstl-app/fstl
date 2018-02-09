@@ -8,8 +8,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Mesh::Mesh(std::vector<GLfloat> v, std::vector<GLuint> i)
-    : vertices(v), indices(i)
+Mesh::Mesh(std::vector<GLfloat>&& v, std::vector<GLuint>&& i)
+    : vertices(std::move(v)), indices(std::move(i))
 {
     // Nothing to do here
 }

@@ -42,6 +42,7 @@ set(Icon_Resource exe/fstl.rc)
 #find required packages. 
 find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets OpenGL)
 find_package(OpenGL REQUIRED)
+find_package(Threads REQUIRED)
 
 #add resources to RCC
 qt5_add_resources(Project_Resources_RCC ${Project_Resources})
@@ -50,9 +51,11 @@ qt5_add_resources(Project_Resources_RCC ${Project_Resources})
 include_directories(${QT_QTOPENGL_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} )
 
 add_executable(fstl WIN32 ${Project_Sources} ${Project_Headers} ${Project_Resources_RCC} ${Icon_Resource})
-target_link_libraries(fstl Qt5::Widgets Qt5::Core Qt5::Gui Qt5::OpenGL ${OPENGL_LIBRARIES})
-set(Fstl_LINK_FLAGS ${CMAKE_CURRENT_SOURCE_DIR}/${Icon_Resource})
-set_target_properties(fstl PROPERTIES LINK_FLAGS ${Fstl_LINK_FLAGS})
+target_link_libraries(fstl Qt5::Widgets Qt5::Core Qt5::Gui Qt5::OpenGL ${OPENGL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+if(WIN32)
+  set(Fstl_LINK_FLAGS ${CMAKE_CURRENT_SOURCE_DIR}/${Icon_Resource})
+  set_target_properties(fstl PROPERTIES LINK_FLAGS ${Fstl_LINK_FLAGS})
+endif(WIN32)
 
 # Add version definitions to use within the code. 
 target_compile_definitions(fstl PRIVATE -DFSTL_VERSION="${PROJECT_VERSION}")
@@ -130,6 +133,8 @@ elseif(APPLE)
 	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}")
     set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/app/fstl.icns")
 else()
+	install(TARGETS fstl RUNTIME DESTINATION bin)
+
 	set(CPACK_GENERATOR "DEB;RPM")
 	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}")
 endif(WIN32)
