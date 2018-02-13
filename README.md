@@ -16,7 +16,7 @@ the project is under 1K lines of code and should be fairly approachable.
 
 ## Building
 
-The only dependency for `fstl` is [Qt](https://www.qt.io).
+The only dependency for `fstl` is [Qt 5](https://www.qt.io).
 
 ### macOS
 
