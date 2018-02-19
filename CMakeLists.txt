@@ -47,6 +47,9 @@ find_package(Threads REQUIRED)
 #add resources to RCC
 qt5_add_resources(Project_Resources_RCC ${Project_Resources})
 
+#tell CMake AUTOGEN to skip autogen on the generated qrc files
+set_property(SOURCE ${Project_Resources_RCC} PROPERTY SKIP_AUTOGEN ON)
+
 #include opengl files. 
 include_directories(${QT_QTOPENGL_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} )
 
