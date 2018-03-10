@@ -1,26 +1,20 @@
 #ifndef CANVAS_H
 #define CANVAS_H
 
-#include <QWidget>
-#include <QPropertyAnimation>
-#include <QtOpenGL/QGLWidget>
-#include <QtOpenGL/QGLFunctions>
-#include <QtOpenGL/QGLShaderProgram>
-#include <QMatrix4x4>
+#include <QtOpenGL>
+#include <QSurfaceFormat>
+#include <QOpenGLShaderProgram>
 
 class GLMesh;
 class Mesh;
 class Backdrop;
 
-class Canvas : public QGLWidget, protected QGLFunctions
+class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
 
 public:
-    Canvas(const QGLFormat& format, QWidget* parent=0);
-
-    void initializeGL();
-    void paintEvent(QPaintEvent* event);
+	explicit Canvas(const QSurfaceFormat& format, QWidget* parent=0);
     ~Canvas();
 
     void view_orthographic();
@@ -31,16 +25,18 @@ public slots:
     void clear_status();
     void load_mesh(Mesh* m, bool is_reload);
 
-
 protected:
-    void mousePressEvent(QMouseEvent* event);
-    void mouseReleaseEvent(QMouseEvent* event);
-    void mouseMoveEvent(QMouseEvent* event);
-    void wheelEvent(QWheelEvent* event);
-    void resizeGL(int width, int height);
-    void set_perspective(float p);
-    void view_anim(float v);
+	void paintGL() override;
+	void initializeGL() override;
+	void resizeGL(int width, int height) override;
 
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
+    
+	void set_perspective(float p);
+    void view_anim(float v);
 
 private:
     void draw_mesh();
@@ -48,8 +44,8 @@ private:
     QMatrix4x4 transform_matrix() const;
     QMatrix4x4 view_matrix() const;
 
-    QGLShaderProgram mesh_shader;
-    QGLShaderProgram quad_shader;
+    QOpenGLShaderProgram mesh_shader;
+	QOpenGLShaderProgram quad_shader;
 
     GLMesh* mesh;
     Backdrop* backdrop;

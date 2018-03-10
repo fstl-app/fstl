@@ -8,11 +8,12 @@
 #include "glmesh.h"
 #include "mesh.h"
 
-Canvas::Canvas(const QGLFormat& format, QWidget *parent)
-    : QGLWidget(format, parent), mesh(NULL),
+Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
+    : QOpenGLWidget(parent), mesh(nullptr),
       scale(1), zoom(1), tilt(90), yaw(0),
       perspective(0.25), anim(this, "perspective"), status(" ")
 {
+	setFormat(format);
     QFile styleFile(":/qt/style.qss");
     styleFile.open( QFile::ReadOnly );
     setStyleSheet(styleFile.readAll());
@@ -22,7 +23,9 @@ Canvas::Canvas(const QGLFormat& format, QWidget *parent)
 
 Canvas::~Canvas()
 {
-    delete mesh;
+	makeCurrent();
+	delete mesh;
+	doneCurrent();
 }
 
 void Canvas::view_anim(float v)
@@ -84,33 +87,31 @@ void Canvas::clear_status()
 
 void Canvas::initializeGL()
 {
-    initializeGLFunctions();
+    initializeOpenGLFunctions();
 
-    mesh_shader.addShaderFromSourceFile(QGLShader::Vertex, ":/gl/mesh.vert");
-    mesh_shader.addShaderFromSourceFile(QGLShader::Fragment, ":/gl/mesh.frag");
+    mesh_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/mesh.vert");
+    mesh_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh.frag");
     mesh_shader.link();
 
     backdrop = new Backdrop();
 }
 
-void Canvas::paintEvent(QPaintEvent *event)
+
+void Canvas::paintGL()
 {
-    Q_UNUSED(event);
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
 
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
+	backdrop->draw();
+	if (mesh)  draw_mesh();
 
-    backdrop->draw();
-    if (mesh)  draw_mesh();
+	if (status.isNull())  return;
 
-    if (status.isNull())    return;
-
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.drawText(10, height() - 10, status);
+	QPainter painter(this);
+	painter.setRenderHint(QPainter::Antialiasing);
+	painter.drawText(10, height() - 10, status);
 }
-
 
 void Canvas::draw_mesh()
 {
