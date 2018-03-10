@@ -1,5 +1,4 @@
 #include <QMouseEvent>
-#include <QDebug>
 
 #include <cmath>
 

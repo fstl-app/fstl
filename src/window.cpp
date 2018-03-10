@@ -1,6 +1,4 @@
 #include <QMenuBar>
-#include <QMessageBox>
-#include <QFileDialog>
 
 #include "window.h"
 #include "canvas.h"

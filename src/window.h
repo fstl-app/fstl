@@ -15,8 +15,8 @@ public:
     bool load_stl(const QString& filename, bool is_reload=false);
 
 protected:
-    void dragEnterEvent(QDragEnterEvent* event);
-    void dropEvent(QDropEvent* event);
+    void dragEnterEvent(QDragEnterEvent* event) override;
+    void dropEvent(QDropEvent* event) override;
 
 public slots:
     void on_open();
