@@ -2,15 +2,15 @@
 #include "mesh.h"
 
 GLMesh::GLMesh(const Mesh* const mesh)
-    : vertices(QGLBuffer::VertexBuffer), indices(QGLBuffer::IndexBuffer)
+    : vertices(QOpenGLBuffer::VertexBuffer), indices(QOpenGLBuffer::IndexBuffer)
 {
-    initializeGLFunctions();
+    initializeOpenGLFunctions();
 
     vertices.create();
     indices.create();
 
-    vertices.setUsagePattern(QGLBuffer::StaticDraw);
-    indices.setUsagePattern(QGLBuffer::StaticDraw);
+    vertices.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    indices.setUsagePattern(QOpenGLBuffer::StaticDraw);
 
     vertices.bind();
     vertices.allocate(mesh->vertices.data(),

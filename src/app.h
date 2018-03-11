@@ -10,8 +10,9 @@ class App : public QApplication
     Q_OBJECT
 public:
     explicit App(int& argc, char *argv[]);
+	~App();
 protected:
-    bool event(QEvent* e);
+    bool event(QEvent* e) override;
 private:
     Window* const window;
 

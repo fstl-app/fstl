@@ -1,6 +1,4 @@
 #include <QMenuBar>
-#include <QMessageBox>
-#include <QFileDialog>
 
 #include "window.h"
 #include "canvas.h"
@@ -26,10 +24,14 @@ Window::Window(QWidget *parent) :
     setWindowTitle("fstl");
     setAcceptDrops(true);
 
-    QGLFormat format;
-    format.setVersion(2, 1);
-    format.setSampleBuffers(true);
+    QSurfaceFormat format;
+	format.setDepthBufferSize(24);
+	format.setStencilBufferSize(8);
+	format.setVersion(2, 1);
+	format.setProfile(QSurfaceFormat::CoreProfile);
 
+	QSurfaceFormat::setDefaultFormat(format);
+	
     canvas = new Canvas(format, this);
     setCentralWidget(canvas);
 

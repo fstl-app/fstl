@@ -18,6 +18,11 @@ App::App(int& argc, char *argv[]) :
     window->show();
 }
 
+App::~App()
+{
+	delete window;
+}
+
 bool App::event(QEvent* e)
 {
     if (e->type() == QEvent::FileOpen)
