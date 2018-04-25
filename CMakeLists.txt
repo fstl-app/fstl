@@ -4,6 +4,9 @@
 
 cmake_minimum_required(VERSION 3.3)
 
+# Setting -std=c++11
+set(CMAKE_CXX_STANDARD 11)
+
 # Set the version number
 set (FSTL_VERSION_MAJOR "0")
 set (FSTL_VERSION_MINOR "9")
