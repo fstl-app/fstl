@@ -57,7 +57,7 @@ private:
     float yaw;
 
     float perspective;
-    Q_PROPERTY(float perspective WRITE set_perspective);
+    Q_PROPERTY(float perspective MEMBER perspective WRITE set_perspective);
     QPropertyAnimation anim;
 
     QPoint mouse_pos;
