@@ -117,7 +117,7 @@ Mesh* Loader::load_stl()
     }
 
     // First, try to read the stl as an ASCII file
-    if (file.read(6) == "solid ")
+    if (file.read(5) == "solid")
     {
         file.readLine(); // skip solid name
         const auto line = file.readLine().trimmed();
