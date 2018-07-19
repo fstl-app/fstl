@@ -44,6 +44,9 @@ src/window.h)
 set(Project_Resources qt/qt.qrc gl/gl.qrc)
 set(Icon_Resource exe/fstl.rc)
 
+#set Policy CMP0072 FindOpenGL behavior
+set(OpenGL_GL_PREFERENCE GLVND)
+
 #find required packages. 
 find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets OpenGL)
 find_package(OpenGL REQUIRED)
