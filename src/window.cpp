@@ -13,6 +13,8 @@ Window::Window(QWidget *parent) :
     quit_action(new QAction("Quit", this)),
     perspective_action(new QAction("Perspective", this)),
     orthogonal_action(new QAction("Orthographic", this)),
+    shaded_action(new QAction("Shaded", this)),
+    wireframe_action(new QAction("Wireframe", this)),
     reload_action(new QAction("Reload", this)),
     autoreload_action(new QAction("Autoreload", this)),
     recent_files(new QMenu("Open recent", this)),
@@ -89,6 +91,20 @@ Window::Window(QWidget *parent) :
     projections->setExclusive(true);
     QObject::connect(projections, &QActionGroup::triggered,
                      this, &Window::on_projection);
+
+    auto draw_menu = view_menu->addMenu("Draw Mode");
+    draw_menu->addAction(shaded_action);
+    draw_menu->addAction(wireframe_action);
+    auto drawModes = new QActionGroup(draw_menu);
+    for (auto p : {shaded_action, wireframe_action})
+    {
+        drawModes->addAction(p);
+        p->setCheckable(true);
+    }
+    shaded_action->setChecked(true);
+    drawModes->setExclusive(true);
+    QObject::connect(drawModes, &QActionGroup::triggered,
+                     this, &Window::on_drawMode);
 
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);
@@ -189,6 +205,18 @@ void Window::on_projection(QAction* proj)
     else
     {
         canvas->view_orthographic();
+    }
+}
+
+void Window::on_drawMode(QAction* mode)
+{
+    if (mode == shaded_action)
+    {
+        canvas->draw_shaded();
+    }
+    else
+    {
+        canvas->draw_wireframe();
     }
 }
 

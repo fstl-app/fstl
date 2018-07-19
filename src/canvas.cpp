@@ -44,6 +44,16 @@ void Canvas::view_perspective()
     view_anim(0.25);
 }
 
+void Canvas::draw_shaded()
+{
+    set_drawMode(0);
+}
+
+void Canvas::draw_wireframe()
+{
+    set_drawMode(1);
+}
+
 void Canvas::load_mesh(Mesh* m, bool is_reload)
 {
     mesh = new GLMesh(m);
@@ -78,6 +88,12 @@ void Canvas::set_perspective(float p)
     update();
 }
 
+void Canvas::set_drawMode(int mode)
+{
+    drawMode = mode;
+    update();
+}
+
 void Canvas::clear_status()
 {
     status = "";
@@ -91,6 +107,9 @@ void Canvas::initializeGL()
     mesh_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/mesh.vert");
     mesh_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh.frag");
     mesh_shader.link();
+    mesh_wireframe_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/mesh.vert");
+    mesh_wireframe_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_wireframe.frag");
+    mesh_wireframe_shader.link();
 
     backdrop = new Backdrop();
 }
@@ -114,7 +133,20 @@ void Canvas::paintGL()
 
 void Canvas::draw_mesh()
 {
-    mesh_shader.bind();
+    QOpenGLShaderProgram* selected_mesh_shader = NULL;
+    // Set gl draw mode
+    if(drawMode == 1)
+    {
+        selected_mesh_shader = &mesh_wireframe_shader;
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+    else
+    {
+        selected_mesh_shader = &mesh_shader;
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+
+    selected_mesh_shader->bind();
 
     // Load the transform and view matrices into the shader
     glUniformMatrix4fv(
@@ -134,9 +166,12 @@ void Canvas::draw_mesh()
     // Then draw the mesh with that vertex position
     mesh->draw(vp);
 
+    // Reset draw mode for the background and anything else that needs to be drawn
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
     // Clean up state machine
     glDisableVertexAttribArray(vp);
-    mesh_shader.release();
+    selected_mesh_shader->release();
 }
 
 QMatrix4x4 Canvas::transform_matrix() const

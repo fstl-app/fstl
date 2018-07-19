@@ -19,6 +19,8 @@ public:
 
     void view_orthographic();
     void view_perspective();
+    void draw_shaded();
+    void draw_wireframe();
 
 public slots:
     void set_status(const QString& s);
@@ -36,6 +38,7 @@ protected:
     void wheelEvent(QWheelEvent* event) override;
     
 	void set_perspective(float p);
+    void set_drawMode(int mode);
     void view_anim(float v);
 
 private:
@@ -45,6 +48,7 @@ private:
     QMatrix4x4 view_matrix() const;
 
     QOpenGLShaderProgram mesh_shader;
+    QOpenGLShaderProgram mesh_wireframe_shader;
 	QOpenGLShaderProgram quad_shader;
 
     GLMesh* mesh;
@@ -57,6 +61,7 @@ private:
     float yaw;
 
     float perspective;
+    int drawMode;
     Q_PROPERTY(float perspective MEMBER perspective WRITE set_perspective);
     QPropertyAnimation anim;
 
