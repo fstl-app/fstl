@@ -85,32 +85,26 @@ if(WIN32)
 		install(TARGETS fstl DESTINATION bin COMPONENT all)
 		
 		install(FILES
-		${Qt5Core_DIR}/../../../bin/libEGL.dll
-        ${Qt5Core_DIR}/../../../bin/libGLESv2.dll
-        ${Qt5Core_DIR}/../../../bin/Qt5Core.dll
-        ${Qt5Core_DIR}/../../../bin/Qt5Gui.dll
-        ${Qt5Core_DIR}/../../../bin/Qt5Network.dll
-        ${Qt5Core_DIR}/../../../bin/Qt5OpenGL.dll
-		${Qt5Core_DIR}/../../../bin/Qt5Widgets.dll
-		DESTINATION bin COMPONENT all)
+			$<TARGET_FILE:Qt5::Gui_EGL>
+			$<TARGET_FILE:Qt5::Gui_GLESv2>
+			$<TARGET_FILE:Qt5::Core>
+			$<TARGET_FILE:Qt5::Gui> 
+			$<TARGET_FILE:Qt5::OpenGL>
+			$<TARGET_FILE:Qt5::Widgets>
+			DESTINATION bin COMPONENT all)
 		
 		#install file in the platforms directory.
 		install (FILES
-		${Qt5Core_DIR}/../../../plugins/platforms/qwindows.dll
-		DESTINATION bin/platforms COMPONENT all
+			${Qt5Core_DIR}/../../../plugins/platforms/qwindows.dll
+			DESTINATION bin/platforms COMPONENT all
 		)
 
 		#custom commands based on: https://gist.github.com/Rod-Persky/e6b93e9ee31f9516261b
 		add_custom_command(TARGET fstl POST_BUILD 
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Qt5Core_DIR}/../../../bin/libEGLd.dll          ${CMAKE_BINARY_DIR}/Debug
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Qt5Core_DIR}/../../../bin/libGLESv2d.dll       ${CMAKE_BINARY_DIR}/Debug
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Core> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Gui> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Widgets> $<TARGET_FILE_DIR:${PROJECT_NAME}>
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::OpenGL>        $<TARGET_FILE_DIR:${PROJECT_NAME}>
-
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Qt5Core_DIR}/../../../bin/libEGL.dll          ${CMAKE_BINARY_DIR}/Release
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different ${Qt5Core_DIR}/../../../bin/libGLESv2.dll       ${CMAKE_BINARY_DIR}/Release
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Core>       $<TARGET_FILE_DIR:${PROJECT_NAME}>
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Gui>        $<TARGET_FILE_DIR:${PROJECT_NAME}>
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Widgets>    $<TARGET_FILE_DIR:${PROJECT_NAME}>
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::OpenGL>     $<TARGET_FILE_DIR:${PROJECT_NAME}>
 		)	
 	endif(MSVC)
 
