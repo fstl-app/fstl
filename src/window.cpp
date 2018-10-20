@@ -248,6 +248,11 @@ void Window::on_load_recent(QAction* a)
     load_stl(a->data().toString());
 }
 
+void Window::on_loaded(const QString& filename)
+{
+    current_file = filename;
+}
+
 void Window::rebuild_recent_files()
 {
     QSettings settings;
@@ -320,6 +325,8 @@ bool Window::load_stl(const QString& filename, bool is_reload)
                   this, &Window::setWindowTitle);
         connect(loader, &Loader::loaded_file,
                   this, &Window::set_watched);
+        connect(loader, &Loader::loaded_file,
+                  this, &Window::on_loaded);
         autoreload_action->setEnabled(true);
         reload_action->setEnabled(true);
     }
@@ -341,4 +348,114 @@ void Window::dragEnterEvent(QDragEnterEvent *event)
 void Window::dropEvent(QDropEvent *event)
 {
     load_stl(event->mimeData()->urls().front().toLocalFile());
+}
+
+void Window::build_folder_file_list()
+{
+    QString current_folder_path = QFileInfo(current_file).absoluteDir().absolutePath();
+    if (!lookup_folder_files.isEmpty())
+    {
+        if (current_folder_path == lookup_folder) {
+            return;
+        }
+
+        lookup_folder_files.clear();
+    }
+    lookup_folder = current_folder_path;
+
+    QDirIterator dirIterator(lookup_folder, QStringList() << "*.stl", QDir::Files | QDir::Readable | QDir::Hidden);
+    while (dirIterator.hasNext()) {
+        dirIterator.next();
+
+        QString name = dirIterator.fileName();
+        lookup_folder_files.append(name);
+    }
+
+    QCollator collator;
+    collator.setNumericMode(true);
+
+    std::sort(
+        lookup_folder_files.begin(),
+        lookup_folder_files.end(),
+        collator);
+}
+
+QPair<QString, QString> Window::get_file_neighbors()
+{
+    if (current_file.isEmpty()) {
+        return QPair<QString, QString>(QString::null, QString::null);
+    }
+
+    build_folder_file_list();
+
+    QFileInfo fileInfo(current_file);
+
+    QString current_dir = fileInfo.absoluteDir().absolutePath();
+    QString current_name = fileInfo.fileName();
+
+    QString prev = QString::null;
+    QString next = QString::null;
+
+    QListIterator<QString> fileIterator(lookup_folder_files);
+    while (fileIterator.hasNext()) {
+        QString name = fileIterator.next();
+
+        if (name == current_name) {
+            if (fileIterator.hasNext()) {
+                next = current_dir + QDir::separator() + fileIterator.next();
+            }
+            break;
+        }
+
+        prev = name;
+    }
+
+    if (!prev.isEmpty()) {
+        prev.prepend(QDir::separator());
+        prev.prepend(current_dir);
+    }
+
+    return QPair<QString, QString>(prev, next);
+}
+
+bool Window::load_prev(void)
+{
+    QPair<QString, QString> neighbors = get_file_neighbors();
+    if (neighbors.first.isEmpty()) {
+        return false;
+    }
+
+    return load_stl(neighbors.first);
+}
+
+bool Window::load_next(void)
+{
+    QPair<QString, QString> neighbors = get_file_neighbors();
+    if (neighbors.second.isEmpty()) {
+        return false;
+    }
+
+    return load_stl(neighbors.second);
+}
+
+void Window::keyPressEvent(QKeyEvent* event)
+{
+    if (!open_action->isEnabled())
+    {
+        QMainWindow::keyPressEvent(event);
+        return;
+    }
+
+    if (event->key() == Qt::Key_Left)
+    {
+        load_prev();
+        return;
+    }
+    else if (event->key() == Qt::Key_Right)
+    {
+        load_next();
+        return;
+    }
+
+    QMainWindow::keyPressEvent(event);
 }
