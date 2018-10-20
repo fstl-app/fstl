@@ -47,6 +47,7 @@ private slots:
 
 private:
     void rebuild_recent_files();
+    void sorted_insert(QStringList& list, const QCollator& collator, const QString& value);
     void build_folder_file_list();
     QPair<QString, QString> get_file_neighbors();
 

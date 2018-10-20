@@ -350,6 +350,29 @@ void Window::dropEvent(QDropEvent *event)
     load_stl(event->mimeData()->urls().front().toLocalFile());
 }
 
+void Window::sorted_insert(QStringList& list, const QCollator& collator, const QString& value)
+{
+    int start = 0;
+    int end = list.size() - 1;
+    int index = 0;
+    while (start <= end){
+        int mid = (start+end)/2;
+        if (list[mid] == value) {
+            return;
+        }
+        int compare = collator.compare(value, list[mid]);
+        if (compare < 0) {
+            end = mid-1;
+            index = mid;
+        } else {
+            start = mid+1;
+            index = start;
+        }
+    }
+
+    list.insert(index, value);
+}
+
 void Window::build_folder_file_list()
 {
     QString current_folder_path = QFileInfo(current_file).absoluteDir().absolutePath();
@@ -363,21 +386,16 @@ void Window::build_folder_file_list()
     }
     lookup_folder = current_folder_path;
 
+    QCollator collator;
+    collator.setNumericMode(true);
+
     QDirIterator dirIterator(lookup_folder, QStringList() << "*.stl", QDir::Files | QDir::Readable | QDir::Hidden);
     while (dirIterator.hasNext()) {
         dirIterator.next();
 
         QString name = dirIterator.fileName();
-        lookup_folder_files.append(name);
+        sorted_insert(lookup_folder_files, collator, name);
     }
-
-    QCollator collator;
-    collator.setNumericMode(true);
-
-    std::sort(
-        lookup_folder_files.begin(),
-        lookup_folder_files.end(),
-        collator);
 }
 
 QPair<QString, QString> Window::get_file_neighbors()
