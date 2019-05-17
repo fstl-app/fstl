@@ -64,6 +64,18 @@ make -j8
 ./fstl
 ```
 
+## Documentation
+
+### Linux
+
+Install Doxygen with your distro's package manager (e.g. `doxygen` on Debian).
+```
+cd fstl
+
+doxygen Doxyfile
+```
+The resulting documentation can be accessed at `fstl/doc/html/index.html`.
+
 --------------------------------------------------------------------------------
 
 # License
