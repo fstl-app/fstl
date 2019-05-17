@@ -1,3 +1,10 @@
+/**
+ * @file loader.h
+ * @brief Threaded .stl file reader
+ *
+ * @details
+ */
+
 #ifndef LOADER_H
 #define LOADER_H
 

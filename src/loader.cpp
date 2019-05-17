@@ -1,3 +1,10 @@
+/**
+ * @file loader.cpp
+ * @brief Defines the properties of the threaded .stl loader
+ *
+ * @details
+ */
+
 #include <future>
 
 #include "loader.h"

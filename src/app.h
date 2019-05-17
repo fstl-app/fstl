@@ -1,3 +1,10 @@
+/**
+ * @file app.h
+ * @brief fstl is based on Qt QApplication
+ *
+ * @details
+ */
+
 #ifndef APP_H
 #define APP_H
 

@@ -1,3 +1,10 @@
+/**
+ * @file glmesh.cpp
+ * @brief Defines the properties of the 3D mesh
+ *
+ * @details
+ */
+
 #include "glmesh.h"
 #include "mesh.h"
 

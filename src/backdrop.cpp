@@ -1,3 +1,10 @@
+/**
+ * @file backdrop.cpp
+ * @brief Shader and buffer properties
+ *
+ * @details Specifies the shaders used from the gl directory.
+ */
+
 #include "backdrop.h"
 
 Backdrop::Backdrop()

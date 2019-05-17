@@ -1,3 +1,10 @@
+/**
+ * @file window.cpp
+ * @brief Defines the window properties of the GUI
+ *
+ * @details
+ */
+
 #include <QMenuBar>
 
 #include "window.h"

@@ -1,3 +1,10 @@
+/**
+ * @file window.h
+ * @brief based on Qt QMainWindow, handles of .stl files, and establishes visualization modes
+ *
+ * @details
+ */
+
 #ifndef WINDOW_H
 #define WINDOW_H
 
