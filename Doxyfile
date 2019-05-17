@@ -1,0 +1,31 @@
+# Doxyfile 1.8.11
+
+#---------------------------------------------------------------------------
+# Project related configuration options
+#---------------------------------------------------------------------------
+
+PROJECT_NAME           = "fstl"
+PROJECT_NUMBER         = 0.9.3
+PROJECT_BRIEF          = "A viewer for .stl files"
+OUTPUT_DIRECTORY       = doc/
+
+#---------------------------------------------------------------------------
+# Configuration options related to the input files
+#---------------------------------------------------------------------------
+
+INPUT                  = README.md include/ src/
+FILE_PATTERNS          = *.h *.cpp
+USE_MDFILE_AS_MAINPAGE = README.md
+
+#---------------------------------------------------------------------------
+# Configuration options related to the HTML output
+#---------------------------------------------------------------------------
+
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html/
+
+#---------------------------------------------------------------------------
+# Configuration options related to the LaTeX output
+#---------------------------------------------------------------------------
+
+GENERATE_LATEX         = NO

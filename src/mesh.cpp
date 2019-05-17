@@ -1,3 +1,10 @@
+/**
+ * @file mesh.cpp
+ * @brief Defines the min and max mesh vertices
+ *
+ * @details
+ */
+
 #include <QFile>
 #include <QDataStream>
 #include <QVector3D>

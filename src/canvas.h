@@ -1,3 +1,10 @@
+/**
+ * @file canvas.h
+ * @brief based on QOpenGLWidget, loads 3D mesh and defines visualization options
+ *
+ * @details
+ */
+
 #ifndef CANVAS_H
 #define CANVAS_H
 

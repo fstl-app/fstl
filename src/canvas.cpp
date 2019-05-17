@@ -1,3 +1,10 @@
+/**
+ * @file canvas.cpp
+ * @brief Defines the properties of the 3D canvas
+ *
+ * @details
+ */
+
 #include <QMouseEvent>
 
 #include <cmath>

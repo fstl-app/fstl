@@ -1,3 +1,10 @@
+/**
+ * @file mesh.h
+ * @brief based on Qt OpenGL
+ *
+ * @details
+ */
+
 #ifndef MESH_H
 #define MESH_H
 

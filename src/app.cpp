@@ -1,3 +1,10 @@
+/**
+ * @file app.cpp
+ * @brief Creates a window that loads an stl file
+ *
+ * @details The file that is loaded in the application window can be changed in this code.
+ */
+
 #include <QDebug>
 #include <QFileOpenEvent>
 
