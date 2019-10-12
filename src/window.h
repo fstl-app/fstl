@@ -44,7 +44,8 @@ private slots:
     void on_clear_recent();
     void on_load_recent(QAction* a);
     void on_loaded(const QString& filename);
-
+	void on_save_screenshot();
+	
 private:
     void rebuild_recent_files();
     void sorted_insert(QStringList& list, const QCollator& collator, const QString& value);
@@ -60,7 +61,8 @@ private:
     QAction* const wireframe_action;
     QAction* const reload_action;
     QAction* const autoreload_action;
-
+	QAction* const save_screenshot_action;
+	
     QMenu* const recent_files;
     QActionGroup* const recent_files_group;
     QAction* const recent_files_clear_action;
