@@ -17,7 +17,7 @@ Window::Window(QWidget *parent) :
     wireframe_action(new QAction("Wireframe", this)),
     reload_action(new QAction("Reload", this)),
     autoreload_action(new QAction("Autoreload", this)),
-	save_screenshot_action(new QAction("Save Screenshot", this)),
+    save_screenshot_action(new QAction("Save Screenshot", this)),
     recent_files(new QMenu("Open recent", this)),
     recent_files_group(new QActionGroup(this)),
     recent_files_clear_action(new QAction("Clear recent files", this)),
@@ -68,9 +68,9 @@ Window::Window(QWidget *parent) :
     QObject::connect(recent_files_group, &QActionGroup::triggered,
                      this, &Window::on_load_recent);
 
-	save_screenshot_action->setCheckable(false);
-	QObject::connect(save_screenshot_action, &QAction::triggered, 
-		this, &Window::on_save_screenshot);
+    save_screenshot_action->setCheckable(false);
+    QObject::connect(save_screenshot_action, &QAction::triggered, 
+	    this, &Window::on_save_screenshot);
 	
     rebuild_recent_files();
 
@@ -80,7 +80,7 @@ Window::Window(QWidget *parent) :
     file_menu->addSeparator();
     file_menu->addAction(reload_action);
     file_menu->addAction(autoreload_action);
-	file_menu->addAction(save_screenshot_action);
+    file_menu->addAction(save_screenshot_action);
     file_menu->addAction(quit_action);
 
     auto view_menu = menuBar()->addMenu("View");
@@ -261,36 +261,36 @@ void Window::on_loaded(const QString& filename)
 
 void Window::on_save_screenshot()
 {
-	const auto image = canvas->grabFramebuffer();
-	auto file_name = QFileDialog::getSaveFileName(
-		this, 
-		tr("Save Screenshot Image"),
-		QStandardPaths::standardLocations(QStandardPaths::StandardLocation::PicturesLocation).first(),
-		"Images (*.png *.jpg)");
+    const auto image = canvas->grabFramebuffer();
+    auto file_name = QFileDialog::getSaveFileName(
+        this, 
+        tr("Save Screenshot Image"),
+        QStandardPaths::standardLocations(QStandardPaths::StandardLocation::PicturesLocation).first(),
+        "Images (*.png *.jpg)");
 
-	auto get_file_extension = [](const std::string& file_name) -> std::string
-	{
-		const auto location = std::find(file_name.rbegin(), file_name.rend(), '.');
-		if (location == file_name.rend())
-		{
-			return "";
-		}
+    auto get_file_extension = [](const std::string& file_name) -> std::string
+    {
+	    const auto location = std::find(file_name.rbegin(), file_name.rend(), '.');
+	    if (location == file_name.rend())
+	    {
+		    return "";
+	    }
 
-		const auto index = std::distance(file_name.rbegin(), location);
-		return file_name.substr(file_name.size() - index);
-	};
+	    const auto index = std::distance(file_name.rbegin(), location);
+	    return file_name.substr(file_name.size() - index);
+    };
 
-	const auto extension = get_file_extension(file_name.toStdString());
-	if(extension.empty() || (extension != "png" && extension != "jpg"))
-	{
-		file_name.append(".png");
-	}
+    const auto extension = get_file_extension(file_name.toStdString());
+    if(extension.empty() || (extension != "png" && extension != "jpg"))
+    {
+	    file_name.append(".png");
+    }
 	
-	const auto save_ok = image.save(file_name);
-	if(!save_ok)
-	{
-		QMessageBox::warning(this, tr("Error Saving Image"), tr("Unable to save screen shot image."));
-	}
+    const auto save_ok = image.save(file_name);
+    if(!save_ok)
+    {
+	    QMessageBox::warning(this, tr("Error Saving Image"), tr("Unable to save screen shot image."));
+    }
 }
 
 void Window::rebuild_recent_files()
