@@ -28,13 +28,13 @@ Window::Window(QWidget *parent) :
     setAcceptDrops(true);
 
     QSurfaceFormat format;
-	format.setDepthBufferSize(24);
-	format.setStencilBufferSize(8);
-	format.setVersion(2, 1);
-	format.setProfile(QSurfaceFormat::CoreProfile);
+    format.setDepthBufferSize(24);
+    format.setStencilBufferSize(8);
+    format.setVersion(2, 1);
+    format.setProfile(QSurfaceFormat::CoreProfile);
 
-	QSurfaceFormat::setDefaultFormat(format);
-	
+    QSurfaceFormat::setDefaultFormat(format);
+    
     canvas = new Canvas(format, this);
     setCentralWidget(canvas);
 
@@ -70,8 +70,8 @@ Window::Window(QWidget *parent) :
 
     save_screenshot_action->setCheckable(false);
     QObject::connect(save_screenshot_action, &QAction::triggered, 
-	    this, &Window::on_save_screenshot);
-	
+        this, &Window::on_save_screenshot);
+    
     rebuild_recent_files();
 
     auto file_menu = menuBar()->addMenu("File");
@@ -270,26 +270,26 @@ void Window::on_save_screenshot()
 
     auto get_file_extension = [](const std::string& file_name) -> std::string
     {
-	    const auto location = std::find(file_name.rbegin(), file_name.rend(), '.');
-	    if (location == file_name.rend())
-	    {
-		    return "";
-	    }
+        const auto location = std::find(file_name.rbegin(), file_name.rend(), '.');
+        if (location == file_name.rend())
+        {
+            return "";
+        }
 
-	    const auto index = std::distance(file_name.rbegin(), location);
-	    return file_name.substr(file_name.size() - index);
+        const auto index = std::distance(file_name.rbegin(), location);
+        return file_name.substr(file_name.size() - index);
     };
 
     const auto extension = get_file_extension(file_name.toStdString());
     if(extension.empty() || (extension != "png" && extension != "jpg"))
     {
-	    file_name.append(".png");
+        file_name.append(".png");
     }
-	
+    
     const auto save_ok = image.save(file_name);
     if(!save_ok)
     {
-	    QMessageBox::warning(this, tr("Error Saving Image"), tr("Unable to save screen shot image."));
+        QMessageBox::warning(this, tr("Error Saving Image"), tr("Unable to save screen shot image."));
     }
 }
 
