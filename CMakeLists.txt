@@ -61,12 +61,17 @@ set_property(SOURCE ${Project_Resources_RCC} PROPERTY SKIP_AUTOGEN ON)
 #include opengl files. 
 include_directories(${QT_QTOPENGL_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} )
 
-add_executable(fstl WIN32 ${Project_Sources} ${Project_Headers} ${Project_Resources_RCC} ${Icon_Resource})
-target_link_libraries(fstl Qt5::Widgets Qt5::Core Qt5::Gui Qt5::OpenGL ${OPENGL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 if(WIN32)
+  add_executable(fstl WIN32 ${Project_Sources} ${Project_Headers} ${Project_Resources_RCC} ${Icon_Resource})
   set(Fstl_LINK_FLAGS ${CMAKE_CURRENT_SOURCE_DIR}/${Icon_Resource})
   set_target_properties(fstl PROPERTIES LINK_FLAGS ${Fstl_LINK_FLAGS})
+elseif(APPLE)
+  add_executable(fstl MACOSX_BUNDLE ${Project_Sources} ${Project_Headers} ${Project_Resources_RCC} ${Icon_Resource})
+else()
+  add_executable(fstl ${Project_Sources} ${Project_Headers} ${Project_Resources_RCC} ${Icon_Resource})
 endif(WIN32)
+
+target_link_libraries(fstl Qt5::Widgets Qt5::Core Qt5::Gui Qt5::OpenGL ${OPENGL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 # Add version definitions to use within the code. 
 target_compile_definitions(fstl PRIVATE -DFSTL_VERSION="${PROJECT_VERSION}")

@@ -12,6 +12,7 @@ APP=fstl
 MACDEPLOYQT=`otool -L $APP.app/Contents/MacOS/fstl | sed -n -e "s:\(.*\)lib/QtCore.*:\1/bin/macdeployqt:gp"`
 
 $MACDEPLOYQT $APP.app
+cp ../app/Info.plist $APP.app/Contents/
 
 # Delete unused Qt plugins
 cd fstl.app/Contents/PlugIns
@@ -41,7 +42,6 @@ do
 done
 
 cd ../Resources
-rm empty.lproj
 
 # Create a disk image
 cd ../../..
