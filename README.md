@@ -34,7 +34,7 @@ Please choose a default application for files of type model/stl
 use application #
 ```
 
-Selection the `Other` option and type `fstl` as the desired command to open STL files.
+Select the `Other` option and type `fstl` as the desired command to open STL files.
 This will now become the system default, even when opening files from the file manager.
 
 ## Building
