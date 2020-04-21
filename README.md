@@ -47,6 +47,7 @@ Install Qt from their website or [Homebrew](brew.sh),
 making sure `qmake` is on your shell's path.
 
 Then, run through the following set of commands in a shell:
+
 ```
 git clone https://github.com/mkeeter/fstl
 cd fstl
