@@ -15,6 +15,28 @@ the project is under 1K lines of code and should be fairly approachable.
 ![Eiffel tower](http://mattkeeter.com/projects/fstl/eiffel.png)
 (credit to [Pranav Panchal](https://grabcad.com/pranav.panchal))
 
+## Setting `fstl` as the Default STL Viewer
+
+To set `fstl` as the default viewer for STL files, run the following in your terminal:
+
+```bash
+# replace example.stl with an actual file
+mimeopen -d example.stl
+```
+
+The following output will result:
+
+```
+Please choose a default application for files of type model/stl
+
+	1) Other...
+
+use application #
+```
+
+Selection the `Other` option and type `fstl` as the desired command to open STL files.
+This will now become the system default, even when opening files from the file manager.
+
 ## Building
 
 The only dependency for `fstl` is [Qt 5](https://www.qt.io).
