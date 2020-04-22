@@ -17,6 +17,21 @@ the project is under 1K lines of code and should be fairly approachable.
 
 ## Setting `fstl` as the Default STL Viewer
 
+### Windows
+
+1. Right-click an STL file
+2. Select `Open With` >>> `Choose another app`
+3. Select `More Apps` and `Look for another app on this PC`
+4. Enter the path to the `fstl` EXE file
+
+### MacOS
+
+1. Ctrl+click an STL file
+2. Select `Get Info`
+3. Navigate to the `Open with` section
+4. Select `fstl` in the dropdown
+5. Click `Change All`
+
 ### Linux
 
 If `mimeopen` is available on your system, it can be used to set `fstl` as the default viewer for STL files.
