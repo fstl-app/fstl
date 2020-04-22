@@ -17,7 +17,10 @@ the project is under 1K lines of code and should be fairly approachable.
 
 ## Setting `fstl` as the Default STL Viewer
 
-To set `fstl` as the default viewer for STL files, run the following in your terminal:
+### Linux
+
+If `mimeopen` is available on your system, it can be used to set `fstl` as the default viewer for STL files.
+Run the following in your terminal:
 
 ```bash
 # replace example.stl with an actual file
