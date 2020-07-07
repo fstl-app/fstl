@@ -17,6 +17,7 @@ Window::Window(QWidget *parent) :
     wireframe_action(new QAction("Wireframe", this)),
     reload_action(new QAction("Reload", this)),
     autoreload_action(new QAction("Autoreload", this)),
+    save_screenshot_action(new QAction("Save Screenshot", this)),
     recent_files(new QMenu("Open recent", this)),
     recent_files_group(new QActionGroup(this)),
     recent_files_clear_action(new QAction("Clear recent files", this)),
@@ -27,13 +28,13 @@ Window::Window(QWidget *parent) :
     setAcceptDrops(true);
 
     QSurfaceFormat format;
-	format.setDepthBufferSize(24);
-	format.setStencilBufferSize(8);
-	format.setVersion(2, 1);
-	format.setProfile(QSurfaceFormat::CoreProfile);
+    format.setDepthBufferSize(24);
+    format.setStencilBufferSize(8);
+    format.setVersion(2, 1);
+    format.setProfile(QSurfaceFormat::CoreProfile);
 
-	QSurfaceFormat::setDefaultFormat(format);
-	
+    QSurfaceFormat::setDefaultFormat(format);
+    
     canvas = new Canvas(format, this);
     setCentralWidget(canvas);
 
@@ -67,6 +68,10 @@ Window::Window(QWidget *parent) :
     QObject::connect(recent_files_group, &QActionGroup::triggered,
                      this, &Window::on_load_recent);
 
+    save_screenshot_action->setCheckable(false);
+    QObject::connect(save_screenshot_action, &QAction::triggered, 
+        this, &Window::on_save_screenshot);
+    
     rebuild_recent_files();
 
     auto file_menu = menuBar()->addMenu("File");
@@ -75,6 +80,7 @@ Window::Window(QWidget *parent) :
     file_menu->addSeparator();
     file_menu->addAction(reload_action);
     file_menu->addAction(autoreload_action);
+    file_menu->addAction(save_screenshot_action);
     file_menu->addAction(quit_action);
 
     auto view_menu = menuBar()->addMenu("View");
@@ -248,6 +254,45 @@ void Window::on_load_recent(QAction* a)
     load_stl(a->data().toString());
 }
 
+void Window::on_loaded(const QString& filename)
+{
+    current_file = filename;
+}
+
+void Window::on_save_screenshot()
+{
+    const auto image = canvas->grabFramebuffer();
+    auto file_name = QFileDialog::getSaveFileName(
+        this, 
+        tr("Save Screenshot Image"),
+        QStandardPaths::standardLocations(QStandardPaths::StandardLocation::PicturesLocation).first(),
+        "Images (*.png *.jpg)");
+
+    auto get_file_extension = [](const std::string& file_name) -> std::string
+    {
+        const auto location = std::find(file_name.rbegin(), file_name.rend(), '.');
+        if (location == file_name.rend())
+        {
+            return "";
+        }
+
+        const auto index = std::distance(file_name.rbegin(), location);
+        return file_name.substr(file_name.size() - index);
+    };
+
+    const auto extension = get_file_extension(file_name.toStdString());
+    if(extension.empty() || (extension != "png" && extension != "jpg"))
+    {
+        file_name.append(".png");
+    }
+    
+    const auto save_ok = image.save(file_name);
+    if(!save_ok)
+    {
+        QMessageBox::warning(this, tr("Error Saving Image"), tr("Unable to save screen shot image."));
+    }
+}
+
 void Window::rebuild_recent_files()
 {
     QSettings settings;
@@ -320,6 +365,8 @@ bool Window::load_stl(const QString& filename, bool is_reload)
                   this, &Window::setWindowTitle);
         connect(loader, &Loader::loaded_file,
                   this, &Window::set_watched);
+        connect(loader, &Loader::loaded_file,
+                  this, &Window::on_loaded);
         autoreload_action->setEnabled(true);
         reload_action->setEnabled(true);
     }
@@ -341,4 +388,132 @@ void Window::dragEnterEvent(QDragEnterEvent *event)
 void Window::dropEvent(QDropEvent *event)
 {
     load_stl(event->mimeData()->urls().front().toLocalFile());
+}
+
+void Window::sorted_insert(QStringList& list, const QCollator& collator, const QString& value)
+{
+    int start = 0;
+    int end = list.size() - 1;
+    int index = 0;
+    while (start <= end){
+        int mid = (start+end)/2;
+        if (list[mid] == value) {
+            return;
+        }
+        int compare = collator.compare(value, list[mid]);
+        if (compare < 0) {
+            end = mid-1;
+            index = mid;
+        } else {
+            start = mid+1;
+            index = start;
+        }
+    }
+
+    list.insert(index, value);
+}
+
+void Window::build_folder_file_list()
+{
+    QString current_folder_path = QFileInfo(current_file).absoluteDir().absolutePath();
+    if (!lookup_folder_files.isEmpty())
+    {
+        if (current_folder_path == lookup_folder) {
+            return;
+        }
+
+        lookup_folder_files.clear();
+    }
+    lookup_folder = current_folder_path;
+
+    QCollator collator;
+    collator.setNumericMode(true);
+
+    QDirIterator dirIterator(lookup_folder, QStringList() << "*.stl", QDir::Files | QDir::Readable | QDir::Hidden);
+    while (dirIterator.hasNext()) {
+        dirIterator.next();
+
+        QString name = dirIterator.fileName();
+        sorted_insert(lookup_folder_files, collator, name);
+    }
+}
+
+QPair<QString, QString> Window::get_file_neighbors()
+{
+    if (current_file.isEmpty()) {
+        return QPair<QString, QString>(QString::null, QString::null);
+    }
+
+    build_folder_file_list();
+
+    QFileInfo fileInfo(current_file);
+
+    QString current_dir = fileInfo.absoluteDir().absolutePath();
+    QString current_name = fileInfo.fileName();
+
+    QString prev = QString::null;
+    QString next = QString::null;
+
+    QListIterator<QString> fileIterator(lookup_folder_files);
+    while (fileIterator.hasNext()) {
+        QString name = fileIterator.next();
+
+        if (name == current_name) {
+            if (fileIterator.hasNext()) {
+                next = current_dir + QDir::separator() + fileIterator.next();
+            }
+            break;
+        }
+
+        prev = name;
+    }
+
+    if (!prev.isEmpty()) {
+        prev.prepend(QDir::separator());
+        prev.prepend(current_dir);
+    }
+
+    return QPair<QString, QString>(prev, next);
+}
+
+bool Window::load_prev(void)
+{
+    QPair<QString, QString> neighbors = get_file_neighbors();
+    if (neighbors.first.isEmpty()) {
+        return false;
+    }
+
+    return load_stl(neighbors.first);
+}
+
+bool Window::load_next(void)
+{
+    QPair<QString, QString> neighbors = get_file_neighbors();
+    if (neighbors.second.isEmpty()) {
+        return false;
+    }
+
+    return load_stl(neighbors.second);
+}
+
+void Window::keyPressEvent(QKeyEvent* event)
+{
+    if (!open_action->isEnabled())
+    {
+        QMainWindow::keyPressEvent(event);
+        return;
+    }
+
+    if (event->key() == Qt::Key_Left)
+    {
+        load_prev();
+        return;
+    }
+    else if (event->key() == Qt::Key_Right)
+    {
+        load_next();
+        return;
+    }
+
+    QMainWindow::keyPressEvent(event);
 }

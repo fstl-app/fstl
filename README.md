@@ -11,8 +11,49 @@ Issues and minor pull requests are welcome;
 the project is under 1K lines of code and should be fairly approachable.
 
 ## Screenshot
+
 ![Eiffel tower](http://mattkeeter.com/projects/fstl/eiffel.png)
 (credit to [Pranav Panchal](https://grabcad.com/pranav.panchal))
+
+## Setting `fstl` as the Default STL Viewer
+
+### Windows
+
+1. Right-click an STL file
+2. Select `Open With` >>> `Choose another app`
+3. Select `More Apps` and `Look for another app on this PC`
+4. Enter the path to the `fstl` EXE file
+
+### MacOS
+
+1. Ctrl+click an STL file
+2. Select `Get Info`
+3. Navigate to the `Open with` section
+4. Select `fstl` in the dropdown
+5. Click `Change All`
+
+### Linux
+
+If `mimeopen` is available on your system, it can be used to set `fstl` as the default viewer for STL files.
+Run the following in your terminal:
+
+```bash
+# replace example.stl with an actual file
+mimeopen -d example.stl
+```
+
+The following output will result:
+
+```
+Please choose a default application for files of type model/stl
+
+	1) Other...
+
+use application #
+```
+
+Select the `Other` option and type `fstl` as the desired command to open STL files.
+This will now become the system default, even when opening files from the file manager.
 
 ## Building
 
@@ -24,6 +65,7 @@ Install Qt from their website or [Homebrew](brew.sh),
 making sure `qmake` is on your shell's path.
 
 Then, run through the following set of commands in a shell:
+
 ```
 git clone https://github.com/mkeeter/fstl
 cd fstl
