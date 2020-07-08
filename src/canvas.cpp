@@ -10,7 +10,8 @@
 Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     : QOpenGLWidget(parent), mesh(nullptr),
       scale(1), zoom(1), tilt(90), yaw(0),
-      perspective(0.25), anim(this, "perspective"), status(" ")
+      perspective(0.25), anim(this, "perspective"), status(" "),
+      drawMode(shaded), drawAxes(false)
 {
 	setFormat(format);
     QFile styleFile(":/qt/style.qss");
@@ -52,6 +53,12 @@ void Canvas::draw_shaded()
 void Canvas::draw_wireframe()
 {
     set_drawMode(wireframe);
+}
+
+void Canvas::draw_axes(bool d)
+{
+    drawAxes = d;
+    update();
 }
 
 void Canvas::load_mesh(Mesh* m, bool is_reload)

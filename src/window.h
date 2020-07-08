@@ -38,6 +38,7 @@ public slots:
 private slots:
     void on_projection(QAction* proj);
     void on_drawMode(QAction* mode);
+    void on_drawAxes(bool d);
     void on_watched_change(const QString& filename);
     void on_reload();
     void on_autoreload_triggered(bool r);
@@ -59,6 +60,7 @@ private:
     QAction* const orthogonal_action;
     QAction* const shaded_action;
     QAction* const wireframe_action;
+    QAction* const axes_action;
     QAction* const reload_action;
     QAction* const autoreload_action;
     QAction* const save_screenshot_action;
