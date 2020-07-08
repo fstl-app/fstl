@@ -9,6 +9,8 @@ class GLMesh;
 class Mesh;
 class Backdrop;
 
+enum DrawMode {shaded, wireframe};
+
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
@@ -38,7 +40,7 @@ protected:
     void wheelEvent(QWheelEvent* event) override;
     
 	void set_perspective(float p);
-    void set_drawMode(int mode);
+    void set_drawMode(enum DrawMode mode);
     void view_anim(float v);
 
 private:
@@ -61,7 +63,7 @@ private:
     float yaw;
 
     float perspective;
-    int drawMode;
+    enum DrawMode drawMode;
     Q_PROPERTY(float perspective MEMBER perspective WRITE set_perspective);
     QPropertyAnimation anim;
 

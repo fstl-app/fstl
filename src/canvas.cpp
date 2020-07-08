@@ -46,12 +46,12 @@ void Canvas::view_perspective()
 
 void Canvas::draw_shaded()
 {
-    set_drawMode(0);
+    set_drawMode(shaded);
 }
 
 void Canvas::draw_wireframe()
 {
-    set_drawMode(1);
+    set_drawMode(wireframe);
 }
 
 void Canvas::load_mesh(Mesh* m, bool is_reload)
@@ -88,7 +88,7 @@ void Canvas::set_perspective(float p)
     update();
 }
 
-void Canvas::set_drawMode(int mode)
+void Canvas::set_drawMode(enum DrawMode mode)
 {
     drawMode = mode;
     update();
@@ -134,8 +134,7 @@ void Canvas::paintGL()
 void Canvas::draw_mesh()
 {
     QOpenGLShaderProgram* selected_mesh_shader = NULL;
-    // Set gl draw mode
-    if(drawMode == 1)
+    if(drawMode == wireframe)
     {
         selected_mesh_shader = &mesh_wireframe_shader;
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
