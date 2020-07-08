@@ -4,6 +4,7 @@
 
 #include "canvas.h"
 #include "backdrop.h"
+#include "axis.h"
 #include "glmesh.h"
 #include "mesh.h"
 
@@ -13,7 +14,7 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
       perspective(0.25), anim(this, "perspective"), status(" "),
       drawMode(shaded), drawAxes(false)
 {
-	setFormat(format);
+    setFormat(format);
     QFile styleFile(":/qt/style.qss");
     styleFile.open( QFile::ReadOnly );
     setStyleSheet(styleFile.readAll());
@@ -119,6 +120,7 @@ void Canvas::initializeGL()
     mesh_wireframe_shader.link();
 
     backdrop = new Backdrop();
+    axis = new Axis();
 }
 
 
@@ -129,6 +131,7 @@ void Canvas::paintGL()
 	glEnable(GL_DEPTH_TEST);
 
 	backdrop->draw();
+	if (drawAxes) axis->draw(transform_matrix(), view_matrix());
 	if (mesh)  draw_mesh();
 
 	if (status.isNull())  return;

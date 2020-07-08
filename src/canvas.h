@@ -8,6 +8,7 @@
 class GLMesh;
 class Mesh;
 class Backdrop;
+class Axis;
 
 enum DrawMode {shaded, wireframe};
 
@@ -52,10 +53,10 @@ private:
 
     QOpenGLShaderProgram mesh_shader;
     QOpenGLShaderProgram mesh_wireframe_shader;
-    QOpenGLShaderProgram quad_shader;
 
     GLMesh* mesh;
     Backdrop* backdrop;
+    Axis* axis;
 
     QVector3D center;
     float scale;
