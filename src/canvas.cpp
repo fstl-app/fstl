@@ -78,6 +78,7 @@ void Canvas::load_mesh(Mesh* m, bool is_reload)
         yaw = 0;
         tilt = 90;
     }
+    axis->setScale(m->xmin(), m->xmax(), m->ymin(), m->ymax(), m->zmin(), m->zmax());
 
     update();
 
@@ -131,8 +132,11 @@ void Canvas::paintGL()
 	glEnable(GL_DEPTH_TEST);
 
 	backdrop->draw();
-	if (drawAxes) axis->draw(transform_matrix(), view_matrix());
 	if (mesh)  draw_mesh();
+	if (drawAxes){
+		axis->draw(transform_matrix(), view_matrix(), orient_matrix(),
+			aspect_matrix(), width() / float(height()));
+	}
 
 	if (status.isNull())  return;
 
@@ -182,18 +186,23 @@ void Canvas::draw_mesh()
     glDisableVertexAttribArray(vp);
     selected_mesh_shader->release();
 }
-
-QMatrix4x4 Canvas::transform_matrix() const
+QMatrix4x4 Canvas::orient_matrix() const
 {
     QMatrix4x4 m;
     m.rotate(tilt, QVector3D(1, 0, 0));
     m.rotate(yaw,  QVector3D(0, 0, 1));
-    m.scale(-scale, scale, -scale);
+    //We want the x axis to the right, and the z axis up
+    m.scale(-1, 1, -1);
+    return m;
+}
+QMatrix4x4 Canvas::transform_matrix() const
+{
+    QMatrix4x4 m = orient_matrix();
+    m.scale(scale);
     m.translate(-center);
     return m;
 }
-
-QMatrix4x4 Canvas::view_matrix() const
+QMatrix4x4 Canvas::aspect_matrix() const
 {
     QMatrix4x4 m;
     if (width() > height())
@@ -204,6 +213,11 @@ QMatrix4x4 Canvas::view_matrix() const
     {
         m.scale(-1, width() / float(height()), 0.5);
     }
+    return m;
+}
+QMatrix4x4 Canvas::view_matrix() const
+{
+    QMatrix4x4 m = aspect_matrix();
     m.scale(zoom, zoom, 1);
     m(3, 2) = perspective;
     return m;

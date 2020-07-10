@@ -48,7 +48,9 @@ protected:
 private:
     void draw_mesh();
 
+    QMatrix4x4 orient_matrix() const;
     QMatrix4x4 transform_matrix() const;
+    QMatrix4x4 aspect_matrix() const;
     QMatrix4x4 view_matrix() const;
 
     QOpenGLShaderProgram mesh_shader;
