@@ -104,7 +104,7 @@ void Axis::draw(QMatrix4x4 transMat, QMatrix4x4 viewMat,
     const float hudSize = 0.2;
     QMatrix4x4 hudMat;
     //Move the hud to the bottom left corner with margin
-    if(aspectRatio > 1.0)
+    if (aspectRatio > 1.0)
     {
         hudMat.translate(aspectRatio-2*hudSize, -1.0+2*hudSize, 0);
     }

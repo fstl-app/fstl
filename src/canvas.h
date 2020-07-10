@@ -74,6 +74,7 @@ private:
 
     QPoint mouse_pos;
     QString status;
+    QString meshInfo;
 };
 
 #endif // CANVAS_H

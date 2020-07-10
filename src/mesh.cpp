@@ -42,6 +42,10 @@ float Mesh::max(size_t start) const
     return v;
 }
 
+int Mesh::triCount() const
+{
+    return indices.size()/3;
+}
 bool Mesh::empty() const
 {
     return vertices.size() == 0;

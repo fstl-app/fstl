@@ -12,7 +12,7 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     : QOpenGLWidget(parent), mesh(nullptr),
       scale(1), zoom(1), tilt(90), yaw(0),
       perspective(0.25), anim(this, "perspective"), status(" "),
-      drawMode(shaded), drawAxes(false)
+      meshInfo(""), drawMode(shaded), drawAxes(false)
 {
     setFormat(format);
     QFile styleFile(":/qt/style.qss");
@@ -78,8 +78,10 @@ void Canvas::load_mesh(Mesh* m, bool is_reload)
         yaw = 0;
         tilt = 90;
     }
+    meshInfo = QStringLiteral("Triangles: %1\nX: [%2, %3]\nY: [%4, %5]\nZ: [%6, %7]")
+        .arg(m->triCount()).arg(m->xmin()).arg(m->xmax())
+        .arg(m->ymin()).arg(m->ymax()).arg(m->zmin()).arg(m->zmax());
     axis->setScale(m->xmin(), m->xmax(), m->ymin(), m->ymax(), m->zmin(), m->zmax());
-
     update();
 
     delete m;
@@ -127,22 +129,19 @@ void Canvas::initializeGL()
 
 void Canvas::paintGL()
 {
-	glClearColor(0.0, 0.0, 0.0, 0.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    backdrop->draw();
+    if (mesh)  draw_mesh();
+    if (drawAxes) axis->draw(transform_matrix(), view_matrix(),
+        orient_matrix(), aspect_matrix(), width() / float(height()));
 
-	backdrop->draw();
-	if (mesh)  draw_mesh();
-	if (drawAxes){
-		axis->draw(transform_matrix(), view_matrix(), orient_matrix(),
-			aspect_matrix(), width() / float(height()));
-	}
-
-	if (status.isNull())  return;
-
-	QPainter painter(this);
-	painter.setRenderHint(QPainter::Antialiasing);
-	painter.drawText(10, height() - 10, status);
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    float textHeight = painter.fontInfo().pointSize();
+    if (drawAxes) painter.drawText(QRect(10, textHeight, width(), height()), meshInfo);
+    painter.drawText(10, height() - textHeight, status);
 }
 
 void Canvas::draw_mesh()
