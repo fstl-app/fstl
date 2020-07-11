@@ -114,7 +114,6 @@ void Axis::draw(QMatrix4x4 transMat, QMatrix4x4 viewMat,
     }
     //Scale the hud to be small
     hudMat.scale(hudSize, hudSize, 1);
-    glClear(GL_DEPTH_BUFFER_BIT);//Ensure hud draws over everything else
     glUniformMatrix4fv(
                 shader.uniformLocation("view_matrix"),
                 1, GL_FALSE, (aspectMat*hudMat).data());
