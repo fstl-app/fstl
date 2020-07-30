@@ -178,11 +178,15 @@ Mesh* Loader::read_stl_binary(QFile& file)
         // Skip face attribute and next face's normal vector
         b += 3 * sizeof(float) + sizeof(uint16_t);
     }
-
+    
+    /*
+    The first 80 lines of binary STLs are a unparsed comment field. 
+    Even if the file starts with "solid", it can still be a completely valid binary STL file.
     if (confusing_stl)
     {
         emit warning_confusing_stl();
     }
+    */
 
     return mesh_from_verts(tri_count, verts);
 }
