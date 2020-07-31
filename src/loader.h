@@ -26,16 +26,11 @@ signals:
 
     void error_bad_stl();
     void error_empty_mesh();
-    void warning_confusing_stl();
     void error_missing_file();
 
 private:
     const QString filename;
     bool is_reload;
-
-    /*  Used to warn on binary STLs that begin with the word 'solid'" */
-    bool confusing_stl;
-
 };
 
 #endif // LOADER_H

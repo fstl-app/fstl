@@ -127,14 +127,12 @@ Mesh* Loader::load_stl()
             file.seek(0);
             return read_stl_ascii(file);
         }
-        confusing_stl = true;
-    }
-    else
-    {
-        confusing_stl = false;
+        // Otherwise, this STL is a binary stl but contains 'solid' as
+        // the first five characters.  This is a bad life choice, but
+        // we can gracefully handle it by falling through to the binary
+        // STL reader below.
     }
 
-    // Otherwise, skip the rest of the header material and read as binary
     file.seek(0);
     return read_stl_binary(file);
 }
@@ -177,11 +175,6 @@ Mesh* Loader::read_stl_binary(QFile& file)
 
         // Skip face attribute and next face's normal vector
         b += 3 * sizeof(float) + sizeof(uint16_t);
-    }
-
-    if (confusing_stl)
-    {
-        emit warning_confusing_stl();
     }
 
     return mesh_from_verts(tri_count, verts);
