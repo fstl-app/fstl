@@ -9,7 +9,7 @@ class Axis : protected QOpenGLFunctions
 {
 public:
     Axis();
-    void setScale(float* min, float* max);
+    void setScale(QVector3D min, QVector3D max);
     void draw(QMatrix4x4 transMat, QMatrix4x4 viewMat,
         QMatrix4x4 orientMat, QMatrix4x4 aspectMat, float aspectRatio);
 private:

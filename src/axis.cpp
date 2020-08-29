@@ -32,26 +32,26 @@ Axis::Axis()
     shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/colored_lines.vert");
     shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/colored_lines.frag");
     shader.link();
+    const int ptSize = 6*sizeof(float);
     for(int lIdx = 0; lIdx < 3; lIdx++)
     {
         const float* l = axisLabels[lIdx];
-        int ptCount = axisSegCount[lIdx]*2;
+        const int ptCount = axisSegCount[lIdx]*2;
         float c[3] = {0.0};
         c[lIdx] = 1.0;//set color
         QOpenGLBuffer b = flowerLabelVertices[lIdx];
         b.create();
         b.bind();
-        b.allocate(ptCount*sizeof(float)*6);
-        int pSize = 6*sizeof(float);
+        b.allocate(ptCount*ptSize);
         for(int pIdx = 0; pIdx < ptCount; pIdx++)
         {
-            b.write(pIdx*pSize, &(l[pIdx*3]), 3*sizeof(float));//write coords
-            b.write(pIdx*pSize+3*sizeof(float), c, 3*sizeof(float));//write color
+            b.write(pIdx*ptSize, &(l[pIdx*3]), ptSize/2);//write coords
+            b.write(pIdx*ptSize + ptSize/2, c, ptSize/2);//write color
         }
         b.release();
     }
     //Axis buffer: 6 floats per vertex, 2 vert per line, 3 lines
-    float aBuf[sizeof(float)*6*2*3] = {0.0};
+    float aBuf[6*2*3] = {0.0};
     for(int aIdx = 0; aIdx < 3; aIdx++)
     {
         aBuf[(2*aIdx)*6+3+aIdx] = 1.0;//Set color (last 3 floats)
@@ -69,7 +69,7 @@ Axis::Axis()
     vertices.allocate(aBuf, sizeof(aBuf));
     vertices.release();
 }
-void Axis::setScale(float* min, float* max)
+void Axis::setScale(QVector3D min, QVector3D max)
 {
     //Max function. not worth importing <algorithm> just for max
     auto Max = [](float a, float b)
@@ -99,24 +99,29 @@ void Axis::draw(QMatrix4x4 transMat, QMatrix4x4 viewMat,
     shader.bind();
     vertices.bind();
     // Load the transform and view matrices into the shader
-    glUniformMatrix4fv(
-                shader.uniformLocation("transform_matrix"),
-                1, GL_FALSE, transMat.data());
-    glUniformMatrix4fv(
-                shader.uniformLocation("view_matrix"),
-                1, GL_FALSE, viewMat.data());
-
+    auto loadMatrixUniforms = [&](QMatrix4x4 transform, QMatrix4x4 view)
+    {
+        glUniformMatrix4fv(
+                    shader.uniformLocation("transform_matrix"),
+                    1, GL_FALSE, transform.data());
+        glUniformMatrix4fv(
+                    shader.uniformLocation("view_matrix"),
+                    1, GL_FALSE, view.data());
+    };
     const GLuint vp = shader.attributeLocation("vertex_position");
     const GLuint vc = shader.attributeLocation("vertex_color");
-
     glEnableVertexAttribArray(vp);
     glEnableVertexAttribArray(vc);
-
-    glVertexAttribPointer(vp, 3, GL_FLOAT, false,
-                          6 * sizeof(GLfloat), 0);
-    glVertexAttribPointer(vc, 3, GL_FLOAT, false,
-                          6 * sizeof(GLfloat),
-                          (GLvoid*)(3 * sizeof(GLfloat)));
+    auto loadAttribPtr = [&]()
+    {
+        glVertexAttribPointer(vp, 3, GL_FLOAT, false,
+                        6 * sizeof(GLfloat), 0);
+        glVertexAttribPointer(vc, 3, GL_FLOAT, false,
+                        6 * sizeof(GLfloat),
+                        (GLvoid*)(3 * sizeof(GLfloat)));
+    };
+    loadMatrixUniforms(transMat, viewMat);
+    loadAttribPtr();
 
     glDrawArrays(GL_LINES, 0, 3*6);
 
@@ -137,18 +142,8 @@ void Axis::draw(QMatrix4x4 transMat, QMatrix4x4 viewMat,
     }
     //Scale the hud to be small
     hudMat.scale(hudSize, hudSize, 1);
-    glUniformMatrix4fv(
-                shader.uniformLocation("view_matrix"),
-                1, GL_FALSE, (aspectMat*hudMat).data());
-    glUniformMatrix4fv(
-                shader.uniformLocation("transform_matrix"),
-                1, GL_FALSE, orientMat.data());
-
-    glVertexAttribPointer(vp, 3, GL_FLOAT, false,
-                          6 * sizeof(GLfloat), 0);
-    glVertexAttribPointer(vc, 3, GL_FLOAT, false,
-                          6 * sizeof(GLfloat),
-                          (GLvoid*)(3 * sizeof(GLfloat)));
+    loadMatrixUniforms(orientMat, aspectMat*hudMat);
+    loadAttribPtr();
     glDrawArrays(GL_LINES, 0, 3*6);
     flowerAxisVertices.release();
     for(int aIdx = 0; aIdx < 3; aIdx++){
@@ -156,20 +151,11 @@ void Axis::draw(QMatrix4x4 transMat, QMatrix4x4 viewMat,
         transVec[aIdx] = 1.25;//This is how far we want the letters to be extended out
         QOpenGLBuffer b = flowerLabelVertices[aIdx];
         //The only transform we want is to translate the letters to the ends of the axis lines
-        QMatrix4x4 transMat = QMatrix4x4();
-        transMat.translate(orientMat * transVec);
+        QMatrix4x4 labelTransMat = QMatrix4x4();
+        labelTransMat.translate(orientMat * transVec);
         b.bind();
-        glUniformMatrix4fv(
-                    shader.uniformLocation("view_matrix"),
-                    1, GL_FALSE, (aspectMat*hudMat).data());
-        glUniformMatrix4fv(
-                    shader.uniformLocation("transform_matrix"),
-                    1, GL_FALSE, transMat.data());
-        glVertexAttribPointer(vp, 3, GL_FLOAT, false,
-                          6 * sizeof(GLfloat), 0);
-        glVertexAttribPointer(vc, 3, GL_FLOAT, false,
-                          6 * sizeof(GLfloat),
-                          (GLvoid*)(3 * sizeof(GLfloat)));
+        loadMatrixUniforms(labelTransMat, aspectMat * hudMat);
+        loadAttribPtr();
         glDrawArrays(GL_LINES, 0, axisSegCount[aIdx]*2*6);
         b.release();
     }
