@@ -65,11 +65,12 @@ void Canvas::draw_axes(bool d)
 void Canvas::load_mesh(Mesh* m, bool is_reload)
 {
     mesh = new GLMesh(m);
-
+    float min[] = {m->xmin(), m->ymin(), m->zmin()};
+    float max[] = {m->xmax(), m->ymax(), m->zmax()};
     if (!is_reload)
     {
-        QVector3D lower(m->xmin(), m->ymin(), m->zmin());
-        QVector3D upper(m->xmax(), m->ymax(), m->zmax());
+        QVector3D lower(min[0], min[1], min[2]);
+        QVector3D upper(max[0], max[1], max[2]);
         center = (lower + upper) / 2;
         scale = 2 / (upper - lower).length();
 
@@ -78,10 +79,9 @@ void Canvas::load_mesh(Mesh* m, bool is_reload)
         yaw = 0;
         tilt = 90;
     }
-    meshInfo = QStringLiteral("Triangles: %1\nX: [%2, %3]\nY: [%4, %5]\nZ: [%6, %7]")
-        .arg(m->triCount()).arg(m->xmin()).arg(m->xmax())
-        .arg(m->ymin()).arg(m->ymax()).arg(m->zmin()).arg(m->zmax());
-    axis->setScale(m->xmin(), m->xmax(), m->ymin(), m->ymax(), m->zmin(), m->zmax());
+    meshInfo = QStringLiteral("Triangles: %1\nX: [%2, %3]\nY: [%4, %5]\nZ: [%6, %7]").arg(m->triCount());
+    for(int dIdx = 0; dIdx < 3; dIdx++) meshInfo = meshInfo.arg(min[dIdx]).arg(max[dIdx]);
+    axis->setScale(min, max);
     update();
 
     delete m;
