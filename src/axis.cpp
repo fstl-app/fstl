@@ -1,73 +1,96 @@
 #include "axis.h"
+
+const float xLet[] = {
+    -0.1, -0.2, 0,
+    0.1, 0.2, 0,
+    0.1, -0.2, 0,
+    -0.1, 0.2, 0
+};
+const float yLet[] = {
+    0, -0.2, 0,
+    0, 0, 0,
+    0, 0, 0,
+    0.1, 0.2, 0,
+    0, 0, 0,
+    -0.1, 0.2, 0
+};
+const float zLet[] = {
+    -0.1, -0.2, 0,
+    0.1, -0.2, 0,
+    0.1, -0.2, 0,
+    -0.1, 0.2, 0,
+    -0.1, 0.2, 0,
+    0.1, 0.2, 0
+};
+const int axisSegCount[] = {2, 3, 3};
+const float* axisLabels[] = {xLet, yLet, zLet};
+
 Axis::Axis()
-    : vbuf {1, 0, 0, 1, 0, 0, //X Axis
-        -1, 0, 0, 1, 0, 0,
-        0, 1, 0, 0, 1, 0, //Y Axis
-        0, -1, 0, 0, 1, 0,
-        0, 0, 1, 0, 0, 1, //Z Axis
-        0, 0, -1, 0, 0, 1}
 {
     initializeOpenGLFunctions();
 
     shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/colored_lines.vert");
     shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/colored_lines.frag");
     shader.link();
-
-    float hud_vbuf[] = {0, 0, 0, 1, 0, 0, //X Axis
-        1, 0, 0, 1, 0, 0,
-        1.1, 0.1, 0, 1, 0, 0, //X Letter
-        1.5, -0.1, 0, 1, 0, 0,
-        1.1, -0.1, 0, 1, 0, 0,
-        1.5, 0.1, 0, 1, 0, 0,
-
-        0, 0, 0, 0, 1, 0, //Y Axis
-        0, 1, 0, 0, 1, 0,
-        0, 1.1, 0, 0, 1, 0, //Y Letter
-        0, 1.3, 0, 0, 1, 0,
-        0, 1.3, 0, 0, 1, 0,
-        0, 1.5, 0.1, 0, 1, 0,
-        0, 1.3, 0, 0, 1, 0,
-        0, 1.5, -0.1, 0, 1, 0,
-
-        0, 0, 0, 0, 0, 1, //Z Axis
-        0, 0, 1, 0, 0, 1,
-        0.1, 0, 1.1, 0, 0, 1, //Z Letter
-        -0.1, 0, 1.1, 0, 0, 1,
-        -0.1, 0, 1.1, 0, 0, 1,
-        0.1, 0, 1.5, 0, 0, 1,
-        0.1, 0, 1.5, 0, 0, 1,
-        -0.1, 0, 1.5, 0, 0, 1,
-    };
+    for(int lIdx = 0; lIdx < 3; lIdx++)
+    {
+        const float* l = axisLabels[lIdx];
+        int ptCount = axisSegCount[lIdx]*2;
+        float c[3] = {0.0};
+        c[lIdx] = 1.0;//set color
+        QOpenGLBuffer b = flowerLabelVertices[lIdx];
+        b.create();
+        b.bind();
+        b.allocate(ptCount*sizeof(float)*6);
+        int pSize = 6*sizeof(float);
+        for(int pIdx = 0; pIdx < ptCount; pIdx++)
+        {
+            b.write(pIdx*pSize, &(l[pIdx*3]), 3*sizeof(float));//write coords
+            b.write(pIdx*pSize+3*sizeof(float), c, 3*sizeof(float));//write color
+        }
+        b.release();
+    }
+    //Axis buffer: 6 floats per vertex, 2 vert per line, 3 lines
+    float aBuf[sizeof(float)*6*2*3] = {0.0};
+    for(int aIdx = 0; aIdx < 3; aIdx++)
+    {
+        aBuf[(2*aIdx)*6+3+aIdx] = 1.0;//Set color (last 3 floats)
+        aBuf[(2*aIdx+1)*6+3+aIdx] = 1.0;//Set color (last 3 floats)
+        aBuf[(2*aIdx+1)*6+aIdx] = 1.0;//Extend line in axis
+    }
     //The lines which form the 'axis-flower' in the corner
-    hud_vertices.create();
-    hud_vertices.bind();
-    hud_vertices.allocate(hud_vbuf, sizeof(hud_vbuf));
-    hud_vertices.release();
+    flowerAxisVertices.create();
+    flowerAxisVertices.bind();
+    flowerAxisVertices.allocate(aBuf, sizeof(aBuf));
+    flowerAxisVertices.release();
     //The lines which form the model-space axes
     vertices.create();
     vertices.bind();
-    vertices.allocate(vbuf, sizeof(vbuf));
+    vertices.allocate(aBuf, sizeof(aBuf));
     vertices.release();
 }
-void Axis::setScale(float xmin, float xmax, float ymin, float ymax, float zmin, float zmax)
+void Axis::setScale(float* min, float* max)
 {
     //Max function. not worth importing <algorithm> just for max
-    auto max = [](float a, float b)
+    auto Max = [](float a, float b)
     {
         return (a > b) ? a : b;
     };
     //This is how much the axes extend beyond the model
     //We want it to be dependent on the model's size, but uniform on all axes.
-    const float axismargin = 0.25*max(max(xmax-xmin, ymax-ymin), zmax-zmin);
-    //Manually rewrite coordinates to control axis draw lengths
-    vbuf[0] = xmin-axismargin;
-    vbuf[6] = xmax+axismargin;
-    vbuf[13] = ymin-axismargin;
-    vbuf[19] = ymax+axismargin;
-    vbuf[26] = zmin-axismargin;
-    vbuf[32] = zmax+axismargin;
+    const float axismargin = 0.25*Max(Max(max[0]-min[0], max[1]-min[1]), max[2]-min[2]);
     vertices.bind();
-    vertices.write(0, vbuf, sizeof(vbuf));
+    //Manually rewrite coordinates to control axis draw lengths
+    float s = sizeof(float);
+    //aIdx*12+aIdx gets us to the set of 2 points of the axis line, plus the offset for that dimension
+    //+6 gets us to the other end of the line in that dimension
+    for(int aIdx = 0; aIdx < 3; aIdx++)
+    {
+        float t = min[aIdx]-axismargin;
+        vertices.write(s*(aIdx*12+aIdx), &t, s);
+        t = max[aIdx]+axismargin;
+        vertices.write(s*(aIdx*12+aIdx+6), &t, s);
+    }
     vertices.release();
 }
 void Axis::draw(QMatrix4x4 transMat, QMatrix4x4 viewMat,
@@ -99,7 +122,7 @@ void Axis::draw(QMatrix4x4 transMat, QMatrix4x4 viewMat,
 
     vertices.release();
     //Next, we draw the hud axis-flower
-    hud_vertices.bind();
+    flowerAxisVertices.bind();
     glClear(GL_DEPTH_BUFFER_BIT);//Ensure hud draws over everything
     const float hudSize = 0.2;
     QMatrix4x4 hudMat;
@@ -126,8 +149,29 @@ void Axis::draw(QMatrix4x4 transMat, QMatrix4x4 viewMat,
     glVertexAttribPointer(vc, 3, GL_FLOAT, false,
                           6 * sizeof(GLfloat),
                           (GLvoid*)(3 * sizeof(GLfloat)));
-
-    glDrawArrays(GL_LINES, 0, 3*22);
+    glDrawArrays(GL_LINES, 0, 3*6);
+    flowerAxisVertices.release();
+    for(int aIdx = 0; aIdx < 3; aIdx++){
+        QVector3D transVec = QVector3D();
+        transVec[aIdx] = 1.25;//This is how far we want the letters to be extended out
+        QOpenGLBuffer b = flowerLabelVertices[aIdx];
+        //The only transform we want is to translate the letters to the ends of the axis lines
+        QMatrix4x4 transMat = QMatrix4x4();
+        transMat.translate(orientMat * transVec);
+        b.bind();
+        glUniformMatrix4fv(
+                    shader.uniformLocation("view_matrix"),
+                    1, GL_FALSE, (aspectMat*hudMat).data());
+        glUniformMatrix4fv(
+                    shader.uniformLocation("transform_matrix"),
+                    1, GL_FALSE, transMat.data());
+        glVertexAttribPointer(vp, 3, GL_FLOAT, false,
+                          6 * sizeof(GLfloat), 0);
+        glVertexAttribPointer(vc, 3, GL_FLOAT, false,
+                          6 * sizeof(GLfloat),
+                          (GLvoid*)(3 * sizeof(GLfloat)));
+        glDrawArrays(GL_LINES, 0, axisSegCount[aIdx]*2*6);
+        b.release();
+    }
     shader.release();
-    hud_vertices.release();
 }

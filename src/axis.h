@@ -9,15 +9,14 @@ class Axis : protected QOpenGLFunctions
 {
 public:
     Axis();
-    void setScale(float xmin, float xmax, float ymin, float ymax,
-        float zmin, float zmax);
+    void setScale(float* min, float* max);
     void draw(QMatrix4x4 transMat, QMatrix4x4 viewMat,
         QMatrix4x4 orientMat, QMatrix4x4 aspectMat, float aspectRatio);
 private:
-    void drawHud(QMatrix4x4 transMat, QMatrix4x4 viewMat);
     QOpenGLShaderProgram shader;
-    float vbuf[36];
-    QOpenGLBuffer vertices, hud_vertices;
+    QOpenGLBuffer vertices, //GL Buffer for model-space coords
+        flowerAxisVertices; //GL Buffer for hud-space axis lines
+    QOpenGLBuffer flowerLabelVertices[3];//Buffer for hud-space label lines
 };
 
 #endif // AXIS_H
