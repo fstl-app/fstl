@@ -24,6 +24,7 @@ set(CMAKE_AUTOUIC ON)
 #set project sources
 set(Project_Sources src/app.cpp
 src/backdrop.cpp
+src/axis.cpp
 src/canvas.cpp
 src/glmesh.cpp
 src/loader.cpp
@@ -34,6 +35,7 @@ src/window.cpp)
 #set project headers. 
 set(Project_Headers src/app.h
 src/backdrop.h
+src/axis.h
 src/canvas.h
 src/glmesh.h
 src/loader.h

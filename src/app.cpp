@@ -16,7 +16,7 @@ App::App(int& argc, char *argv[]) :
 
 App::~App()
 {
-	delete window;
+    delete window;
 }
 
 bool App::event(QEvent* e)

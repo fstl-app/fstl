@@ -4,15 +4,17 @@
 
 #include "canvas.h"
 #include "backdrop.h"
+#include "axis.h"
 #include "glmesh.h"
 #include "mesh.h"
 
 Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     : QOpenGLWidget(parent), mesh(nullptr),
       scale(1), zoom(1), tilt(90), yaw(0),
-      perspective(0.25), anim(this, "perspective"), status(" ")
+      perspective(0.25), anim(this, "perspective"), status(" "),
+      meshInfo(""), drawMode(shaded), drawAxes(false)
 {
-	setFormat(format);
+    setFormat(format);
     QFile styleFile(":/qt/style.qss");
     styleFile.open( QFile::ReadOnly );
     setStyleSheet(styleFile.readAll());
@@ -46,22 +48,27 @@ void Canvas::view_perspective()
 
 void Canvas::draw_shaded()
 {
-    set_drawMode(0);
+    set_drawMode(shaded);
 }
 
 void Canvas::draw_wireframe()
 {
-    set_drawMode(1);
+    set_drawMode(wireframe);
+}
+
+void Canvas::draw_axes(bool d)
+{
+    drawAxes = d;
+    update();
 }
 
 void Canvas::load_mesh(Mesh* m, bool is_reload)
 {
     mesh = new GLMesh(m);
-
+    QVector3D lower(m->xmin(), m->ymin(), m->zmin());
+    QVector3D upper(m->xmax(), m->ymax(), m->zmax());
     if (!is_reload)
     {
-        QVector3D lower(m->xmin(), m->ymin(), m->zmin());
-        QVector3D upper(m->xmax(), m->ymax(), m->zmax());
         center = (lower + upper) / 2;
         scale = 2 / (upper - lower).length();
 
@@ -70,7 +77,9 @@ void Canvas::load_mesh(Mesh* m, bool is_reload)
         yaw = 0;
         tilt = 90;
     }
-
+    meshInfo = QStringLiteral("Triangles: %1\nX: [%2, %3]\nY: [%4, %5]\nZ: [%6, %7]").arg(m->triCount());
+    for(int dIdx = 0; dIdx < 3; dIdx++) meshInfo = meshInfo.arg(lower[dIdx]).arg(upper[dIdx]);
+    axis->setScale(lower, upper);
     update();
 
     delete m;
@@ -88,7 +97,7 @@ void Canvas::set_perspective(float p)
     update();
 }
 
-void Canvas::set_drawMode(int mode)
+void Canvas::set_drawMode(enum DrawMode mode)
 {
     drawMode = mode;
     update();
@@ -112,30 +121,31 @@ void Canvas::initializeGL()
     mesh_wireframe_shader.link();
 
     backdrop = new Backdrop();
+    axis = new Axis();
 }
 
 
 void Canvas::paintGL()
 {
-	glClearColor(0.0, 0.0, 0.0, 0.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    backdrop->draw();
+    if (mesh)  draw_mesh();
+    if (drawAxes) axis->draw(transform_matrix(), view_matrix(),
+        orient_matrix(), aspect_matrix(), width() / float(height()));
 
-	backdrop->draw();
-	if (mesh)  draw_mesh();
-
-	if (status.isNull())  return;
-
-	QPainter painter(this);
-	painter.setRenderHint(QPainter::Antialiasing);
-	painter.drawText(10, height() - 10, status);
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    float textHeight = painter.fontInfo().pointSize();
+    if (drawAxes) painter.drawText(QRect(10, textHeight, width(), height()), meshInfo);
+    painter.drawText(10, height() - textHeight, status);
 }
 
 void Canvas::draw_mesh()
 {
     QOpenGLShaderProgram* selected_mesh_shader = NULL;
-    // Set gl draw mode
-    if(drawMode == 1)
+    if(drawMode == wireframe)
     {
         selected_mesh_shader = &mesh_wireframe_shader;
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -173,18 +183,23 @@ void Canvas::draw_mesh()
     glDisableVertexAttribArray(vp);
     selected_mesh_shader->release();
 }
-
-QMatrix4x4 Canvas::transform_matrix() const
+QMatrix4x4 Canvas::orient_matrix() const
 {
     QMatrix4x4 m;
     m.rotate(tilt, QVector3D(1, 0, 0));
     m.rotate(yaw,  QVector3D(0, 0, 1));
-    m.scale(-scale, scale, -scale);
+    //We want the x axis to the right, and the z axis up
+    m.scale(-1, 1, -1);
+    return m;
+}
+QMatrix4x4 Canvas::transform_matrix() const
+{
+    QMatrix4x4 m = orient_matrix();
+    m.scale(scale);
     m.translate(-center);
     return m;
 }
-
-QMatrix4x4 Canvas::view_matrix() const
+QMatrix4x4 Canvas::aspect_matrix() const
 {
     QMatrix4x4 m;
     if (width() > height())
@@ -195,6 +210,11 @@ QMatrix4x4 Canvas::view_matrix() const
     {
         m.scale(-1, width() / float(height()), 0.5);
     }
+    return m;
+}
+QMatrix4x4 Canvas::view_matrix() const
+{
+    QMatrix4x4 m = aspect_matrix();
     m.scale(zoom, zoom, 1);
     m(3, 2) = perspective;
     return m;

@@ -5,6 +5,8 @@
         <file>mesh_wireframe.frag</file>
         <file>quad.frag</file>
         <file>quad.vert</file>
+        <file>colored_lines.frag</file>
+        <file>colored_lines.vert</file>
         <file>sphere.stl</file>
     </qresource>
 </RCC>

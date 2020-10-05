@@ -21,6 +21,7 @@ public:
     float ymax() const { return max(1); }
     float zmax() const { return max(2); }
 
+    int triCount() const;
     bool empty() const;
 
 private:
