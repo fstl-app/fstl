@@ -126,7 +126,7 @@ Window::Window(QWidget *parent) :
 void Window::on_open()
 {
     QString filename = QFileDialog::getOpenFileName(
-                this, "Load .stl file", QString(), "*.stl");
+                this, "Load .stl file", QString(), "STL files (*.stl, *.STL)");
     if (!filename.isNull())
     {
         load_stl(filename);
