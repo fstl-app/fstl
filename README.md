@@ -1,6 +1,9 @@
 # fstl
 
-`fstl` is the fastest [.stl file](http://en.wikipedia.org/wiki/STL_\(file_format\)) viewer.
+`fstl` is a very fast [.stl file](http://en.wikipedia.org/wiki/STL_\(file_format\)) viewer.
+
+It was originally written by [Matt Keeter](https://mattkeeter.com),
+and is now primarily maintained by [@DeveloperPaul123](https://github.com/DeveloperPaul123).
 
 It is designed to quickly load and render very high-polygon models;
 showing 2 million triangles at 60+ FPS on a mid-range laptop.
