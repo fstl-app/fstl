@@ -12,7 +12,7 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     : QOpenGLWidget(parent), mesh(nullptr),
       scale(1), zoom(1), tilt(90), yaw(0),
       perspective(0.25), anim(this, "perspective"), status(" "),
-      meshInfo(""), drawMode(shaded), drawAxes(false)
+      meshInfo(""), drawMode(shaded), drawAxes(false), invertZoom(false)
 {
     setFormat(format);
     QFile styleFile(":/qt/style.qss");
@@ -59,6 +59,12 @@ void Canvas::draw_wireframe()
 void Canvas::draw_axes(bool d)
 {
     drawAxes = d;
+    update();
+}
+
+void Canvas::invert_zoom(bool d)
+{
+    invertZoom = d;
     update();
 }
 
@@ -275,12 +281,18 @@ void Canvas::wheelEvent(QWheelEvent *event)
     if (event->delta() < 0)
     {
         for (int i=0; i > event->delta(); --i)
-            zoom *= 1.001;
+            if (invertZoom)
+                zoom /= 1.001;
+            else 
+                zoom *= 1.001;
     }
     else if (event->delta() > 0)
     {
-        for (int i=0; i < event->delta(); ++i)
-            zoom /= 1.001;
+        for (int i=0; i < event->delta(); ++i) 
+            if (invertZoom) 
+                zoom *= 1.001;
+            else 
+                zoom /= 1.001;
     }
 
     // Then find the cursor's GL position post-zoom and adjust center.

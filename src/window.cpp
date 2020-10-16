@@ -16,6 +16,7 @@ Window::Window(QWidget *parent) :
     shaded_action(new QAction("Shaded", this)),
     wireframe_action(new QAction("Wireframe", this)),
     axes_action(new QAction("Draw Axes", this)),
+    invert_zoom_action(new QAction("Invert Zoom", this)),
     reload_action(new QAction("Reload", this)),
     autoreload_action(new QAction("Autoreload", this)),
     save_screenshot_action(new QAction("Save Screenshot", this)),
@@ -116,6 +117,11 @@ Window::Window(QWidget *parent) :
     axes_action->setCheckable(true);
     QObject::connect(axes_action, &QAction::triggered,
             this, &Window::on_drawAxes);
+
+    view_menu->addAction(invert_zoom_action);
+    invert_zoom_action->setCheckable(true);
+    QObject::connect(invert_zoom_action, &QAction::triggered,
+            this, &Window::on_invertZoom);        
 
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);
@@ -226,6 +232,11 @@ void Window::on_drawMode(QAction* mode)
 void Window::on_drawAxes(bool d)
 {
     canvas->draw_axes(d);
+}
+
+void Window::on_invertZoom(bool d)
+{
+    canvas->invert_zoom(d);
 }
 
 void Window::on_watched_change(const QString& filename)
