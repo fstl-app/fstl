@@ -5,6 +5,7 @@
 #include "loader.h"
 
 const QString Window::RECENT_FILE_KEY = "recentFiles";
+const QString Window::INVERT_ZOOM_KEY = "invertZoom";
 
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
@@ -16,6 +17,7 @@ Window::Window(QWidget *parent) :
     shaded_action(new QAction("Shaded", this)),
     wireframe_action(new QAction("Wireframe", this)),
     axes_action(new QAction("Draw Axes", this)),
+    invert_zoom_action(new QAction("Invert Zoom", this)),
     reload_action(new QAction("Reload", this)),
     autoreload_action(new QAction("Autoreload", this)),
     save_screenshot_action(new QAction("Save Screenshot", this)),
@@ -116,6 +118,16 @@ Window::Window(QWidget *parent) :
     axes_action->setCheckable(true);
     QObject::connect(axes_action, &QAction::triggered,
             this, &Window::on_drawAxes);
+
+    view_menu->addAction(invert_zoom_action);
+    invert_zoom_action->setCheckable(true);
+    QObject::connect(invert_zoom_action, &QAction::triggered,
+            this, &Window::on_invertZoom);       
+
+    QSettings settings;
+    bool invertZoomFromSettings = settings.value(INVERT_ZOOM_KEY, false).toBool();
+    canvas->invert_zoom(invertZoomFromSettings);
+    invert_zoom_action->setChecked(invertZoomFromSettings);
 
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);
@@ -226,6 +238,13 @@ void Window::on_drawMode(QAction* mode)
 void Window::on_drawAxes(bool d)
 {
     canvas->draw_axes(d);
+}
+
+void Window::on_invertZoom(bool d)
+{
+    canvas->invert_zoom(d);
+    QSettings settings;
+    settings.setValue(INVERT_ZOOM_KEY, d);
 }
 
 void Window::on_watched_change(const QString& filename)

@@ -25,6 +25,7 @@ public:
     void draw_shaded();
     void draw_wireframe();
     void draw_axes(bool d);
+    void invert_zoom(bool d);
 
 public slots:
     void set_status(const QString& s);
@@ -69,6 +70,7 @@ private:
     float perspective;
     enum DrawMode drawMode;
     bool drawAxes;
+    bool invertZoom;
     Q_PROPERTY(float perspective MEMBER perspective WRITE set_perspective);
     QPropertyAnimation anim;
 

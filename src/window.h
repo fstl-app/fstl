@@ -38,6 +38,7 @@ private slots:
     void on_projection(QAction* proj);
     void on_drawMode(QAction* mode);
     void on_drawAxes(bool d);
+    void on_invertZoom(bool d);
     void on_watched_change(const QString& filename);
     void on_reload();
     void on_autoreload_triggered(bool r);
@@ -60,6 +61,7 @@ private:
     QAction* const shaded_action;
     QAction* const wireframe_action;
     QAction* const axes_action;
+    QAction* const invert_zoom_action;
     QAction* const reload_action;
     QAction* const autoreload_action;
     QAction* const save_screenshot_action;
@@ -69,6 +71,7 @@ private:
     QAction* const recent_files_clear_action;
     const static int MAX_RECENT_FILES=8;
     const static QString RECENT_FILE_KEY;
+    const static QString INVERT_ZOOM_KEY;
     QString current_file;
     QString lookup_folder;
     QStringList lookup_folder_files;
