@@ -5,6 +5,7 @@
 #include "loader.h"
 
 const QString Window::RECENT_FILE_KEY = "recentFiles";
+const QString Window::INVERT_ZOOM_KEY = "invertZoom";
 
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
@@ -121,7 +122,12 @@ Window::Window(QWidget *parent) :
     view_menu->addAction(invert_zoom_action);
     invert_zoom_action->setCheckable(true);
     QObject::connect(invert_zoom_action, &QAction::triggered,
-            this, &Window::on_invertZoom);        
+            this, &Window::on_invertZoom);       
+
+    QSettings settings;
+    bool invertZoomFromSettings = settings.value(INVERT_ZOOM_KEY, false).toBool();
+    canvas->invert_zoom(invertZoomFromSettings);
+    invert_zoom_action->setChecked(invertZoomFromSettings);
 
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);
@@ -237,6 +243,8 @@ void Window::on_drawAxes(bool d)
 void Window::on_invertZoom(bool d)
 {
     canvas->invert_zoom(d);
+    QSettings settings;
+    settings.setValue(INVERT_ZOOM_KEY, d);
 }
 
 void Window::on_watched_change(const QString& filename)

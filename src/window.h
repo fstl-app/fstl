@@ -71,6 +71,7 @@ private:
     QAction* const recent_files_clear_action;
     const static int MAX_RECENT_FILES=8;
     const static QString RECENT_FILE_KEY;
+    const static QString INVERT_ZOOM_KEY;
     QString current_file;
     QString lookup_folder;
     QStringList lookup_folder_files;
