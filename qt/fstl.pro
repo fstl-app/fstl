@@ -15,7 +15,8 @@ SOURCES += \
     ../src/glmesh.cpp \
     ../src/loader.cpp \
     ../src/window.cpp \
-    ../src/backdrop.cpp
+    ../src/backdrop.cpp \
+    ../src/axis.cpp
 
 HEADERS  += \
     ../src/app.h\
@@ -24,7 +25,8 @@ HEADERS  += \
     ../src/glmesh.h \
     ../src/loader.h \
     ../src/window.h \
-    ../src/backdrop.h
+    ../src/backdrop.h \
+    ../src/axis.h
 
 CONFIG += c++11
 
