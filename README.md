@@ -95,16 +95,13 @@ This should produce two new files in the root directory:
 Install Qt with your distro's package manager (required libraries are Core, Gui,
 Widgets and OpenGL, e.g. `qt5-default` and `libqt5opengl5-dev` on Debian).
 
-You can build fstl with qmake (in some distros qmake-qt5) or with CMake:
+You can build fstl with CMake:
 ```
 git clone https://github.com/mkeeter/fstl
 cd fstl
 mkdir build
 cd build
-
-qmake ../qt/fstl.pro  # For qmake build
-cmake ..              # For CMake build
-
+cmake ..
 make -j8
 ./fstl
 ```
