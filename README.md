@@ -70,7 +70,7 @@ making sure `qmake` is on your shell's path.
 Then, run through the following set of commands in a shell:
 
 ```
-git clone https://github.com/mkeeter/fstl
+git clone https://github.com/fstl-app/fstl
 cd fstl
 mkdir build
 cd build
@@ -97,7 +97,7 @@ Widgets and OpenGL, e.g. `qt5-default` and `libqt5opengl5-dev` on Debian).
 
 You can build fstl with CMake:
 ```
-git clone https://github.com/mkeeter/fstl
+git clone https://github.com/fstl-app/fstl
 cd fstl
 mkdir build
 cd build

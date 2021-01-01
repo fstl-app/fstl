@@ -148,10 +148,10 @@ void Window::on_open()
 void Window::on_about()
 {
     QMessageBox::about(this, "",
-        "<p align=\"center\"><b>fstl</b></p>"
+        "<p align=\"center\"><b>fstl</b><br>" FSTL_VERSION "</p>"
         "<p>A fast viewer for <code>.stl</code> files.<br>"
-        "<a href=\"https://github.com/mkeeter/fstl\""
-        "   style=\"color: #93a1a1;\">https://github.com/mkeeter/fstl</a></p>"
+        "<a href=\"https://github.com/fstl-app/fstl\""
+        "   style=\"color: #93a1a1;\">https://github.com/fstl-app/fstl</a></p>"
         "<p>© 2014-2017 Matthew Keeter<br>"
         "<a href=\"mailto:matt.j.keeter@gmail.com\""
         "   style=\"color: #93a1a1;\">matt.j.keeter@gmail.com</a></p>");

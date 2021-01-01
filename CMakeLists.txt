@@ -4,6 +4,8 @@
 
 cmake_minimum_required(VERSION 3.3)
 
+project(fstl)
+
 # Setting -std=c++11
 set(CMAKE_CXX_STANDARD 11)
 # Setting standard to required, as requisted by DeveloperPaul123 on github
@@ -12,10 +14,10 @@ set(CXX_STANDARD_REQUIRED ON)
 # Set the version number
 set (FSTL_VERSION_MAJOR "0")
 set (FSTL_VERSION_MINOR "9")
-set (FSTL_VERSION_PATCH "4")
+set (FSTL_VERSION_PATCH "5-snapshot")
 set (PROJECT_VERSION "${FSTL_VERSION_MAJOR}.${FSTL_VERSION_MINOR}.${FSTL_VERSION_PATCH}")
 
-project(fstl)
+message(STATUS "Version: ${PROJECT_VERSION}")
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -125,7 +127,7 @@ if(WIN32)
 	set(CPACK_NSIS_MUI_FINISHPAGE_RUN ${PROJECT_NAME})
 	set(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME}")
 	set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\fstl.exe")
-	set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/mkeeter/fstl")
+	set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/fstl-app/fstl")
 	set(CPACK_NSIS_DISPLAY_NAME "fstl ${FSTL_VERSION}")
 	set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/exe/fstl.ico")
 	set(CPACK_NSIS_MUI_UNIICON  "${CMAKE_CURRENT_SOURCE_DIR}/exe/fstl.ico")
