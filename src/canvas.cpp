@@ -24,9 +24,11 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
 
 Canvas::~Canvas()
 {
-	makeCurrent();
-	delete mesh;
-	doneCurrent();
+    makeCurrent();
+    delete mesh;
+    delete backdrop;
+    delete axis;
+    doneCurrent();
 }
 
 void Canvas::view_anim(float v)
@@ -70,6 +72,7 @@ void Canvas::invert_zoom(bool d)
 
 void Canvas::load_mesh(Mesh* m, bool is_reload)
 {
+    delete mesh;
     mesh = new GLMesh(m);
     QVector3D lower(m->xmin(), m->ymin(), m->zmin());
     QVector3D upper(m->xmax(), m->ymax(), m->zmax());
