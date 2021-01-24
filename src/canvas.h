@@ -10,7 +10,7 @@ class Mesh;
 class Backdrop;
 class Axis;
 
-enum DrawMode {shaded, wireframe};
+enum DrawMode {shaded, wireframe, surfaceangle};
 
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -22,10 +22,9 @@ public:
 
     void view_orthographic();
     void view_perspective();
-    void draw_shaded();
-    void draw_wireframe();
     void draw_axes(bool d);
     void invert_zoom(bool d);
+    void set_drawMode(enum DrawMode mode);
 
 public slots:
     void set_status(const QString& s);
@@ -43,7 +42,6 @@ protected:
     void wheelEvent(QWheelEvent* event) override;
     
     void set_perspective(float p);
-    void set_drawMode(enum DrawMode mode);
     void view_anim(float v);
 
 private:
@@ -54,8 +52,10 @@ private:
     QMatrix4x4 aspect_matrix() const;
     QMatrix4x4 view_matrix() const;
 
+    QOpenGLShader* mesh_vertshader;
     QOpenGLShaderProgram mesh_shader;
     QOpenGLShaderProgram mesh_wireframe_shader;
+    QOpenGLShaderProgram mesh_surfaceangle_shader;
 
     GLMesh* mesh;
     Backdrop* backdrop;
