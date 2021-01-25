@@ -60,6 +60,7 @@ private:
     QAction* const orthogonal_action;
     QAction* const shaded_action;
     QAction* const wireframe_action;
+    QAction* const surfaceangle_action;
     QAction* const axes_action;
     QAction* const invert_zoom_action;
     QAction* const reload_action;

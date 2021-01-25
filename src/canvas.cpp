@@ -26,6 +26,7 @@ Canvas::~Canvas()
 {
 	makeCurrent();
 	delete mesh;
+    delete mesh_vertshader;
 	doneCurrent();
 }
 
@@ -44,16 +45,6 @@ void Canvas::view_orthographic()
 void Canvas::view_perspective()
 {
     view_anim(0.25);
-}
-
-void Canvas::draw_shaded()
-{
-    set_drawMode(shaded);
-}
-
-void Canvas::draw_wireframe()
-{
-    set_drawMode(wireframe);
 }
 
 void Canvas::draw_axes(bool d)
@@ -119,12 +110,17 @@ void Canvas::initializeGL()
 {
     initializeOpenGLFunctions();
 
-    mesh_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/mesh.vert");
+    mesh_vertshader = new QOpenGLShader(QOpenGLShader::Vertex);
+    mesh_vertshader->compileSourceFile(":/gl/mesh.vert");
+    mesh_shader.addShader(mesh_vertshader);
     mesh_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh.frag");
     mesh_shader.link();
-    mesh_wireframe_shader.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/gl/mesh.vert");
+    mesh_wireframe_shader.addShader(mesh_vertshader);
     mesh_wireframe_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_wireframe.frag");
     mesh_wireframe_shader.link();
+    mesh_surfaceangle_shader.addShader(mesh_vertshader);
+    mesh_surfaceangle_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_surfaceangle.frag");
+    mesh_surfaceangle_shader.link();
 
     backdrop = new Backdrop();
     axis = new Axis();
@@ -158,7 +154,14 @@ void Canvas::draw_mesh()
     }
     else
     {
-        selected_mesh_shader = &mesh_shader;
+        if(drawMode == shaded)
+        {
+            selected_mesh_shader = &mesh_shader;
+        }
+        else
+        {
+            selected_mesh_shader = &mesh_surfaceangle_shader;
+        }
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
