@@ -159,7 +159,7 @@ Mesh* Loader::read_stl_binary(QFile& file)
     QVector<Vertex> verts(tri_count*3);
 
     // Dummy array, because readRawData is faster than skipRawData
-    std::unique_ptr<uint8_t> buffer(new uint8_t[tri_count * 50]);
+    std::unique_ptr<uint8_t[]> buffer(new uint8_t[tri_count * 50]);
     data.readRawData((char*)buffer.get(), tri_count * 50);
 
     // Store vertices in the array, processing one triangle at a time.

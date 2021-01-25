@@ -70,7 +70,7 @@ making sure `qmake` is on your shell's path.
 Then, run through the following set of commands in a shell:
 
 ```
-git clone https://github.com/mkeeter/fstl
+git clone https://github.com/fstl-app/fstl
 cd fstl
 mkdir build
 cd build
@@ -95,16 +95,13 @@ This should produce two new files in the root directory:
 Install Qt with your distro's package manager (required libraries are Core, Gui,
 Widgets and OpenGL, e.g. `qt5-default` and `libqt5opengl5-dev` on Debian).
 
-You can build fstl with qmake (in some distros qmake-qt5) or with CMake:
+You can build fstl with CMake:
 ```
-git clone https://github.com/mkeeter/fstl
+git clone https://github.com/fstl-app/fstl
 cd fstl
 mkdir build
 cd build
-
-qmake ../qt/fstl.pro  # For qmake build
-cmake ..              # For CMake build
-
+cmake ..
 make -j8
 ./fstl
 ```
