@@ -16,6 +16,7 @@ Window::Window(QWidget *parent) :
     orthogonal_action(new QAction("Orthographic", this)),
     shaded_action(new QAction("Shaded", this)),
     wireframe_action(new QAction("Wireframe", this)),
+    surfaceangle_action(new QAction("Surface Angle", this)),
     axes_action(new QAction("Draw Axes", this)),
     invert_zoom_action(new QAction("Invert Zoom", this)),
     reload_action(new QAction("Reload", this)),
@@ -104,8 +105,9 @@ Window::Window(QWidget *parent) :
     auto draw_menu = view_menu->addMenu("Draw Mode");
     draw_menu->addAction(shaded_action);
     draw_menu->addAction(wireframe_action);
+    draw_menu->addAction(surfaceangle_action);
     auto drawModes = new QActionGroup(draw_menu);
-    for (auto p : {shaded_action, wireframe_action})
+    for (auto p : {shaded_action, wireframe_action, surfaceangle_action})
     {
         drawModes->addAction(p);
         p->setCheckable(true);
@@ -227,11 +229,15 @@ void Window::on_drawMode(QAction* mode)
 {
     if (mode == shaded_action)
     {
-        canvas->draw_shaded();
+        canvas->set_drawMode(shaded);
+    }
+    else if (mode == wireframe_action)
+    {
+        canvas->set_drawMode(wireframe);
     }
     else
     {
-        canvas->draw_wireframe();
+        canvas->set_drawMode(surfaceangle);
     }
 }
 
