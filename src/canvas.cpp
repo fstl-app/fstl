@@ -278,7 +278,7 @@ void Canvas::wheelEvent(QWheelEvent *event)
 {
     // Find GL position before the zoom operation
     // (to zoom about mouse cursor)
-    auto p = event->pos();
+    auto p = event->position();
     QVector3D v(1 - p.x() / (0.5*width()),
                 p.y() / (0.5*height()) - 1, 0);
     QVector3D a = transform_matrix().inverted() *
