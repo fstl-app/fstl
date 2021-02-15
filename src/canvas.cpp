@@ -284,17 +284,17 @@ void Canvas::wheelEvent(QWheelEvent *event)
     QVector3D a = transform_matrix().inverted() *
                   view_matrix().inverted() * v;
 
-    if (event->delta() < 0)
+    if (event->angleDelta().y() < 0)
     {
-        for (int i=0; i > event->delta(); --i)
+        for (int i=0; i > event->angleDelta().y(); --i)
             if (invertZoom)
                 zoom /= 1.001;
             else 
                 zoom *= 1.001;
     }
-    else if (event->delta() > 0)
+    else if (event->angleDelta().y() > 0)
     {
-        for (int i=0; i < event->delta(); ++i) 
+        for (int i=0; i < event->angleDelta().y(); ++i)
             if (invertZoom) 
                 zoom *= 1.001;
             else 
