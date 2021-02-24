@@ -60,12 +60,14 @@ This will now become the system default, even when opening files from the file m
 
 ## Building
 
-The only dependency for `fstl` is [Qt 5](https://www.qt.io).
+The only dependency for `fstl` is [Qt 5](https://www.qt.io),
+plus [`cmake`](https://cmake.org/) for building.
 
 ### macOS
 
-Install Qt from their website or [Homebrew](brew.sh),
-making sure `qmake` is on your shell's path.
+Install Qt from their website or [Homebrew](brew.sh).
+
+Install `cmake` through Homebrew or equivalent.
 
 Then, run through the following set of commands in a shell:
 
@@ -74,10 +76,12 @@ git clone https://github.com/fstl-app/fstl
 cd fstl
 mkdir build
 cd build
-qmake ../qt/fstl.pro
+cmake -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.15.0/ ..
 make -j8
 ./fstl.app/Contents/MacOS/fstl
 ```
+
+You may need to edit the Qt path depending on your installation.
 
 To package a standalone app, go to the app directory and run `package.sh`
 
