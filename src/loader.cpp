@@ -169,7 +169,7 @@ Mesh* Loader::read_stl_binary(QFile& file)
         // Load vertex data from .stl file into vertices
         for (unsigned i=0; i < 3; ++i)
         {
-            memcpy(&v[i], b, 3*sizeof(float));
+            qFromLittleEndian<float>(b, 3, &v[i]);
             b += 3 * sizeof(float);
         }
 
