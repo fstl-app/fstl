@@ -466,7 +466,7 @@ void Window::build_folder_file_list()
 QPair<QString, QString> Window::get_file_neighbors()
 {
     if (current_file.isEmpty()) {
-        return QPair<QString, QString>(QString(), QString());
+        return QPair<QString, QString>(QString::null, QString::null);
     }
 
     build_folder_file_list();
@@ -476,8 +476,8 @@ QPair<QString, QString> Window::get_file_neighbors()
     QString current_dir = fileInfo.absoluteDir().absolutePath();
     QString current_name = fileInfo.fileName();
 
-    QString prev = QString();
-    QString next = QString();
+    QString prev = QString::null;
+    QString next = QString::null;
 
     QListIterator<QString> fileIterator(lookup_folder_files);
     while (fileIterator.hasNext()) {
