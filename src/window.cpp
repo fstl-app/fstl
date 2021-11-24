@@ -10,6 +10,7 @@ const QString Window::AUTORELOAD_KEY = "autoreload";
 const QString Window::DRAW_AXES_KEY = "drawAxes";
 const QString Window::PROJECTION_KEY = "projection";
 const QString Window::DRAW_MODE_KEY = "drawMode";
+const QString Window::WINDOW_GEOM_KEY = "windowGeometry";
 
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
@@ -126,12 +127,10 @@ Window::Window(QWidget *parent) :
     QObject::connect(invert_zoom_action, &QAction::triggered,
             this, &Window::on_invertZoom);       
 
-    load_persist_settings();
-
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);
 
-    resize(600, 400);
+    load_persist_settings();
 }
 
 void Window::load_persist_settings(){
@@ -164,6 +163,9 @@ void Window::load_persist_settings(){
     canvas->set_drawMode(draw_mode);
     QAction* (dm_acts[]) = {shaded_action, wireframe_action, surfaceangle_action};
     dm_acts[draw_mode]->setChecked(true);
+
+    resize(600, 400);
+    restoreGeometry(settings.value(WINDOW_GEOM_KEY).toByteArray());
 }
 
 void Window::on_open()
@@ -447,6 +449,18 @@ void Window::dragEnterEvent(QDragEnterEvent *event)
 void Window::dropEvent(QDropEvent *event)
 {
     load_stl(event->mimeData()->urls().front().toLocalFile());
+}
+
+void Window::resizeEvent(QResizeEvent *event)
+{
+    QSettings().setValue(WINDOW_GEOM_KEY, saveGeometry());
+    QWidget::resizeEvent(event);
+}
+
+void Window::moveEvent(QMoveEvent *event)
+{
+    QSettings().setValue(WINDOW_GEOM_KEY, saveGeometry());
+    QWidget::moveEvent(event);
 }
 
 void Window::sorted_insert(QStringList& list, const QCollator& collator, const QString& value)

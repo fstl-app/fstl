@@ -20,6 +20,8 @@ public:
 protected:
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
+    void resizeEvent(QResizeEvent *event) override;
+    void moveEvent(QMoveEvent *event) override;
     void keyPressEvent(QKeyEvent* event) override;
 
 public slots:
@@ -78,6 +80,7 @@ private:
     const static QString DRAW_AXES_KEY;
     const static QString PROJECTION_KEY;
     const static QString DRAW_MODE_KEY;
+    const static QString WINDOW_GEOM_KEY;
 
     QString current_file;
     QString lookup_folder;
