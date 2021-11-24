@@ -49,6 +49,7 @@ private slots:
 
 private:
     void rebuild_recent_files();
+    void load_persist_settings();
     void sorted_insert(QStringList& list, const QCollator& collator, const QString& value);
     void build_folder_file_list();
     QPair<QString, QString> get_file_neighbors();
@@ -57,7 +58,7 @@ private:
     QAction* const about_action;
     QAction* const quit_action;
     QAction* const perspective_action;
-    QAction* const orthogonal_action;
+    QAction* const orthographic_action;
     QAction* const shaded_action;
     QAction* const wireframe_action;
     QAction* const surfaceangle_action;
@@ -73,6 +74,11 @@ private:
     const static int MAX_RECENT_FILES=8;
     const static QString RECENT_FILE_KEY;
     const static QString INVERT_ZOOM_KEY;
+    const static QString AUTORELOAD_KEY;
+    const static QString DRAW_AXES_KEY;
+    const static QString PROJECTION_KEY;
+    const static QString DRAW_MODE_KEY;
+
     QString current_file;
     QString lookup_folder;
     QStringList lookup_folder_files;

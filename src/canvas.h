@@ -10,7 +10,7 @@ class Mesh;
 class Backdrop;
 class Axis;
 
-enum DrawMode {shaded, wireframe, surfaceangle};
+enum DrawMode {shaded, wireframe, surfaceangle, DRAWMODECOUNT};
 
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -20,8 +20,10 @@ public:
     explicit Canvas(const QSurfaceFormat& format, QWidget* parent=0);
     ~Canvas();
 
-    void view_orthographic();
-    void view_perspective();
+    const static float P_PERSPECTIVE;
+    const static float P_ORTHOGRAPHIC;
+
+    void view_perspective(float p, bool animate);
     void draw_axes(bool d);
     void invert_zoom(bool d);
     void set_drawMode(enum DrawMode mode);

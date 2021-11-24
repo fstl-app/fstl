@@ -8,11 +8,14 @@
 #include "glmesh.h"
 #include "mesh.h"
 
+const float Canvas::P_PERSPECTIVE = 0.25f;
+const float Canvas::P_ORTHOGRAPHIC = 0.0f;
+
 Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     : QOpenGLWidget(parent), mesh(nullptr),
       scale(1), zoom(1), tilt(90), yaw(0),
-      perspective(0.25), anim(this, "perspective"), status(" "),
-      meshInfo(""), drawMode(shaded), drawAxes(false), invertZoom(false)
+      anim(this, "perspective"), status(" "),
+      meshInfo("")
 {
     setFormat(format);
     QFile styleFile(":/qt/style.qss");
@@ -39,14 +42,15 @@ void Canvas::view_anim(float v)
     anim.start();
 }
 
-void Canvas::view_orthographic()
-{
-    view_anim(0);
-}
-
-void Canvas::view_perspective()
-{
-    view_anim(0.25);
+void Canvas::view_perspective(float p, bool animate){
+    if(animate)
+    {
+        view_anim(p);
+    }
+    else
+    {
+        set_perspective(p);
+    }
 }
 
 void Canvas::draw_axes(bool d)
