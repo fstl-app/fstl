@@ -4,8 +4,8 @@
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication::setOrganizationName("mkeeter");
-    QCoreApplication::setOrganizationDomain("https://github.com/mkeeter/fstl");
+    QCoreApplication::setOrganizationName("fstl-app");
+    QCoreApplication::setOrganizationDomain("https://github.com/fstl-app/fstl");
     QCoreApplication::setApplicationName("fstl");
     QCoreApplication::setApplicationVersion(FSTL_VERSION);
     App a(argc, argv);
