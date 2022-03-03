@@ -6,6 +6,11 @@
 
 const QString Window::RECENT_FILE_KEY = "recentFiles";
 const QString Window::INVERT_ZOOM_KEY = "invertZoom";
+const QString Window::AUTORELOAD_KEY = "autoreload";
+const QString Window::DRAW_AXES_KEY = "drawAxes";
+const QString Window::PROJECTION_KEY = "projection";
+const QString Window::DRAW_MODE_KEY = "drawMode";
+const QString Window::WINDOW_GEOM_KEY = "windowGeometry";
 
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
@@ -13,7 +18,7 @@ Window::Window(QWidget *parent) :
     about_action(new QAction("About", this)),
     quit_action(new QAction("Quit", this)),
     perspective_action(new QAction("Perspective", this)),
-    orthogonal_action(new QAction("Orthographic", this)),
+    orthographic_action(new QAction("Orthographic", this)),
     shaded_action(new QAction("Shaded", this)),
     wireframe_action(new QAction("Wireframe", this)),
     surfaceangle_action(new QAction("Surface Angle", this)),
@@ -54,8 +59,6 @@ Window::Window(QWidget *parent) :
                      this, &Window::close);
 
     autoreload_action->setCheckable(true);
-    autoreload_action->setChecked(true);
-    autoreload_action->setEnabled(false);
     QObject::connect(autoreload_action, &QAction::triggered,
             this, &Window::on_autoreload_triggered);
 
@@ -90,14 +93,13 @@ Window::Window(QWidget *parent) :
     auto view_menu = menuBar()->addMenu("View");
     auto projection_menu = view_menu->addMenu("Projection");
     projection_menu->addAction(perspective_action);
-    projection_menu->addAction(orthogonal_action);
+    projection_menu->addAction(orthographic_action);
     auto projections = new QActionGroup(projection_menu);
-    for (auto p : {perspective_action, orthogonal_action})
+    for (auto p : {perspective_action, orthographic_action})
     {
         projections->addAction(p);
         p->setCheckable(true);
     }
-    perspective_action->setChecked(true);
     projections->setExclusive(true);
     QObject::connect(projections, &QActionGroup::triggered,
                      this, &Window::on_projection);
@@ -112,7 +114,6 @@ Window::Window(QWidget *parent) :
         drawModes->addAction(p);
         p->setCheckable(true);
     }
-    shaded_action->setChecked(true);
     drawModes->setExclusive(true);
     QObject::connect(drawModes, &QActionGroup::triggered,
                      this, &Window::on_drawMode);
@@ -126,15 +127,45 @@ Window::Window(QWidget *parent) :
     QObject::connect(invert_zoom_action, &QAction::triggered,
             this, &Window::on_invertZoom);       
 
-    QSettings settings;
-    bool invertZoomFromSettings = settings.value(INVERT_ZOOM_KEY, false).toBool();
-    canvas->invert_zoom(invertZoomFromSettings);
-    invert_zoom_action->setChecked(invertZoomFromSettings);
-
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);
 
+    load_persist_settings();
+}
+
+void Window::load_persist_settings(){
+    QSettings settings;
+    bool invert_zoom = settings.value(INVERT_ZOOM_KEY, false).toBool();
+    canvas->invert_zoom(invert_zoom);
+    invert_zoom_action->setChecked(invert_zoom);
+
+    autoreload_action->setChecked(settings.value(AUTORELOAD_KEY, true).toBool());
+
+    bool draw_axes = settings.value(DRAW_AXES_KEY, false).toBool();
+    canvas->draw_axes(draw_axes);
+    axes_action->setChecked(draw_axes);
+
+    QString projection = settings.value(PROJECTION_KEY, "perspective").toString();
+    if(projection == "perspective"){
+        canvas->view_perspective(Canvas::P_PERSPECTIVE, false);
+        perspective_action->setChecked(true);
+    }else{
+        canvas->view_perspective(Canvas::P_ORTHOGRAPHIC, false);
+        orthographic_action->setChecked(true);
+    }
+
+    DrawMode draw_mode = (DrawMode)settings.value(DRAW_MODE_KEY, DRAWMODECOUNT).toInt();
+    
+    if(draw_mode >= DRAWMODECOUNT)
+    {
+        draw_mode = shaded;
+    }
+    canvas->set_drawMode(draw_mode);
+    QAction* (dm_acts[]) = {shaded_action, wireframe_action, surfaceangle_action};
+    dm_acts[draw_mode]->setChecked(true);
+
     resize(600, 400);
+    restoreGeometry(settings.value(WINDOW_GEOM_KEY).toByteArray());
 }
 
 void Window::on_open()
@@ -217,40 +248,45 @@ void Window::on_projection(QAction* proj)
 {
     if (proj == perspective_action)
     {
-        canvas->view_perspective();
+        canvas->view_perspective(Canvas::P_PERSPECTIVE, true);
+        QSettings().setValue(PROJECTION_KEY, "perspective");
     }
     else
     {
-        canvas->view_orthographic();
+        canvas->view_perspective(Canvas::P_ORTHOGRAPHIC, true);
+        QSettings().setValue(PROJECTION_KEY, "orthographic");
     }
 }
 
-void Window::on_drawMode(QAction* mode)
+void Window::on_drawMode(QAction* act)
 {
-    if (mode == shaded_action)
+    DrawMode mode;
+    if (act == shaded_action)
     {
-        canvas->set_drawMode(shaded);
+        mode = shaded;
     }
-    else if (mode == wireframe_action)
+    else if (act == wireframe_action)
     {
-        canvas->set_drawMode(wireframe);
+        mode = wireframe;
     }
     else
     {
-        canvas->set_drawMode(surfaceangle);
+        mode = surfaceangle;
     }
+    canvas->set_drawMode(mode);
+    QSettings().setValue(DRAW_MODE_KEY, mode);
 }
 
 void Window::on_drawAxes(bool d)
 {
     canvas->draw_axes(d);
+    QSettings().setValue(DRAW_AXES_KEY, d);
 }
 
 void Window::on_invertZoom(bool d)
 {
     canvas->invert_zoom(d);
-    QSettings settings;
-    settings.setValue(INVERT_ZOOM_KEY, d);
+    QSettings().setValue(INVERT_ZOOM_KEY, d);
 }
 
 void Window::on_watched_change(const QString& filename)
@@ -267,6 +303,7 @@ void Window::on_autoreload_triggered(bool b)
     {
         on_reload();
     }
+    QSettings().setValue(AUTORELOAD_KEY, b);
 }
 
 void Window::on_clear_recent()
@@ -392,7 +429,6 @@ bool Window::load_stl(const QString& filename, bool is_reload)
                   this, &Window::set_watched);
         connect(loader, &Loader::loaded_file,
                   this, &Window::on_loaded);
-        autoreload_action->setEnabled(true);
         reload_action->setEnabled(true);
     }
 
@@ -413,6 +449,18 @@ void Window::dragEnterEvent(QDragEnterEvent *event)
 void Window::dropEvent(QDropEvent *event)
 {
     load_stl(event->mimeData()->urls().front().toLocalFile());
+}
+
+void Window::resizeEvent(QResizeEvent *event)
+{
+    QSettings().setValue(WINDOW_GEOM_KEY, saveGeometry());
+    QWidget::resizeEvent(event);
+}
+
+void Window::moveEvent(QMoveEvent *event)
+{
+    QSettings().setValue(WINDOW_GEOM_KEY, saveGeometry());
+    QWidget::moveEvent(event);
 }
 
 void Window::sorted_insert(QStringList& list, const QCollator& collator, const QString& value)
