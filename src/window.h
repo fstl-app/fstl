@@ -48,6 +48,7 @@ private slots:
     void on_load_recent(QAction* a);
     void on_loaded(const QString& filename);
     void on_save_screenshot();
+    void on_hide_menuBar();
 
 private:
     void rebuild_recent_files();
@@ -69,6 +70,7 @@ private:
     QAction* const reload_action;
     QAction* const autoreload_action;
     QAction* const save_screenshot_action;
+    QAction* const hide_menuBar_action;
 
     QMenu* const recent_files;
     QActionGroup* const recent_files_group;

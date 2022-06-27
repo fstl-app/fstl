@@ -27,6 +27,7 @@ Window::Window(QWidget *parent) :
     reload_action(new QAction("Reload", this)),
     autoreload_action(new QAction("Autoreload", this)),
     save_screenshot_action(new QAction("Save Screenshot", this)),
+    hide_menuBar_action(new QAction("Hide Menu Bar", this)),
     recent_files(new QMenu("Open recent", this)),
     recent_files_group(new QActionGroup(this)),
     recent_files_clear_action(new QAction("Clear recent files", this)),
@@ -53,10 +54,12 @@ Window::Window(QWidget *parent) :
     open_action->setShortcut(QKeySequence::Open);
     QObject::connect(open_action, &QAction::triggered,
                      this, &Window::on_open);
+    this->addAction(open_action);
 
     quit_action->setShortcut(QKeySequence::Quit);
     QObject::connect(quit_action, &QAction::triggered,
                      this, &Window::close);
+    this->addAction(quit_action);
 
     autoreload_action->setCheckable(true);
     QObject::connect(autoreload_action, &QAction::triggered,
@@ -126,6 +129,13 @@ Window::Window(QWidget *parent) :
     invert_zoom_action->setCheckable(true);
     QObject::connect(invert_zoom_action, &QAction::triggered,
             this, &Window::on_invertZoom);       
+
+    view_menu->addAction(hide_menuBar_action);
+    hide_menuBar_action->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_C);
+    hide_menuBar_action->setCheckable(true);
+    QObject::connect(hide_menuBar_action, &QAction::toggled,
+            this, &Window::on_hide_menuBar);
+    this->addAction(hide_menuBar_action);
 
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);
@@ -357,6 +367,11 @@ void Window::on_save_screenshot()
     }
 }
 
+void Window::on_hide_menuBar()
+{
+    menuBar()->setVisible(!hide_menuBar_action->isChecked());
+}
+
 void Window::rebuild_recent_files()
 {
     QSettings settings;
@@ -585,6 +600,11 @@ void Window::keyPressEvent(QKeyEvent* event)
     else if (event->key() == Qt::Key_Right)
     {
         load_next();
+        return;
+    }
+    else if (event->key() == Qt::Key_Escape)
+    {
+        hide_menuBar_action->setChecked(false);
         return;
     }
 
