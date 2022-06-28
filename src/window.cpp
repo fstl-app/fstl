@@ -195,7 +195,7 @@ void Window::on_about()
         "<p>A fast viewer for <code>.stl</code> files.<br>"
         "<a href=\"https://github.com/fstl-app/fstl\""
         "   style=\"color: #93a1a1;\">https://github.com/fstl-app/fstl</a></p>"
-        "<p>© 2014-2017 Matthew Keeter<br>"
+        "<p>© 2014-2022 Matthew Keeter<br>"
         "<a href=\"mailto:matt.j.keeter@gmail.com\""
         "   style=\"color: #93a1a1;\">matt.j.keeter@gmail.com</a></p>");
 }
