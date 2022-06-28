@@ -88,69 +88,69 @@ set(CPACK_PACKAGE_VERSION_PATCH ${FSTL_VERSION_PATCH})
 
 if(WIN32)
 
-	set(QT_USE_QTMAIN true)
-	
-	if(MSVC)
-		set_source_files_properties(fstl PROPERTIES LINKER_LANGUAGE "CXX")
-		set_target_properties(fstl PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
+    set(QT_USE_QTMAIN true)
+    
+    if(MSVC)
+        set_source_files_properties(fstl PROPERTIES LINKER_LANGUAGE "CXX")
+        set_target_properties(fstl PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
 
-		install(TARGETS fstl DESTINATION bin COMPONENT all)
-		
-		install(FILES
-			$<TARGET_FILE:Qt5::Gui_EGL>
-			$<TARGET_FILE:Qt5::Gui_GLESv2>
-			$<TARGET_FILE:Qt5::Core>
-			$<TARGET_FILE:Qt5::Gui> 
-			$<TARGET_FILE:Qt5::OpenGL>
-			$<TARGET_FILE:Qt5::Widgets>
-			DESTINATION bin COMPONENT all)
-		
-		#install file in the platforms directory.
-		install (FILES
-			${Qt5Core_DIR}/../../../plugins/platforms/qwindows.dll
-			DESTINATION bin/platforms COMPONENT all
-		)
+        install(TARGETS fstl DESTINATION bin COMPONENT all)
+        
+        install(FILES
+            $<TARGET_FILE:Qt5::Gui_EGL>
+            $<TARGET_FILE:Qt5::Gui_GLESv2>
+            $<TARGET_FILE:Qt5::Core>
+            $<TARGET_FILE:Qt5::Gui> 
+            $<TARGET_FILE:Qt5::OpenGL>
+            $<TARGET_FILE:Qt5::Widgets>
+            DESTINATION bin COMPONENT all)
+        
+        #install file in the platforms directory.
+        install (FILES
+            ${Qt5Core_DIR}/../../../plugins/platforms/qwindows.dll
+            DESTINATION bin/platforms COMPONENT all
+        )
 
-		#custom commands based on: https://gist.github.com/Rod-Persky/e6b93e9ee31f9516261b
-		add_custom_command(TARGET fstl POST_BUILD 
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Core>       $<TARGET_FILE_DIR:${PROJECT_NAME}>
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Gui>        $<TARGET_FILE_DIR:${PROJECT_NAME}>
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Widgets>    $<TARGET_FILE_DIR:${PROJECT_NAME}>
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::OpenGL>     $<TARGET_FILE_DIR:${PROJECT_NAME}>
-		)	
-	endif(MSVC)
+        #custom commands based on: https://gist.github.com/Rod-Persky/e6b93e9ee31f9516261b
+        add_custom_command(TARGET fstl POST_BUILD 
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Core>       $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Gui>        $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Widgets>    $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::OpenGL>     $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        )	
+    endif(MSVC)
 
-	# windows specific installer generation information
-	set(CPACK_GENERATOR NSIS)
-	set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL OFF)
-	set(CPACK_NSIS_MODIFY_PATH ON)
-	set(CPACK_NSIS_MUI_FINISHPAGE_RUN ${PROJECT_NAME})
-	set(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME}")
-	set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\fstl.exe")
-	set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/fstl-app/fstl")
-	set(CPACK_NSIS_DISPLAY_NAME "fstl ${FSTL_VERSION}")
-	set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/exe/fstl.ico")
-	set(CPACK_NSIS_MUI_UNIICON  "${CMAKE_CURRENT_SOURCE_DIR}/exe/fstl.ico")
-	set(CPACK_NSIS_CREATE_ICONS_EXTRA
-		"CreateShortCut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\fstl.lnk' '$INSTDIR\\\\bin\\\\fstl.exe'")
-	set(CPACK_COMPONENTS_ALL all)
-	if (CMAKE_CL_64)
-		set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
-	else (CMAKE_CL_64)
-		set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES")
-	endif (CMAKE_CL_64)
+    # windows specific installer generation information
+    set(CPACK_GENERATOR NSIS)
+    set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL OFF)
+    set(CPACK_NSIS_MODIFY_PATH ON)
+    set(CPACK_NSIS_MUI_FINISHPAGE_RUN ${PROJECT_NAME})
+    set(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME}")
+    set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\fstl.exe")
+    set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/fstl-app/fstl")
+    set(CPACK_NSIS_DISPLAY_NAME "fstl ${FSTL_VERSION}")
+    set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/exe/fstl.ico")
+    set(CPACK_NSIS_MUI_UNIICON  "${CMAKE_CURRENT_SOURCE_DIR}/exe/fstl.ico")
+    set(CPACK_NSIS_CREATE_ICONS_EXTRA
+        "CreateShortCut '$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\fstl.lnk' '$INSTDIR\\\\bin\\\\fstl.exe'")
+    set(CPACK_COMPONENTS_ALL all)
+    if (CMAKE_CL_64)
+        set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES64")
+    else (CMAKE_CL_64)
+        set(CPACK_NSIS_INSTALL_ROOT "$PROGRAMFILES")
+    endif (CMAKE_CL_64)
 elseif(APPLE)
-	set(CPACK_GENERATOR "DragNDrop")
-	set(CPACK_DMG_FORMAT "UDBZ")
-	set(CPACK_DMG_VOLUME_NAME "${PROJECT_NAME}")
-	set(CPACK_SYSTEM_NAME "OSX")
-	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}")
+    set(CPACK_GENERATOR "DragNDrop")
+    set(CPACK_DMG_FORMAT "UDBZ")
+    set(CPACK_DMG_VOLUME_NAME "${PROJECT_NAME}")
+    set(CPACK_SYSTEM_NAME "OSX")
+    set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}")
     set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/app/fstl.icns")
 else()
-	install(TARGETS fstl RUNTIME DESTINATION bin)
+    install(TARGETS fstl RUNTIME DESTINATION bin)
 
-	set(CPACK_GENERATOR "DEB;RPM")
-	set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}")
+    set(CPACK_GENERATOR "DEB;RPM")
+    set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}")
 endif(WIN32)
 
 include(CPack)
