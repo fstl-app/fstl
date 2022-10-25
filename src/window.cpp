@@ -180,8 +180,8 @@ void Window::load_persist_settings(){
 
 void Window::on_open()
 {
-    QString filename = QFileDialog::getOpenFileName(
-                this, "Load .stl file", QString(), "STL files (*.stl, *.STL)");
+    const QString filename = QFileDialog::getOpenFileName(
+                this, "Load .stl file", QString(), "STL files (*.stl *.STL)");
     if (!filename.isNull())
     {
         load_stl(filename);
