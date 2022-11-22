@@ -86,6 +86,20 @@ void Canvas::view_anim(float v)
     anim.start();
 }
 
+void Canvas::common_view_change(enum ViewPoint c){
+  switch (c) {
+    break; default: return ;
+    break; case centerview: scale = default_scale; center = default_center; zoom = 1;
+    break; case topview:    yaw = 0;   tilt = 0;
+    break; case bottomview: yaw = 0;   tilt = 180;
+    break; case leftview:   yaw = -90; tilt = 90;
+    break; case rightview : yaw = 90;  tilt = 90;
+    break; case frontview:  yaw = 0;   tilt = 90;
+    break; case backview:   yaw = 180; tilt = 90;
+  }
+  update();
+}
+
 void Canvas::view_perspective(float p, bool animate){
     if(animate)
     {
@@ -131,8 +145,8 @@ void Canvas::load_mesh(Mesh* m, bool is_reload)
     QVector3D upper(m->xmax(), m->ymax(), m->zmax());
     if (!is_reload)
     {
-        center = (lower + upper) / 2;
-        scale = 2 / (upper - lower).length();
+        default_center = center = (lower + upper) / 2;
+        default_scale = scale = 2 / (upper - lower).length();
 
         // Reset other camera parameters
         zoom = 1;
