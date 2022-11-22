@@ -43,6 +43,7 @@ private slots:
     void on_invertZoom(bool d);
     void on_watched_change(const QString& filename);
     void on_reload();
+    void on_common_view_change(QAction* common);
     void on_autoreload_triggered(bool r);
     void on_clear_recent();
     void on_load_recent(QAction* a);
@@ -61,6 +62,13 @@ private:
     QAction* const about_action;
     QAction* const quit_action;
     QAction* const perspective_action;
+    QAction* const common_view_center_action;
+    QAction* const common_view_top_action;
+    QAction* const common_view_bottom_action;
+    QAction* const common_view_left_action;
+    QAction* const common_view_right_action;
+    QAction* const common_view_front_action;
+    QAction* const common_view_back_action;
     QAction* const orthographic_action;
     QAction* const shaded_action;
     QAction* const wireframe_action;

@@ -18,6 +18,13 @@ Window::Window(QWidget *parent) :
     about_action(new QAction("About", this)),
     quit_action(new QAction("Quit", this)),
     perspective_action(new QAction("Perspective", this)),
+    common_view_center_action(new QAction("Center the model", this)),
+    common_view_top_action(new QAction("Top", this)),
+    common_view_bottom_action(new QAction("Bottom", this)),
+    common_view_left_action(new QAction("Left", this)),
+    common_view_right_action(new QAction("Right", this)),
+    common_view_front_action(new QAction("Front", this)),
+    common_view_back_action(new QAction("Back", this)),
     orthographic_action(new QAction("Orthographic", this)),
     shaded_action(new QAction("Shaded", this)),
     wireframe_action(new QAction("Wireframe", this)),
@@ -136,6 +143,25 @@ Window::Window(QWidget *parent) :
     QObject::connect(hide_menuBar_action, &QAction::toggled,
             this, &Window::on_hide_menuBar);
     this->addAction(hide_menuBar_action);
+
+    auto common_menu = view_menu->addMenu("Viewpoint");
+    common_menu->addAction(common_view_center_action);
+    common_menu->addAction(common_view_top_action);
+    common_menu->addAction(common_view_bottom_action);
+    common_menu->addAction(common_view_left_action);
+    common_menu->addAction(common_view_right_action);
+    common_menu->addAction(common_view_front_action);
+    common_menu->addAction(common_view_back_action);
+    auto common_views = new QActionGroup(common_menu);
+    common_views->addAction(common_view_center_action);
+    common_views->addAction(common_view_top_action);
+    common_views->addAction(common_view_bottom_action);
+    common_views->addAction(common_view_left_action);
+    common_views->addAction(common_view_right_action);
+    common_views->addAction(common_view_front_action);
+    common_views->addAction(common_view_back_action);
+    QObject::connect(common_views, &QActionGroup::triggered,
+                     this, &Window::on_common_view_change);
 
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);
@@ -408,6 +434,17 @@ void Window::on_reload()
     {
         load_stl(fs[0], true);
     }
+}
+
+void Window::on_common_view_change(QAction* common)
+{
+  if (common == common_view_center_action) canvas->common_view_change(centerview);
+  if (common == common_view_top_action) canvas->common_view_change(topview);
+  if (common == common_view_bottom_action) canvas->common_view_change(bottomview);
+  if (common == common_view_left_action) canvas->common_view_change(leftview);
+  if (common == common_view_right_action) canvas->common_view_change(rightview);
+  if (common == common_view_front_action) canvas->common_view_change(frontview);
+  if (common == common_view_back_action) canvas->common_view_change(backview);
 }
 
 bool Window::load_stl(const QString& filename, bool is_reload)

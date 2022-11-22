@@ -10,6 +10,7 @@ class Mesh;
 class Backdrop;
 class Axis;
 
+enum ViewPoint {centerview, topview, bottomview, leftview, rightview, frontview, backview};
 enum DrawMode {shaded, wireframe, surfaceangle, DRAWMODECOUNT};
 
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
@@ -27,6 +28,7 @@ public:
     void draw_axes(bool d);
     void invert_zoom(bool d);
     void set_drawMode(enum DrawMode mode);
+    void common_view_change(enum ViewPoint c);
 
 public slots:
     void set_status(const QString& s);
@@ -63,8 +65,8 @@ private:
     Backdrop* backdrop;
     Axis* axis;
 
-    QVector3D center;
-    float scale;
+    QVector3D center, default_center;
+    float scale, default_scale;
     float zoom;
     float tilt;
     float yaw;
