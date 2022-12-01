@@ -1,6 +1,7 @@
 #include <QMouseEvent>
 
 #include <cmath>
+#include <vector>
 
 #include "canvas.h"
 #include "backdrop.h"
@@ -14,7 +15,8 @@ const float Canvas::P_ORTHOGRAPHIC = 0.0f;
 Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     : QOpenGLWidget(parent), mesh(nullptr),
       scale(1), default_scale(1), zoom(1), tilt(90), yaw(0),
-      anim(this, "perspective"), status(" "),
+      perspective_animation(this, "perspective"),
+      status(" "),
       meshInfo("")
 {
     setFormat(format);
@@ -22,7 +24,7 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     styleFile.open( QFile::ReadOnly );
     setStyleSheet(styleFile.readAll());
 
-    anim.setDuration(100);
+    perspective_animation.setDuration(100);
 }
 
 Canvas::~Canvas()
@@ -37,23 +39,103 @@ Canvas::~Canvas()
 
 void Canvas::view_anim(float v)
 {
-    anim.setStartValue(perspective);
-    anim.setEndValue(v);
-    anim.start();
+    perspective_animation.setStartValue(perspective);
+    perspective_animation.setEndValue(v);
+    perspective_animation.start();
+}
+
+void Canvas::animate_properties_as_group(std::vector<std::tuple<QByteArray, QVariant, int>> prop_list)
+{
+    common_view_animation.clear();
+    for(const auto &value : prop_list)
+    {
+        const auto& prop_name = std::get<QByteArray>(value);
+        const auto anim = new QPropertyAnimation(this, prop_name);
+        anim->setStartValue(property(prop_name));
+        anim->setEndValue(std::get<QVariant>(value));
+        anim->setDuration(std::get<int>(value));
+
+        common_view_animation.addAnimation(anim);
+    }
+
+    common_view_animation.start();
 }
 
 void Canvas::common_view_change(enum ViewPoint c){
-  switch (c) {
-    break; default: return ;
-    break; case centerview: scale = default_scale; center = default_center; zoom = 1;
-    break; case topview:    yaw = 0;   tilt = 0;
-    break; case bottomview: yaw = 0;   tilt = 180;
-    break; case leftview:   yaw = -90; tilt = 90;
-    break; case rightview : yaw = 90;  tilt = 90;
-    break; case frontview:  yaw = 0;   tilt = 90;
-    break; case backview:   yaw = 180; tilt = 90;
-  }
-  update();
+    switch (c)
+    {
+    case centerview:
+        {
+            animate_properties_as_group(
+                {
+                    std::make_tuple("scale", default_scale, 100),
+                    std::make_tuple("center", default_center, 100),
+                    std::make_tuple("zoom", 1., 100)
+                }
+            );
+        }
+        break;
+    case topview:
+        {
+            animate_properties_as_group(
+                {
+                    std::make_tuple("yaw", 0.f, 100),
+                    std::make_tuple("tilt", 0.f, 100)
+                }
+            );
+        }
+        break;
+    case bottomview:
+        {
+            animate_properties_as_group(
+                {
+                    std::make_tuple("yaw", 0.f, 100),
+                    std::make_tuple("tilt", 180.f, 100)
+                }
+            );
+        }
+
+        break;
+    case leftview:
+        {
+            animate_properties_as_group(
+                {
+                    std::make_tuple("yaw", -90.f, 100),
+                    std::make_tuple("tilt", 90.f, 100)
+                }
+            );
+        }
+        break;
+    case rightview:
+        {
+            animate_properties_as_group(
+                {
+                    std::make_tuple("yaw", 90.f, 100),
+                    std::make_tuple("tilt", 90.f, 100)
+                }
+            );
+        }
+        break;
+    case frontview:
+        {
+            animate_properties_as_group(
+                {
+                    std::make_tuple("yaw", 0.f, 100),
+                    std::make_tuple("tilt", 90.f, 100)
+                }
+            );
+        }
+        break;
+    case backview:
+        {
+            animate_properties_as_group(
+                {
+                    std::make_tuple("yaw", 180.f, 100),
+                    std::make_tuple("tilt", 90.f, 100)
+                }
+            );
+        }
+    }
 }
 
 void Canvas::view_perspective(float p, bool animate){
@@ -112,6 +194,36 @@ void Canvas::set_status(const QString &s)
 void Canvas::set_perspective(float p)
 {
     perspective = p;
+    update();
+}
+
+void Canvas::set_center(QVector3D cen)
+{
+    center = cen;
+    update();
+}
+
+void Canvas::set_scale(float s)
+{
+    scale = s;
+    update();
+}
+
+void Canvas::set_zoom(float z)
+{
+    zoom = z;
+    update();
+}
+
+void Canvas::set_tilt(float t)
+{
+    tilt = t;
+    update();
+}
+
+void Canvas::set_yaw(float y)
+{
+    yaw = y;
     update();
 }
 

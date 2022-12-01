@@ -5,6 +5,9 @@
 #include <QSurfaceFormat>
 #include <QOpenGLShaderProgram>
 
+#include <tuple>
+#include <vector>
+
 class GLMesh;
 class Mesh;
 class Backdrop;
@@ -16,6 +19,12 @@ enum DrawMode {shaded, wireframe, surfaceangle, DRAWMODECOUNT};
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
+    Q_PROPERTY(float perspective MEMBER perspective WRITE set_perspective);
+    Q_PROPERTY(QVector3D center MEMBER center WRITE set_center);
+    Q_PROPERTY(float scale MEMBER scale WRITE set_scale);
+    Q_PROPERTY(float zoom MEMBER zoom WRITE set_zoom);
+    Q_PROPERTY(float tilt MEMBER tilt WRITE set_tilt);
+    Q_PROPERTY(float yaw MEMBER yaw WRITE set_yaw);
 
 public:
     explicit Canvas(const QSurfaceFormat& format, QWidget* parent=0);
@@ -46,8 +55,18 @@ protected:
     void wheelEvent(QWheelEvent* event) override;
     
     void set_perspective(float p);
+    void set_center(QVector3D cen);
+    void set_scale(float s);
+    void set_zoom(float z);
+    void set_tilt(float t);
+    void set_yaw(float y);
     void view_anim(float v);
 
+    /**
+     * @brief Animates a list of properties of the Canvas class in a parallel animation group.
+     * @param prop_list List of tuples of the property name, the target value and the property animation time.
+     */
+    void animate_properties_as_group(std::vector<std::tuple<QByteArray, QVariant, int>> prop_list);
 private:
     void draw_mesh();
 
@@ -75,8 +94,10 @@ private:
     enum DrawMode drawMode;
     bool drawAxes;
     bool invertZoom;
-    Q_PROPERTY(float perspective MEMBER perspective WRITE set_perspective);
-    QPropertyAnimation anim;
+    
+    QPropertyAnimation perspective_animation;
+
+    QParallelAnimationGroup common_view_animation;
 
     QPoint mouse_pos;
     QString status;
