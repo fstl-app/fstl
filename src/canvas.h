@@ -53,6 +53,9 @@ private:
     QMatrix4x4 transform_matrix() const;
     QMatrix4x4 aspect_matrix() const;
     QMatrix4x4 view_matrix() const;
+    void resetTransform();
+    QPointF calcMr(QPoint p);
+    void calcArcballTransform(QPointF p1, QPointF p2);
 
     QOpenGLShader* mesh_vertshader;
     QOpenGLShaderProgram mesh_shader;
@@ -66,8 +69,7 @@ private:
     QVector3D center;
     float scale;
     float zoom;
-    float tilt;
-    float yaw;
+    QMatrix4x4 currentTransform;
 
     float perspective;
     enum DrawMode drawMode;
