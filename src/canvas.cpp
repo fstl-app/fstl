@@ -69,10 +69,11 @@ void Canvas::invert_zoom(bool d)
 
 void Canvas::resetTransform() {
     currentTransform.setToIdentity();
-    // apply some rotations
+    // apply some rotations to define initial orientation
     currentTransform.rotate(-90.0, QVector3D(1, 0, 0));
-    currentTransform.rotate(45.0, QVector3D(0, 0, 1));
-    currentTransform.rotate(15.0, QVector3D(-1, 1, 0));
+    currentTransform.rotate(180.0 + 15.0, QVector3D(0, 0, 1));
+    currentTransform.rotate(15.0, QVector3D(1, -sin(M_PI/12), 0));
+    
     zoom = 1;
 }
 
