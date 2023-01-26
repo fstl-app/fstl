@@ -54,7 +54,7 @@ private:
     QMatrix4x4 aspect_matrix() const;
     QMatrix4x4 view_matrix() const;
     void resetTransform();
-    QPointF calcMr(QPoint p);
+    QPointF changeMouseCoordinates(QPoint p);
     void calcArcballTransform(QPointF p1, QPointF p2);
 
     QOpenGLShader* mesh_vertshader;

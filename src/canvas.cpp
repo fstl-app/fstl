@@ -262,7 +262,11 @@ void Canvas::mouseReleaseEvent(QMouseEvent* event)
     }
 }
 
-QPointF Canvas::calcMr(QPoint p) {
+
+// This method change the referential of the mouse point coordinates
+// into a referential x=[-1.0,1.0], y=[-1.0,1.0], with 0,0 being the
+// center of the widget.
+QPointF Canvas::changeMouseCoordinates(QPoint p) {
     QPointF pr;
     // Change coordinates
     double ws2 = this->width() / 2.0;
@@ -320,8 +324,8 @@ void Canvas::mouseMoveEvent(QMouseEvent* event)
 
     if (event->buttons() & Qt::LeftButton)
     {
-        QPointF p1r = calcMr(mouse_pos);
-        QPointF p2r = calcMr(p);
+        QPointF p1r = changeMouseCoordinates(mouse_pos);
+        QPointF p2r = changeMouseCoordinates(p);
         calcArcballTransform(p1r,p2r);
 
         update();
