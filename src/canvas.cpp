@@ -13,7 +13,7 @@ const float Canvas::P_ORTHOGRAPHIC = 0.0f;
 
 Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     : QOpenGLWidget(parent), mesh(nullptr),
-      scale(1), zoom(1), tilt(90), yaw(0),
+      scale(1), zoom(1),
       anim(this, "perspective"), status(" "),
       meshInfo("")
 {
@@ -21,6 +21,8 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     QFile styleFile(":/qt/style.qss");
     styleFile.open( QFile::ReadOnly );
     setStyleSheet(styleFile.readAll());
+    currentTransform = QMatrix4x4();
+    currentTransform.setToIdentity();
 
     anim.setDuration(100);
 }
@@ -65,6 +67,16 @@ void Canvas::invert_zoom(bool d)
     update();
 }
 
+void Canvas::resetTransform() {
+    currentTransform.setToIdentity();
+    // apply some rotations to define initial orientation
+    currentTransform.rotate(-90.0, QVector3D(1, 0, 0));
+    currentTransform.rotate(180.0 + 15.0, QVector3D(0, 0, 1));
+    currentTransform.rotate(15.0, QVector3D(1, -sin(M_PI/12), 0));
+    
+    zoom = 1;
+}
+
 void Canvas::load_mesh(Mesh* m, bool is_reload)
 {
     delete mesh;
@@ -78,8 +90,7 @@ void Canvas::load_mesh(Mesh* m, bool is_reload)
 
         // Reset other camera parameters
         zoom = 1;
-        yaw = 0;
-        tilt = 90;
+        resetTransform();
     }
     meshInfo = QStringLiteral("Triangles: %1\nX: [%2, %3]\nY: [%4, %5]\nZ: [%6, %7]").arg(m->triCount());
     for(int dIdx = 0; dIdx < 3; dIdx++) meshInfo = meshInfo.arg(lower[dIdx]).arg(upper[dIdx]);
@@ -201,11 +212,7 @@ void Canvas::draw_mesh()
 }
 QMatrix4x4 Canvas::orient_matrix() const
 {
-    QMatrix4x4 m;
-    m.rotate(tilt, QVector3D(1, 0, 0));
-    m.rotate(yaw,  QVector3D(0, 0, 1));
-    //We want the x axis to the right, and the z axis up
-    m.scale(-1, 1, -1);
+    QMatrix4x4 m = currentTransform;
     return m;
 }
 QMatrix4x4 Canvas::transform_matrix() const
@@ -255,16 +262,72 @@ void Canvas::mouseReleaseEvent(QMouseEvent* event)
     }
 }
 
+
+// This method change the referential of the mouse point coordinates
+// into a referential x=[-1.0,1.0], y=[-1.0,1.0], with 0,0 being the
+// center of the widget.
+QPointF Canvas::changeMouseCoordinates(QPoint p) {
+    QPointF pr;
+    // Change coordinates
+    double ws2 = this->width() / 2.0;
+    double hs2 = this->height() / 2.0;
+    pr.setX(p.x() / ws2 - 1.0);
+    pr.setY(p.y() / hs2 - 1.0);
+    return pr;
+}
+
+void Canvas::calcArcballTransform(QPointF p1, QPointF p2) {
+    // Calc z1 & z2
+    double x1 = p1.x();
+    double x2 = p2.x();
+    double y1 = p1.y();
+    double y2 = p2.y();
+    double p1sq = x1 * x1 + y1 * y1;
+    double z1;
+    if (p1sq <= 1) {
+        z1 = sqrt(1.0 - p1sq);
+    } else {
+        x1 = x1 / sqrt(p1sq);
+        y1 = y1 / sqrt(p1sq);
+        z1 = 0.0;
+    }
+    double p2sq = x2 * x2 + y2 * y2;
+    double z2;
+    if (p2sq <= 1) {
+        z2 = sqrt(1.0 - p2sq);
+    } else {
+        x2 = x2 / sqrt(p2sq);
+        y2 = y2 / sqrt(p2sq);
+        z2 = 0.0;
+    }
+
+    // set v1 and v2
+    QVector3D v1(x1, y1, z1);
+    QVector3D v2(x2, y2, z2);
+
+    // calc v1 cross v2
+    QVector3D v1xv2 = QVector3D::crossProduct(v1, v2);
+    QVector3D v1xv2Obj = currentTransform.inverted().mapVector(v1xv2);
+
+    // calc angle
+    double angle = acos(std::min(1.0f,QVector3D::dotProduct(v1, v2))) * 180.0 / M_PI;
+    
+    // apply transform
+    currentTransform.rotate(angle,v1xv2Obj);
+}
+
 void Canvas::mouseMoveEvent(QMouseEvent* event)
 {
     auto p = event->pos();
     auto d = p - mouse_pos;
-
+    
 
     if (event->buttons() & Qt::LeftButton)
     {
-        yaw = fmod(yaw - d.x(), 360);
-        tilt = fmod(tilt - d.y(), 360);
+        QPointF p1r = changeMouseCoordinates(mouse_pos);
+        QPointF p2r = changeMouseCoordinates(p);
+        calcArcballTransform(p1r,p2r);
+
         update();
     }
     else if (event->buttons() & Qt::RightButton)
