@@ -139,6 +139,9 @@ void Canvas::initializeGL()
     mesh_surfaceangle_shader.addShader(mesh_vertshader);
     mesh_surfaceangle_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_surfaceangle.frag");
     mesh_surfaceangle_shader.link();
+    mesh_meshlight_shader.addShader(mesh_vertshader);
+    mesh_meshlight_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_light.frag");
+    mesh_meshlight_shader.link();
 
     backdrop = new Backdrop();
     axis = new Axis();
@@ -176,9 +179,13 @@ void Canvas::draw_mesh()
         {
             selected_mesh_shader = &mesh_shader;
         }
-        else
+        else if (drawMode == surfaceangle)
         {
             selected_mesh_shader = &mesh_surfaceangle_shader;
+        }
+        else if (drawMode == meshlight)
+        {
+            selected_mesh_shader = &mesh_meshlight_shader;
         }
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }

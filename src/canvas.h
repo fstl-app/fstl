@@ -10,7 +10,7 @@ class Mesh;
 class Backdrop;
 class Axis;
 
-enum DrawMode {shaded, wireframe, surfaceangle, DRAWMODECOUNT};
+enum DrawMode {shaded, wireframe, surfaceangle, meshlight, DRAWMODECOUNT};
 
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -61,6 +61,7 @@ private:
     QOpenGLShaderProgram mesh_shader;
     QOpenGLShaderProgram mesh_wireframe_shader;
     QOpenGLShaderProgram mesh_surfaceangle_shader;
+    QOpenGLShaderProgram mesh_meshlight_shader;
 
     GLMesh* mesh;
     Backdrop* backdrop;
