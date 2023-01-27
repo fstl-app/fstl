@@ -1,5 +1,6 @@
 <RCC>
-    <qresource prefix="qt/">
+    <qresource prefix="/qt">
         <file>style.qss</file>
+        <file>icons/fstl_64x64.png</file>
     </qresource>
 </RCC>
