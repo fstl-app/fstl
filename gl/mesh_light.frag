@@ -1,29 +1,26 @@
 #version 120
 
 uniform float zoom;
+uniform vec4 ambient_light_color;
+uniform vec4 directive_light_color;
+uniform vec3 directive_light_direction;
 
 varying vec3 ec_pos;
 
 void main() {
-    // Light direction
-    vec3 dir = vec3(-1,-1,0);
-    dir = normalize(dir);
-    // Light color
-    vec3 color = vec3(1.0, 1.0, 1.0);
+    // Normalize light direction
+    vec3 dir = normalize(directive_light_direction);
 
+    // vec3 a = vec3(0.0, 1.0, 1.0);
     // normal vector
     vec3 ec_normal = normalize(cross(dFdx(ec_pos), dFdy(ec_pos)));
     ec_normal.z *= zoom;
     ec_normal = normalize(ec_normal);
 
-    float lightcoeff = 0.5 * dot(ec_normal,dir);
-    float diffusecoeff = 0.5;
-    gl_FragColor = vec4((diffusecoeff + lightcoeff) * color, 1.0);  
-}
 
-// dir 1,0,0 eclairage à gauche
-// dir -1,0,0 eclairage à droite
-// dir 0,1,0 eclairage en dessous
-// dir 0,-1,0 eclairage par dessus
-// dir 0,0,1 eclairage par devant
-// dir 0,0,-1 eclairage par derriere
+    vec3 color =  ambient_light_color.w * ambient_light_color.xyz + directive_light_color.w * dot(ec_normal,dir) * directive_light_color.xyz;
+
+    // float coef = dot(ec_normal,dir);
+    // vec3 color = coef * lightcolor + (1.0 - coef) * objectcolor;
+    gl_FragColor = vec4(color, 1.0);
+}

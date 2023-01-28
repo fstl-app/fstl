@@ -22,7 +22,7 @@ Window::Window(QWidget *parent) :
     shaded_action(new QAction("Shaded", this)),
     wireframe_action(new QAction("Wireframe", this)),
     surfaceangle_action(new QAction("Surface Angle", this)),
-    meshlight_action(new QAction("Light Source from Top Right", this)),
+    meshlight_action(new QAction("Shaded ambient and directive light source", this)),
     axes_action(new QAction("Draw Axes", this)),
     invert_zoom_action(new QAction("Invert Zoom", this)),
     reload_action(new QAction("Reload", this)),
