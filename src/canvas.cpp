@@ -253,36 +253,6 @@ void Canvas::draw_mesh()
         // Directive Light Color, followed by the directive light coefficient to use
         //glUniform4f(selected_mesh_shader->uniformLocation("directive_light_color"),1.0f,1.0f,1.0f,0.5f);
         glUniform4f(selected_mesh_shader->uniformLocation("directive_light_color"),directiveColor.redF(),directiveColor.greenF(),directiveColor.blueF(),directiveFactor);
-        //
-        // purely empiric and subjective contrast rule
-        // standard contrast :
-        // coefficient_ambient * ||ambient_color|| ~ coefficient_directive * ||directive_color||
-        // high contrast :
-        // coefficient_ambient * ||ambient_color|| < coefficient_directive * ||directive_color||
-        // low contrast :
-        // coefficient_ambient * ||ambient_color|| > coefficient_directive * ||directive_color||
-        //
-        // Examples
-        // Cool blue high contrast
-        // glUniform4f(selected_mesh_shader->uniformLocation("ambient_light_color"),0.22f, 0.8f, 1.0f, 0.67f);
-        // glUniform4f(selected_mesh_shader->uniformLocation("directive_light_color"),1.0f,1.0f,1.0f,0.8f);
-        // 0.7 * 1.30 = 0.91 < 0.8 * 1.732 = 1.38
-        // Cool blue standard contrast
-        // glUniform4f(selected_mesh_shader->uniformLocation("ambient_light_color"),0.22f, 0.8f, 1.0f, 0.67f);
-        // glUniform4f(selected_mesh_shader->uniformLocation("directive_light_color"),1.0f,1.0f,1.0f,0.5f);
-        // 0.67 * 1.30 = 0.87 ~ 0.5 * 1.732 = 0.87
-        // Grey standard contrast
-        // glUniform4f(selected_mesh_shader->uniformLocation("ambient_light_color"),1.0f,1.0f,1.0f,0.5f);
-        // glUniform4f(selected_mesh_shader->uniformLocation("directive_light_color"),1.0f,1.0f,1.0f,0.5f);
-        // Grey higher contrast
-        // glUniform4f(selected_mesh_shader->uniformLocation("ambient_light_color"),1.0f,1.0f,1.0f,0.4f);
-        // glUniform4f(selected_mesh_shader->uniformLocation("directive_light_color"),1.0f,1.0f,1.0f,0.6f);
-        // Grey lower contrast
-        // glUniform4f(selected_mesh_shader->uniformLocation("ambient_light_color"),1.0f, 1.0f, 1.0f,0.6f);
-        // glUniform4f(selected_mesh_shader->uniformLocation("directive_light_color"),1.0f,1.0f,1.0f,0.4f);
-        // Cyan standard contrast
-        // glUniform4f(selected_mesh_shader->uniformLocation("ambient_light_color"),0.0f, 1.0f, 1.0f,0.6f);
-        // glUniform4f(selected_mesh_shader->uniformLocation("directive_light_color"),1.0f,1.0f,1.0f,0.5f);
 
         // Directive Light Direction
         // dir 1,0,0  Light from the left
@@ -294,7 +264,6 @@ void Canvas::draw_mesh()
         //
         // -1,-1,0 Light from top right
         //glUniform3f(selected_mesh_shader->uniformLocation("directive_light_direction"),-1.0f,-1.0f,0.0f);
-
         glUniform3f(selected_mesh_shader->uniformLocation("directive_light_direction"),listDir.at(currentLightDirection).x(), listDir.at(currentLightDirection).y(), listDir.at(currentLightDirection).z());
     }
 

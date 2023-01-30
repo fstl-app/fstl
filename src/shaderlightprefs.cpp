@@ -2,6 +2,8 @@
 #include "canvas.h"
 #include <QColorDialog>
 
+const QString ShaderLightPrefs::PREFS_GEOM = "shaderPrefsGeometry";
+
 ShaderLightPrefs::ShaderLightPrefs(QWidget *parent, Canvas *_canvas) : QDialog(parent)
 {
     canvas = _canvas;
@@ -85,22 +87,10 @@ ShaderLightPrefs::ShaderLightPrefs(QWidget *parent, Canvas *_canvas) : QDialog(p
     hideButton->setFocusPolicy(Qt::NoFocus);
     connect(hideButton,SIGNAL(clicked(bool)),this,SLOT(hideButtonClicked()));
 
-//    // OK Cancel
-//    QWidget* okCancelBox = new QWidget;
-//    okCancelBox->setLayout(new QHBoxLayout);
-//    this->layout()->addWidget(okCancelBox);
-
-//    QPushButton *doneButton = new QPushButton("&Ok");
-//    okCancelBox->layout()->addWidget(doneButton);
-//    doneButton->setDefault(true);
-//    doneButton->setFixedWidth(80);
-
-//    QPushButton *cancelButton = new QPushButton("&Cancel");
-//    okCancelBox->layout()->addWidget(cancelButton);
-//    cancelButton->setFixedWidth(80);
-
-    //connect(doneButton,SIGNAL(clicked(bool)),this,SLOT(doneButtonClicked()));
-    //connect(cancelButton,SIGNAL(clicked(bool)),this,SLOT(cancelButtonClicked()));
+    QSettings settings;
+    if (!settings.value(PREFS_GEOM).isNull()) {
+        restoreGeometry(settings.value(PREFS_GEOM).toByteArray());
+    }
 }
 
 void ShaderLightPrefs::buttonAmbientColorClicked() {
@@ -169,3 +159,22 @@ void ShaderLightPrefs::resetDirection() {
     comboDirections->setCurrentIndex(canvas->getCurrentLightDirection());
     canvas->update();
 }
+
+void ShaderLightPrefs::resizeEvent(QResizeEvent *event)
+{
+    // simply ignore resize
+}
+
+void ShaderLightPrefs::moveEvent(QMoveEvent *event)
+{
+    QSettings().setValue(PREFS_GEOM, saveGeometry());
+    QWidget::moveEvent(event);
+}
+
+void ShaderLightPrefs::closeEvent(QCloseEvent *event)
+{
+    QSettings().setValue(PREFS_GEOM, saveGeometry());
+    // replace close event by hide
+    this->hide();
+}
+
