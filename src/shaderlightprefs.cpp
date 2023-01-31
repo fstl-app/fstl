@@ -81,11 +81,18 @@ ShaderLightPrefs::ShaderLightPrefs(QWidget *parent, Canvas *_canvas) : QDialog(p
     connect(buttonResetDirection,SIGNAL(clicked(bool)),this,SLOT(resetDirection()));
 
 
-    // Hide button
-    QPushButton* hideButton = new QPushButton("Hide");
-    this->layout()->addWidget(hideButton);
-    hideButton->setFocusPolicy(Qt::NoFocus);
-    connect(hideButton,SIGNAL(clicked(bool)),this,SLOT(hideButtonClicked()));
+    // Ok button
+    QWidget* boxButton = new QWidget;
+    QHBoxLayout* boxButtonLayout = new QHBoxLayout;
+    boxButton->setLayout(boxButtonLayout);
+    QFrame *spacerL = new QFrame;
+    spacerL->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Expanding));
+    QPushButton* okButton = new QPushButton("Ok");
+    boxButtonLayout->addWidget(spacerL);
+    boxButtonLayout->addWidget(okButton);
+    this->layout()->addWidget(boxButton);
+    okButton->setFocusPolicy(Qt::NoFocus);
+    connect(okButton,SIGNAL(clicked(bool)),this,SLOT(okButtonClicked()));
 
     QSettings settings;
     if (!settings.value(PREFS_GEOM).isNull()) {
@@ -145,8 +152,8 @@ void ShaderLightPrefs::resetDirectiveColorClicked() {
     canvas->update();
 }
 
-void ShaderLightPrefs::hideButtonClicked() {
-    this->hide();
+void ShaderLightPrefs::okButtonClicked() {
+    this->close();
 }
 
 void ShaderLightPrefs::comboDirectionsChanged(int ind) {

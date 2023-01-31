@@ -30,7 +30,7 @@ private slots:
     void comboDirectionsChanged(int ind);
     void resetDirection();
 
-    void hideButtonClicked();
+    void okButtonClicked();
 
 private:
     Canvas* canvas;
