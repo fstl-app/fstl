@@ -35,6 +35,7 @@ Window::Window(QWidget *parent) :
 
 {
     setWindowTitle("fstl");
+    setWindowIcon(QIcon(":/qt/icons/fstl_64x64.png"));
     setAcceptDrops(true);
 
     QSurfaceFormat format;
