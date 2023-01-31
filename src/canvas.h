@@ -27,6 +27,7 @@ public:
     void draw_axes(bool d);
     void invert_zoom(bool d);
     void set_drawMode(enum DrawMode mode);
+    void setResetTransformOnLoad(bool d);
 
 public slots:
     void set_status(const QString& s);
@@ -75,6 +76,7 @@ private:
     enum DrawMode drawMode;
     bool drawAxes;
     bool invertZoom;
+    bool resetTransformOnLoad;
     Q_PROPERTY(float perspective MEMBER perspective WRITE set_perspective);
     QPropertyAnimation anim;
 

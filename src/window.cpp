@@ -11,6 +11,7 @@ const QString Window::DRAW_AXES_KEY = "drawAxes";
 const QString Window::PROJECTION_KEY = "projection";
 const QString Window::DRAW_MODE_KEY = "drawMode";
 const QString Window::WINDOW_GEOM_KEY = "windowGeometry";
+const QString Window::RESET_TRANSFORM_ON_LOAD_KEY = "resetTransformOnLoad";
 
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
@@ -28,6 +29,7 @@ Window::Window(QWidget *parent) :
     autoreload_action(new QAction("Autoreload", this)),
     save_screenshot_action(new QAction("Save Screenshot", this)),
     hide_menuBar_action(new QAction("Hide Menu Bar", this)),
+    resetTransformOnLoadAction(new QAction("Reset rotation on load",this)),
     recent_files(new QMenu("Open recent", this)),
     recent_files_group(new QActionGroup(this)),
     recent_files_clear_action(new QAction("Clear recent files", this)),
@@ -131,6 +133,11 @@ Window::Window(QWidget *parent) :
     QObject::connect(invert_zoom_action, &QAction::triggered,
             this, &Window::on_invertZoom);       
 
+    view_menu->addAction(resetTransformOnLoadAction);
+    resetTransformOnLoadAction->setCheckable(true);
+    QObject::connect(resetTransformOnLoadAction, &QAction::triggered,
+            this, &Window::on_resetTransformOnLoad);
+
     view_menu->addAction(hide_menuBar_action);
     hide_menuBar_action->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_C);
     hide_menuBar_action->setCheckable(true);
@@ -149,6 +156,10 @@ void Window::load_persist_settings(){
     bool invert_zoom = settings.value(INVERT_ZOOM_KEY, false).toBool();
     canvas->invert_zoom(invert_zoom);
     invert_zoom_action->setChecked(invert_zoom);
+
+    bool resetTransformOnLoad = settings.value(RESET_TRANSFORM_ON_LOAD_KEY, true).toBool();
+    canvas->setResetTransformOnLoad(resetTransformOnLoad);
+    resetTransformOnLoadAction->setChecked(resetTransformOnLoad);
 
     autoreload_action->setChecked(settings.value(AUTORELOAD_KEY, true).toBool());
 
@@ -298,6 +309,11 @@ void Window::on_invertZoom(bool d)
 {
     canvas->invert_zoom(d);
     QSettings().setValue(INVERT_ZOOM_KEY, d);
+}
+
+void Window::on_resetTransformOnLoad(bool d) {
+    canvas->setResetTransformOnLoad(d);
+    QSettings().setValue(RESET_TRANSFORM_ON_LOAD_KEY, d);
 }
 
 void Window::on_watched_change(const QString& filename)

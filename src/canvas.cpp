@@ -22,7 +22,8 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     styleFile.open( QFile::ReadOnly );
     setStyleSheet(styleFile.readAll());
     currentTransform = QMatrix4x4();
-    currentTransform.setToIdentity();
+    //currentTransform.setToIdentity();
+    resetTransform();
 
     anim.setDuration(100);
 }
@@ -67,6 +68,10 @@ void Canvas::invert_zoom(bool d)
     update();
 }
 
+void Canvas::setResetTransformOnLoad(bool d) {
+    resetTransformOnLoad = d;
+}
+
 void Canvas::resetTransform() {
     currentTransform.setToIdentity();
     // apply some rotations to define initial orientation
@@ -90,7 +95,9 @@ void Canvas::load_mesh(Mesh* m, bool is_reload)
 
         // Reset other camera parameters
         zoom = 1;
-        resetTransform();
+        if (resetTransformOnLoad) {
+            resetTransform();
+        }
     }
     meshInfo = QStringLiteral("Triangles: %1\nX: [%2, %3]\nY: [%4, %5]\nZ: [%6, %7]").arg(m->triCount());
     for(int dIdx = 0; dIdx < 3; dIdx++) meshInfo = meshInfo.arg(lower[dIdx]).arg(upper[dIdx]);
