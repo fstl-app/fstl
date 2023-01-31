@@ -162,13 +162,12 @@ void ShaderLightPrefs::resetDirection() {
 
 void ShaderLightPrefs::resizeEvent(QResizeEvent *event)
 {
-    // simply ignore resize
+    QSettings().setValue(PREFS_GEOM, saveGeometry());
 }
 
 void ShaderLightPrefs::moveEvent(QMoveEvent *event)
 {
     QSettings().setValue(PREFS_GEOM, saveGeometry());
-    QWidget::moveEvent(event);
 }
 
 
