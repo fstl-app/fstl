@@ -171,10 +171,4 @@ void ShaderLightPrefs::moveEvent(QMoveEvent *event)
     QWidget::moveEvent(event);
 }
 
-void ShaderLightPrefs::closeEvent(QCloseEvent *event)
-{
-    QSettings().setValue(PREFS_GEOM, saveGeometry());
-    // replace close event by hide
-    this->hide();
-}
 

@@ -17,7 +17,6 @@ public:
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void moveEvent(QMoveEvent *event) override;
-    void closeEvent(QCloseEvent *event) override;
 
 private slots:
     void buttonAmbientColorClicked();
