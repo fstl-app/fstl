@@ -50,6 +50,7 @@ private slots:
     void on_load_recent(QAction* a);
     void on_loaded(const QString& filename);
     void on_save_screenshot();
+    void on_fullscreen();
     void on_hide_menuBar();
     void on_drawModePrefs();
 
@@ -76,6 +77,7 @@ private:
     QAction* const autoreload_action;
     QAction* const save_screenshot_action;
     QAction* const hide_menuBar_action;
+    QAction* const fullscreen_action;
     QAction* const resetTransformOnLoadAction;
 
     QMenu* const recent_files;
