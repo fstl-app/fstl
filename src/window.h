@@ -51,7 +51,7 @@ private slots:
     void on_loaded(const QString& filename);
     void on_save_screenshot();
     void on_hide_menuBar();
-    void on_meshlightprefs();
+    void on_drawModePrefs();
 
 private:
     void rebuild_recent_files();
@@ -69,7 +69,7 @@ private:
     QAction* const wireframe_action;
     QAction* const surfaceangle_action;
     QAction* const meshlight_action;
-    QAction* const meshlightprefs_action;
+    QAction* const drawModePrefs_action;
     QAction* const axes_action;
     QAction* const invert_zoom_action;
     QAction* const reload_action;
