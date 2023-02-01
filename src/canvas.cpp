@@ -11,6 +11,18 @@
 const float Canvas::P_PERSPECTIVE = 0.25f;
 const float Canvas::P_ORTHOGRAPHIC = 0.0f;
 
+const QString Canvas::AMBIENT_COLOR = "ambientColor";
+const QString Canvas::AMBIENT_FACTOR = "ambientFactor";
+const QString Canvas::DIRECTIVE_COLOR = "directiveColor";
+const QString Canvas::DIRECTIVE_FACTOR = "directiveFactor";
+const QString Canvas::CURRENT_LIGHT_DIRECTION = "currentLightDirection";
+
+const QColor Canvas::defaultAmbientColor = QColor::fromRgbF(0.22,0.8,1.0);
+const QColor Canvas::defaultDirectiveColor = QColor(255,255,255);
+const float Canvas::defaultAmbientFactor = 0.67;
+const float Canvas::defaultDirectiveFactor = 0.5;
+const int Canvas::defaultCurrentLightDirection = 1;
+
 Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     : QOpenGLWidget(parent), mesh(nullptr),
       scale(1), zoom(1),
@@ -23,6 +35,36 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     setStyleSheet(styleFile.readAll());
     currentTransform = QMatrix4x4();
     resetTransform();
+
+    QSettings settings;
+    ambientColor = settings.value(AMBIENT_COLOR,defaultAmbientColor).value<QColor>();
+    directiveColor = settings.value(DIRECTIVE_COLOR,defaultDirectiveColor).value<QColor>();
+    ambientFactor = settings.value(AMBIENT_FACTOR,defaultAmbientFactor).value<float>();
+    directiveFactor = settings.value(DIRECTIVE_FACTOR,defaultDirectiveFactor).value<float>();
+
+    // Fill direction list
+    // Fill in directions
+    nameDir.clear();
+    listDir.clear();
+    QList<QString> xname, yname, zname;
+    xname << "right " << " " << "left ";
+    yname << "top " << " " << "bottom ";
+    zname << "rear " << " " << "front ";
+    for (int i=-1; i<2 ; i++) {
+        for (int j=-1; j<2; j++) {
+            for (int k=-1; k<2; k++) {
+                QString current = xname.at(i+1) + yname.at(j+1) + zname.at(k+1);
+                if (!(i==0 && j==0 && k==0)) {
+                    nameDir << current.simplified();
+                    listDir << QVector3D((double)i,(double)j,(double)k);
+                }
+            }
+        }
+    }
+    currentLightDirection = settings.value(CURRENT_LIGHT_DIRECTION,defaultCurrentLightDirection).value<int>();
+    if (currentLightDirection < 0 || currentLightDirection >= nameDir.length()) {
+        currentLightDirection = defaultCurrentLightDirection;
+    }
 
     anim.setDuration(100);
 }
@@ -145,6 +187,9 @@ void Canvas::initializeGL()
     mesh_surfaceangle_shader.addShader(mesh_vertshader);
     mesh_surfaceangle_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_surfaceangle.frag");
     mesh_surfaceangle_shader.link();
+    mesh_meshlight_shader.addShader(mesh_vertshader);
+    mesh_meshlight_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_light.frag");
+    mesh_meshlight_shader.link();
 
     backdrop = new Backdrop();
     axis = new Axis();
@@ -182,9 +227,13 @@ void Canvas::draw_mesh()
         {
             selected_mesh_shader = &mesh_shader;
         }
-        else
+        else if (drawMode == surfaceangle)
         {
             selected_mesh_shader = &mesh_surfaceangle_shader;
+        }
+        else if (drawMode == meshlight)
+        {
+            selected_mesh_shader = &mesh_meshlight_shader;
         }
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
@@ -201,6 +250,28 @@ void Canvas::draw_mesh()
 
     // Compensate for z-flattening when zooming
     glUniform1f(selected_mesh_shader->uniformLocation("zoom"), 1/zoom);
+
+    // specific meshlight arguments
+    if (drawMode == meshlight) {
+        // Ambient Light Color, followed by the ambient light coefficient to use
+        //glUniform4f(selected_mesh_shader->uniformLocation("ambient_light_color"),0.22f, 0.8f, 1.0f, 0.67f);
+        glUniform4f(selected_mesh_shader->uniformLocation("ambient_light_color"),ambientColor.redF(), ambientColor.greenF(), ambientColor.blueF(), ambientFactor);
+        // Directive Light Color, followed by the directive light coefficient to use
+        //glUniform4f(selected_mesh_shader->uniformLocation("directive_light_color"),1.0f,1.0f,1.0f,0.5f);
+        glUniform4f(selected_mesh_shader->uniformLocation("directive_light_color"),directiveColor.redF(),directiveColor.greenF(),directiveColor.blueF(),directiveFactor);
+
+        // Directive Light Direction
+        // dir 1,0,0  Light from the left
+        // dir -1,0,0 Light from the right
+        // dir 0,1,0  Light from bottom
+        // dir 0,-1,0 Light from top
+        // dir 0,0,1  Light from viewer (front)
+        // dir 0,0,-1 Light from behind
+        //
+        // -1,-1,0 Light from top right
+        //glUniform3f(selected_mesh_shader->uniformLocation("directive_light_direction"),-1.0f,-1.0f,0.0f);
+        glUniform3f(selected_mesh_shader->uniformLocation("directive_light_direction"),listDir.at(currentLightDirection).x(), listDir.at(currentLightDirection).y(), listDir.at(currentLightDirection).z());
+    }
 
     // Find and enable the attribute location for vertex position
     const GLuint vp = selected_mesh_shader->attributeLocation("vertex_position");
@@ -384,4 +455,72 @@ void Canvas::wheelEvent(QWheelEvent *event)
 void Canvas::resizeGL(int width, int height)
 {
     glViewport(0, 0, width, height);
+}
+
+QColor Canvas::getAmbientColor() {
+    return ambientColor;
+}
+
+void Canvas::setAmbientColor(QColor c) {
+    ambientColor = c;
+    QSettings settings;
+    settings.setValue(AMBIENT_COLOR,c);
+}
+
+double Canvas::getAmbientFactor() {
+    return (float) ambientFactor;
+}
+
+void Canvas::setAmbientFactor(double f) {
+    ambientFactor = (float) f;
+    QSettings settings;
+    settings.setValue(AMBIENT_FACTOR,f);
+}
+
+void Canvas::resetAmbientColor() {
+    setAmbientColor(defaultAmbientColor);
+    setAmbientFactor(defaultAmbientFactor);
+}
+
+QColor Canvas::getDirectiveColor() {
+    return directiveColor;
+}
+
+void Canvas::setDirectiveColor(QColor c) {
+    directiveColor = c;
+    QSettings settings;
+    settings.setValue(DIRECTIVE_COLOR,c);
+}
+
+double Canvas::getDirectiveFactor() {
+    return (float) directiveFactor;
+}
+
+void Canvas::setDirectiveFactor(double f) {
+    directiveFactor = (float) f;
+    QSettings settings;
+    settings.setValue(DIRECTIVE_FACTOR,f);
+}
+
+void Canvas::resetDirectiveColor() {
+    setDirectiveColor(defaultDirectiveColor);
+    setDirectiveFactor(defaultDirectiveFactor);
+}
+
+QList<QString> Canvas::getNameDir() {
+    return nameDir;
+}
+
+int Canvas::getCurrentLightDirection() {
+    return currentLightDirection;
+}
+
+void Canvas::setCurrentLightDirection(int ind) {
+    currentLightDirection = ind;
+    QSettings settings;
+    settings.setValue(CURRENT_LIGHT_DIRECTION,currentLightDirection);
+}
+
+void Canvas::resetCurrentLightDirection() {
+    setCurrentLightDirection(defaultCurrentLightDirection);
 }

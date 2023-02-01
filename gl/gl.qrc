@@ -4,6 +4,7 @@
         <file>mesh.vert</file>
         <file>mesh_wireframe.frag</file>
         <file>mesh_surfaceangle.frag</file>
+        <file>mesh_light.frag</file>
         <file>quad.frag</file>
         <file>quad.vert</file>
         <file>colored_lines.frag</file>

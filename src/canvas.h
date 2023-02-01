@@ -10,7 +10,7 @@ class Mesh;
 class Backdrop;
 class Axis;
 
-enum DrawMode {shaded, wireframe, surfaceangle, DRAWMODECOUNT};
+enum DrawMode {shaded, wireframe, surfaceangle, meshlight, DRAWMODECOUNT};
 
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -28,6 +28,23 @@ public:
     void invert_zoom(bool d);
     void set_drawMode(enum DrawMode mode);
     void setResetTransformOnLoad(bool d);
+
+    QColor getAmbientColor();
+    void setAmbientColor(QColor c);
+    double getAmbientFactor();
+    void setAmbientFactor(double f);
+    void resetAmbientColor();
+
+    QColor getDirectiveColor();
+    void setDirectiveColor(QColor c);
+    double getDirectiveFactor();
+    void setDirectiveFactor(double f);
+    void resetDirectiveColor();
+
+    QList<QString> getNameDir();
+    int getCurrentLightDirection();
+    void setCurrentLightDirection(int ind);
+    void resetCurrentLightDirection();
 
 public slots:
     void set_status(const QString& s);
@@ -62,6 +79,27 @@ private:
     QOpenGLShaderProgram mesh_shader;
     QOpenGLShaderProgram mesh_wireframe_shader;
     QOpenGLShaderProgram mesh_surfaceangle_shader;
+    QOpenGLShaderProgram mesh_meshlight_shader;
+
+    QColor ambientColor;
+    QColor directiveColor;
+    float ambientFactor;
+    float directiveFactor;
+    QList<QString> nameDir;
+    QList<QVector3D> listDir;
+    int currentLightDirection;
+
+    const static QColor defaultAmbientColor;
+    const static QColor defaultDirectiveColor;
+    const static float defaultAmbientFactor;
+    const static float defaultDirectiveFactor;
+    const static int defaultCurrentLightDirection;
+    const static QString AMBIENT_COLOR;
+    const static QString AMBIENT_FACTOR;
+    const static QString DIRECTIVE_COLOR;
+    const static QString DIRECTIVE_FACTOR;
+    const static QString CURRENT_LIGHT_DIRECTION;
+
 
     GLMesh* mesh;
     Backdrop* backdrop;
