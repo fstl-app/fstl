@@ -41,6 +41,7 @@ private slots:
     void on_drawMode(QAction* mode);
     void on_drawAxes(bool d);
     void on_invertZoom(bool d);
+    void on_resetTransformOnLoad(bool d);
     void on_watched_change(const QString& filename);
     void on_reload();
     void on_autoreload_triggered(bool r);
@@ -71,6 +72,7 @@ private:
     QAction* const autoreload_action;
     QAction* const save_screenshot_action;
     QAction* const hide_menuBar_action;
+    QAction* const resetTransformOnLoadAction;
 
     QMenu* const recent_files;
     QActionGroup* const recent_files_group;
@@ -83,6 +85,7 @@ private:
     const static QString PROJECTION_KEY;
     const static QString DRAW_MODE_KEY;
     const static QString WINDOW_GEOM_KEY;
+    const static QString RESET_TRANSFORM_ON_LOAD_KEY;
 
     QString current_file;
     QString lookup_folder;
