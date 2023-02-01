@@ -17,6 +17,8 @@ public:
     bool load_stl(const QString& filename, bool is_reload=false);
     bool load_prev(void);
     bool load_next(void);
+    int getCurrentShader();
+    void cycleShader(bool);
 
 protected:
     void dragEnterEvent(QDragEnterEvent* event) override;
@@ -102,6 +104,7 @@ private:
     Canvas* canvas;
 
     ShaderLightPrefs* meshlightprefs;
+    QList<QAction*> dm_acts;
 };
 
 #endif // WINDOW_H

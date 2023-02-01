@@ -90,6 +90,7 @@ Window::Window(QWidget *parent) :
                      this, &Window::on_load_recent);
 
     save_screenshot_action->setCheckable(false);
+    save_screenshot_action->setShortcut(Qt::Key_S);
     QObject::connect(save_screenshot_action, &QAction::triggered, 
         this, &Window::on_save_screenshot);
     
@@ -136,7 +137,8 @@ Window::Window(QWidget *parent) :
     drawModePrefs_action->setDisabled(true);
     view_menu->addAction(axes_action);
     axes_action->setCheckable(true);
-    QObject::connect(axes_action, &QAction::triggered,
+    axes_action->setShortcut(Qt::Key_A);
+    QObject::connect(axes_action, &QAction::toggled,
             this, &Window::on_drawAxes);
 
     view_menu->addAction(invert_zoom_action);
@@ -150,14 +152,14 @@ Window::Window(QWidget *parent) :
             this, &Window::on_resetTransformOnLoad);
 
     view_menu->addAction(hide_menuBar_action);
-    hide_menuBar_action->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_C);
+    hide_menuBar_action->setShortcut(Qt::Key_M);
     hide_menuBar_action->setCheckable(true);
     QObject::connect(hide_menuBar_action, &QAction::toggled,
             this, &Window::on_hide_menuBar);
     this->addAction(hide_menuBar_action);
 
     view_menu->addAction(fullscreen_action);
-    fullscreen_action->setShortcut(Qt::Key_F11);
+    fullscreen_action->setShortcut(Qt::Key_F);
     fullscreen_action->setCheckable(true);
     QObject::connect(fullscreen_action, &QAction::toggled,
             this, &Window::on_fullscreen);
@@ -201,7 +203,7 @@ void Window::load_persist_settings(){
     {
         draw_mode = shaded;
     }
-    QAction* (dm_acts[]) = {shaded_action, wireframe_action, surfaceangle_action, meshlight_action};
+    dm_acts = {shaded_action, wireframe_action, surfaceangle_action, meshlight_action};
     dm_acts[draw_mode]->setChecked(true);
     on_drawMode(dm_acts[draw_mode]);
 
@@ -659,10 +661,11 @@ void Window::keyPressEvent(QKeyEvent* event)
     {
         load_next();
         return;
-    }
-    else if (event->key() == Qt::Key_Escape)
-    {
-        hide_menuBar_action->setChecked(false);
+    } else if (event->key() == Qt::Key_Up) {
+        cycleShader(true);
+        return;
+    } else if (event->key() == Qt::Key_Down) {
+        cycleShader(false);
         return;
     }
 
@@ -675,4 +678,25 @@ void Window::on_fullscreen() {
     } else {
         this->showNormal();
     }
+}
+
+int Window::getCurrentShader() {
+    int shadeNumber = dm_acts.size();
+    int current = 0;
+    for (int i=0; i<shadeNumber;i++) {
+        if (dm_acts.at(i)->isChecked()) {
+            current = i;
+            break;
+        }
+    }
+    return current;
+}
+
+void Window::cycleShader(bool up) {
+    int current = getCurrentShader();
+    int updown = up ? 1 : -1;
+    int nextS = (current + updown) % dm_acts.size();
+    nextS = nextS < 0 ? dm_acts.size() - 1 : nextS;
+    dm_acts.at(nextS)->setChecked(true);
+    on_drawMode(dm_acts.at(nextS));
 }
