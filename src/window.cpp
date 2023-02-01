@@ -29,6 +29,7 @@ Window::Window(QWidget *parent) :
     autoreload_action(new QAction("Autoreload", this)),
     save_screenshot_action(new QAction("Save Screenshot", this)),
     hide_menuBar_action(new QAction("Hide Menu Bar", this)),
+    fullscreen_action(new QAction("Toggle Fullscreen",this)),
     resetTransformOnLoadAction(new QAction("Reset rotation on load",this)),
     recent_files(new QMenu("Open recent", this)),
     recent_files_group(new QActionGroup(this)),
@@ -144,6 +145,14 @@ Window::Window(QWidget *parent) :
     QObject::connect(hide_menuBar_action, &QAction::toggled,
             this, &Window::on_hide_menuBar);
     this->addAction(hide_menuBar_action);
+
+    view_menu->addAction(fullscreen_action);
+    fullscreen_action->setShortcut(Qt::Key_F11);
+    fullscreen_action->setCheckable(true);
+    QObject::connect(fullscreen_action, &QAction::toggled,
+            this, &Window::on_fullscreen);
+    this->addAction(fullscreen_action);
+
 
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);
@@ -626,4 +635,12 @@ void Window::keyPressEvent(QKeyEvent* event)
     }
 
     QMainWindow::keyPressEvent(event);
+}
+
+void Window::on_fullscreen() {
+    if (!this->isFullScreen()) {
+        this->showFullScreen();
+    } else {
+        this->showNormal();
+    }
 }
