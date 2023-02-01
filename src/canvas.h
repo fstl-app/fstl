@@ -27,6 +27,7 @@ public:
     void draw_axes(bool d);
     void invert_zoom(bool d);
     void set_drawMode(enum DrawMode mode);
+    void setResetTransformOnLoad(bool d);
 
     QColor getAmbientColor();
     void setAmbientColor(QColor c);
@@ -113,6 +114,7 @@ private:
     enum DrawMode drawMode;
     bool drawAxes;
     bool invertZoom;
+    bool resetTransformOnLoad;
     Q_PROPERTY(float perspective MEMBER perspective WRITE set_perspective);
     QPropertyAnimation anim;
 
