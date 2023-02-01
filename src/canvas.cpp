@@ -22,7 +22,6 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     styleFile.open( QFile::ReadOnly );
     setStyleSheet(styleFile.readAll());
     currentTransform = QMatrix4x4();
-    //currentTransform.setToIdentity();
     resetTransform();
 
     anim.setDuration(100);
