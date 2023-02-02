@@ -23,7 +23,6 @@ const QKeySequence Window::shortcutDrawAxes = Qt::Key_A;
 const QKeySequence Window::shortcutHideMenuBar = Qt::Key_M;
 const QKeySequence Window::shortcutFullscreen = Qt::Key_F;
 
-
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
     open_action(new QAction("Open", this)),
@@ -718,4 +717,14 @@ void Window::cycleShader(bool up) {
     nextS = nextS < 0 ? dm_acts.size() - 1 : nextS;
     dm_acts.at(nextS)->setChecked(true);
     on_drawMode(dm_acts.at(nextS));
+}
+
+
+// Resize the widget giving the canvas dimension
+// Useful for screenshot of given size.
+void Window::setCanvasSize(int w, int h) {
+    this->showNormal();
+    int dw = this->size().width() - canvas->size().width();
+    int dh = this->size().height() - canvas->size().height();
+    this->resize(w + dw, h + dh);
 }

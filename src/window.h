@@ -19,6 +19,7 @@ public:
     bool load_next(void);
     int getCurrentShader();
     void cycleShader(bool);
+    void setCanvasSize(int w, int h);
 
 protected:
     void dragEnterEvent(QDragEnterEvent* event) override;
