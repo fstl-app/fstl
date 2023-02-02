@@ -14,6 +14,16 @@ const QString Window::DRAW_MODE_KEY = "drawMode";
 const QString Window::WINDOW_GEOM_KEY = "windowGeometry";
 const QString Window::RESET_TRANSFORM_ON_LOAD_KEY = "resetTransformOnLoad";
 
+const QKeySequence Window::shortcutOpen = Qt::Key_O;
+const QKeySequence Window::shortcutReload = Qt::Key_R;
+const QKeySequence Window::shortcutScreenshot = Qt::Key_S;
+const QKeySequence Window::shortcutQuit = Qt::Key_Q;
+const QKeySequence Window::shortcutDrawModeSettings = Qt::Key_P;
+const QKeySequence Window::shortcutDrawAxes = Qt::Key_A;
+const QKeySequence Window::shortcutHideMenuBar = Qt::Key_M;
+const QKeySequence Window::shortcutFullscreen = Qt::Key_F;
+
+
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
     open_action(new QAction("Open", this)),
@@ -62,12 +72,14 @@ Window::Window(QWidget *parent) :
     QObject::connect(watcher, &QFileSystemWatcher::fileChanged,
                      this, &Window::on_watched_change);
 
-    open_action->setShortcut(QKeySequence::Open);
+    //open_action->setShortcut(QKeySequence::Open);
+    open_action->setShortcut(shortcutOpen);
     QObject::connect(open_action, &QAction::triggered,
                      this, &Window::on_open);
     this->addAction(open_action);
 
-    quit_action->setShortcut(QKeySequence::Quit);
+    //quit_action->setShortcut(QKeySequence::Quit);
+    quit_action->setShortcut(shortcutQuit);
     QObject::connect(quit_action, &QAction::triggered,
                      this, &Window::close);
     this->addAction(quit_action);
@@ -76,7 +88,9 @@ Window::Window(QWidget *parent) :
     QObject::connect(autoreload_action, &QAction::triggered,
             this, &Window::on_autoreload_triggered);
 
-    reload_action->setShortcut(QKeySequence::Refresh);
+    //reload_action->setShortcut(QKeySequence::Refresh);
+    reload_action->setShortcut(shortcutReload);
+    this->addAction(reload_action);
     reload_action->setEnabled(false);
     QObject::connect(reload_action, &QAction::triggered,
                      this, &Window::on_reload);
@@ -90,7 +104,8 @@ Window::Window(QWidget *parent) :
                      this, &Window::on_load_recent);
 
     save_screenshot_action->setCheckable(false);
-    save_screenshot_action->setShortcut(Qt::Key_S);
+    save_screenshot_action->setShortcut(shortcutScreenshot);
+    this->addAction(save_screenshot_action);
     QObject::connect(save_screenshot_action, &QAction::triggered, 
         this, &Window::on_save_screenshot);
     
@@ -134,10 +149,13 @@ Window::Window(QWidget *parent) :
     QObject::connect(drawModes, &QActionGroup::triggered,
                      this, &Window::on_drawMode);
     view_menu->addAction(drawModePrefs_action);
+    drawModePrefs_action->setShortcut(shortcutDrawModeSettings);
+    this->addAction(drawModePrefs_action);
     drawModePrefs_action->setDisabled(true);
     view_menu->addAction(axes_action);
     axes_action->setCheckable(true);
-    axes_action->setShortcut(Qt::Key_A);
+    axes_action->setShortcut(shortcutDrawAxes);
+    this->addAction(axes_action);
     QObject::connect(axes_action, &QAction::toggled,
             this, &Window::on_drawAxes);
 
@@ -152,14 +170,15 @@ Window::Window(QWidget *parent) :
             this, &Window::on_resetTransformOnLoad);
 
     view_menu->addAction(hide_menuBar_action);
-    hide_menuBar_action->setShortcut(Qt::Key_M);
+    hide_menuBar_action->setShortcut(shortcutHideMenuBar);
     hide_menuBar_action->setCheckable(true);
     QObject::connect(hide_menuBar_action, &QAction::toggled,
             this, &Window::on_hide_menuBar);
+    // To have the shortcut work without the menu
     this->addAction(hide_menuBar_action);
 
     view_menu->addAction(fullscreen_action);
-    fullscreen_action->setShortcut(Qt::Key_F);
+    fullscreen_action->setShortcut(shortcutFullscreen);
     fullscreen_action->setCheckable(true);
     QObject::connect(fullscreen_action, &QAction::toggled,
             this, &Window::on_fullscreen);

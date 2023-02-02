@@ -95,6 +95,15 @@ private:
     const static QString WINDOW_GEOM_KEY;
     const static QString RESET_TRANSFORM_ON_LOAD_KEY;
 
+    const static QKeySequence shortcutOpen;
+    const static QKeySequence shortcutReload;
+    const static QKeySequence shortcutScreenshot;
+    const static QKeySequence shortcutQuit;
+    const static QKeySequence shortcutDrawModeSettings;
+    const static QKeySequence shortcutDrawAxes;
+    const static QKeySequence shortcutHideMenuBar;
+    const static QKeySequence shortcutFullscreen;
+
     QString current_file;
     QString lookup_folder;
     QStringList lookup_folder_files;
