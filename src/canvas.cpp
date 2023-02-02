@@ -211,6 +211,17 @@ void Canvas::paintGL()
     float textHeight = painter.fontInfo().pointSize();
     if (drawAxes) painter.drawText(QRect(10, textHeight, width(), height()), meshInfo);
     painter.drawText(10, height() - textHeight, status);
+
+    if (drawAxes) {
+        QString sWidth = QString("GL Width = %1").arg(width());
+        QString sHeight = QString("GL Height = %1").arg(height());
+        int sWidthLength = painter.fontMetrics().horizontalAdvance(sWidth);
+        int sHeightLength = painter.fontMetrics().horizontalAdvance(sHeight);
+        int origin = std::min(sWidthLength,sHeightLength);
+        painter.drawText(width() - origin - 10, textHeight + 10, sWidth);
+        painter.drawText(width() - origin - 10, 2* textHeight + 10, sHeight);
+    }
+
 }
 
 void Canvas::draw_mesh()
