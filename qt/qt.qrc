@@ -2,5 +2,14 @@
     <qresource prefix="/qt">
         <file>style.qss</file>
         <file>icons/fstl_64x64.png</file>
+        <file>icons/sphere_shader1.png</file>
+        <file>icons/sphere_shader2.png</file>
+        <file>icons/sphere_shader3.png</file>
+        <file>icons/sphere_shader4.png</file>
+        <file>icons/document-open.png</file>
+        <file>icons/exit.png</file>
+        <file>icons/screenshot.png</file>
+        <file>icons/view-fullscreen.png</file>
+        <file>icons/view-refresh.png</file>
     </qresource>
 </RCC>

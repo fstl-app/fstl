@@ -73,12 +73,14 @@ Window::Window(QWidget *parent) :
 
     //open_action->setShortcut(QKeySequence::Open);
     open_action->setShortcut(shortcutOpen);
+    open_action->setIcon(QIcon(":/qt/icons/document-open.png"));
     QObject::connect(open_action, &QAction::triggered,
                      this, &Window::on_open);
     this->addAction(open_action);
 
     //quit_action->setShortcut(QKeySequence::Quit);
     quit_action->setShortcut(shortcutQuit);
+    quit_action->setIcon(QIcon(":/qt/icons/exit.png"));
     QObject::connect(quit_action, &QAction::triggered,
                      this, &Window::close);
     this->addAction(quit_action);
@@ -89,6 +91,7 @@ Window::Window(QWidget *parent) :
 
     //reload_action->setShortcut(QKeySequence::Refresh);
     reload_action->setShortcut(shortcutReload);
+    reload_action->setIcon(QIcon(":/qt/icons/view-refresh.png"));
     this->addAction(reload_action);
     reload_action->setEnabled(false);
     QObject::connect(reload_action, &QAction::triggered,
@@ -104,6 +107,7 @@ Window::Window(QWidget *parent) :
 
     save_screenshot_action->setCheckable(false);
     save_screenshot_action->setShortcut(shortcutScreenshot);
+    save_screenshot_action->setIcon(QIcon(":/qt/icons/screenshot.png"));
     this->addAction(save_screenshot_action);
     QObject::connect(save_screenshot_action, &QAction::triggered, 
         this, &Window::on_save_screenshot);
@@ -133,11 +137,15 @@ Window::Window(QWidget *parent) :
     QObject::connect(projections, &QActionGroup::triggered,
                      this, &Window::on_projection);
 
-    auto draw_menu = view_menu->addMenu("Draw Mode");
+    draw_menu = view_menu->addMenu("Draw Mode");
     draw_menu->addAction(shaded_action);
     draw_menu->addAction(wireframe_action);
     draw_menu->addAction(surfaceangle_action);
     draw_menu->addAction(meshlight_action);
+    shaded_action->setIcon(QIcon(":/qt/icons/sphere_shader1.png"));
+    wireframe_action->setIcon(QIcon(":/qt/icons/sphere_shader2.png"));
+    surfaceangle_action->setIcon(QIcon(":/qt/icons/sphere_shader3.png"));
+    meshlight_action->setIcon(QIcon(":/qt/icons/sphere_shader4.png"));
     auto drawModes = new QActionGroup(draw_menu);
     for (auto p : {shaded_action, wireframe_action, surfaceangle_action, meshlight_action})
     {
@@ -178,6 +186,7 @@ Window::Window(QWidget *parent) :
 
     view_menu->addAction(fullscreen_action);
     fullscreen_action->setShortcut(shortcutFullscreen);
+    fullscreen_action->setIcon(QIcon(":/qt/icons/view-fullscreen.png"));
     fullscreen_action->setCheckable(true);
     QObject::connect(fullscreen_action, &QAction::toggled,
             this, &Window::on_fullscreen);
@@ -358,6 +367,7 @@ void Window::on_drawMode(QAction* act)
     }
     canvas->set_drawMode(mode);
     QSettings().setValue(DRAW_MODE_KEY, mode);
+    draw_menu->setIcon(act->icon());
 }
 
 void Window::on_drawAxes(bool d)

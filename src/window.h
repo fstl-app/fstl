@@ -84,6 +84,7 @@ private:
     QAction* const resetTransformOnLoadAction;
 
     QMenu* const recent_files;
+    QMenu* draw_menu;
     QActionGroup* const recent_files_group;
     QAction* const recent_files_clear_action;
     const static int MAX_RECENT_FILES=8;
