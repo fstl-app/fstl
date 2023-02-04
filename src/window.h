@@ -5,6 +5,7 @@
 #include <QActionGroup>
 #include <QFileSystemWatcher>
 #include <QCollator>
+#include <QToolButton>
 
 class Canvas;
 class ShaderLightPrefs;
@@ -85,6 +86,11 @@ private:
 
     QMenu* const recent_files;
     QMenu* draw_menu;
+    QToolButton* shaderButton;
+    QToolBar* windowToolBar;
+    QMenu* projection_menu;
+    QToolButton* projectionButton;
+
     QActionGroup* const recent_files_group;
     QAction* const recent_files_clear_action;
     const static int MAX_RECENT_FILES=8;

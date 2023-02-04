@@ -12,5 +12,11 @@
         <file>icons/view-fullscreen.png</file>
         <file>icons/view-refresh.png</file>
         <file>icons/preferences-system.png</file>
+        <file>icons/axes.png</file>
+        <file>icons/orthographic.png</file>
+        <file>icons/perspective.png</file>
+        <file>icons/reset_rotation_on_load.png</file>
+        <file>icons/invert_zoom.png</file>
+        <file>icons/auto_refresh.png</file>
     </qresource>
 </RCC>

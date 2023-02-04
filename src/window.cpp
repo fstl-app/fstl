@@ -86,6 +86,7 @@ Window::Window(QWidget *parent) :
     this->addAction(quit_action);
 
     autoreload_action->setCheckable(true);
+    autoreload_action->setIcon(QIcon(":/qt/icons/auto_refresh.png"));
     QObject::connect(autoreload_action, &QAction::triggered,
             this, &Window::on_autoreload_triggered);
 
@@ -124,9 +125,11 @@ Window::Window(QWidget *parent) :
     file_menu->addAction(quit_action);
 
     auto view_menu = menuBar()->addMenu("View");
-    auto projection_menu = view_menu->addMenu("Projection");
+    projection_menu = view_menu->addMenu("Projection");
     projection_menu->addAction(perspective_action);
+    perspective_action->setIcon(QIcon(":/qt/icons/perspective.png"));
     projection_menu->addAction(orthographic_action);
+    orthographic_action->setIcon(QIcon(":/qt/icons/orthographic.png"));
     auto projections = new QActionGroup(projection_menu);
     for (auto p : {perspective_action, orthographic_action})
     {
@@ -157,22 +160,26 @@ Window::Window(QWidget *parent) :
                      this, &Window::on_drawMode);
     view_menu->addAction(drawModePrefs_action);
     drawModePrefs_action->setShortcut(shortcutDrawModeSettings);
+    drawModePrefs_action->setIcon(QIcon(":/qt/icons/preferences-system.png"));
     this->addAction(drawModePrefs_action);
     drawModePrefs_action->setDisabled(true);
     view_menu->addAction(axes_action);
     axes_action->setCheckable(true);
     axes_action->setShortcut(shortcutDrawAxes);
+    axes_action->setIcon(QIcon(":/qt/icons/axes.png"));
     this->addAction(axes_action);
     QObject::connect(axes_action, &QAction::toggled,
             this, &Window::on_drawAxes);
 
     view_menu->addAction(invert_zoom_action);
     invert_zoom_action->setCheckable(true);
+    invert_zoom_action->setIcon(QIcon(":/qt/icons/invert_zoom.png"));
     QObject::connect(invert_zoom_action, &QAction::triggered,
             this, &Window::on_invertZoom);       
 
     view_menu->addAction(resetTransformOnLoadAction);
     resetTransformOnLoadAction->setCheckable(true);
+    resetTransformOnLoadAction->setIcon(QIcon(":/qt/icons/reset_rotation_on_load.png"));
     QObject::connect(resetTransformOnLoadAction, &QAction::triggered,
             this, &Window::on_resetTransformOnLoad);
 
@@ -196,6 +203,54 @@ Window::Window(QWidget *parent) :
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);
 
+    // Toolbar
+    // First group
+    windowToolBar = new QToolBar;
+    windowToolBar->addAction(quit_action);
+    windowToolBar->addAction(open_action);
+    windowToolBar->addAction(reload_action);
+    windowToolBar->addAction(autoreload_action);
+
+    // preferences button here
+    windowToolBar->addSeparator();
+
+    // Second group
+    projectionButton = new QToolButton;
+    projectionButton->setPopupMode(QToolButton::InstantPopup);
+    projectionButton->setMenu(projection_menu);
+    projectionButton->setFocusPolicy(Qt::NoFocus); // we do not want the button to have keyboard focus
+    windowToolBar->addWidget(projectionButton);
+
+    shaderButton = new QToolButton;
+    shaderButton->setPopupMode(QToolButton::InstantPopup);
+    shaderButton->setMenu(draw_menu);
+    shaderButton->setFocusPolicy(Qt::NoFocus); // we do not want the button to have keyboard focus
+    windowToolBar->addWidget(shaderButton);
+    windowToolBar->addAction(drawModePrefs_action);
+
+    windowToolBar->addAction(axes_action);
+    windowToolBar->addAction(invert_zoom_action);
+    windowToolBar->addAction(resetTransformOnLoadAction);
+
+    windowToolBar->addSeparator();
+    // Third group
+    windowToolBar->addAction(save_screenshot_action);
+    windowToolBar->addAction(fullscreen_action);
+
+
+
+
+    // reset view here
+    // select views here
+    // slect shader here
+    // select gl size here
+
+
+
+
+
+
+    this->addToolBar(windowToolBar);
     load_persist_settings();
 }
 
@@ -216,13 +271,16 @@ void Window::load_persist_settings(){
     axes_action->setChecked(draw_axes);
 
     QString projection = settings.value(PROJECTION_KEY, "perspective").toString();
+    QAction* currentProjection;
     if(projection == "perspective"){
         canvas->view_perspective(Canvas::P_PERSPECTIVE, false);
-        perspective_action->setChecked(true);
+        currentProjection = perspective_action;
     }else{
         canvas->view_perspective(Canvas::P_ORTHOGRAPHIC, false);
-        orthographic_action->setChecked(true);
+        currentProjection = orthographic_action;
     }
+    currentProjection->setChecked(true);
+    on_projection(currentProjection);
 
     DrawMode draw_mode = (DrawMode)settings.value(DRAW_MODE_KEY, DRAWMODECOUNT).toInt();
     
@@ -337,6 +395,9 @@ void Window::on_projection(QAction* proj)
         canvas->view_perspective(Canvas::P_ORTHOGRAPHIC, true);
         QSettings().setValue(PROJECTION_KEY, "orthographic");
     }
+    projection_menu->setIcon(proj->icon());
+    projectionButton->setIcon(proj->icon());
+    projectionButton->setToolTip(QString("%1 : %2").arg(projection_menu->title()).arg(proj->toolTip()));
 }
 
 void Window::on_drawMode(QAction* act)
@@ -368,6 +429,8 @@ void Window::on_drawMode(QAction* act)
     canvas->set_drawMode(mode);
     QSettings().setValue(DRAW_MODE_KEY, mode);
     draw_menu->setIcon(act->icon());
+    shaderButton->setIcon(act->icon());
+    shaderButton->setToolTip(QString("%1 : %2").arg(draw_menu->title()).arg(act->toolTip()));
 }
 
 void Window::on_drawAxes(bool d)
@@ -458,6 +521,7 @@ void Window::on_save_screenshot()
 void Window::on_hide_menuBar()
 {
     menuBar()->setVisible(!hide_menuBar_action->isChecked());
+    windowToolBar->setVisible(!hide_menuBar_action->isChecked());
 }
 
 void Window::rebuild_recent_files()
@@ -694,6 +758,9 @@ void Window::keyPressEvent(QKeyEvent* event)
         return;
     } else if (event->key() == Qt::Key_Down) {
         cycleShader(false);
+        return;
+    } else if (event->key() == Qt::Key_Escape && !menuBar()->isVisible()) { // this is if user did not noticed the hide menu key
+        hide_menuBar_action->toggle();
         return;
     }
 
