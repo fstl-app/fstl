@@ -43,6 +43,7 @@ Window::Window(QWidget *parent) :
     hide_menuBar_action(new QAction("Hide Menu Bar", this)),
     fullscreen_action(new QAction("Toggle Fullscreen",this)),
     resetTransformOnLoadAction(new QAction("Reset rotation on load",this)),
+    setGLSizeAction(new QAction("Set Viewport Size",this)),
     recent_files(new QMenu("Open recent", this)),
     recent_files_group(new QActionGroup(this)),
     recent_files_clear_action(new QAction("Clear recent files", this)),
@@ -199,6 +200,53 @@ Window::Window(QWidget *parent) :
             this, &Window::on_fullscreen);
     this->addAction(fullscreen_action);
 
+    QMenu *resolutionMenu = view_menu->addMenu("Set Viewport Size");
+    resolutionMenu->setIcon(QIcon(":/qt/icons/resolution_1_32.png"));
+    resolutionMenu->menuAction()->setIconVisibleInMenu(true);
+    QActionGroup* groupResolution = new QActionGroup(resolutionMenu);
+
+    QAction *quatreTiers = new QAction("-- 4:3",this);
+    quatreTiers->setDisabled(true);
+    resolutionMenu->addAction(quatreTiers);
+    QAction *setResolution0Action = new QAction("640 x 480  (VGA)",this);
+    resolutionMenu->addAction(setResolution0Action);
+    groupResolution->addAction(setResolution0Action);
+
+    QAction *setResolution1Action = new QAction("768 x 576  (PAL)",this);
+    resolutionMenu->addAction(setResolution1Action);
+    groupResolution->addAction(setResolution1Action);
+
+    QAction *setResolution2Action = new QAction("800 x 600  (SVGA)",this);
+    resolutionMenu->addAction(setResolution2Action);
+    groupResolution->addAction(setResolution2Action);
+
+    QAction *setResolution3Action = new QAction("1024 x 768 (XGA)",this);
+    resolutionMenu->addAction(setResolution3Action);
+    groupResolution->addAction(setResolution3Action);
+
+    QAction *seizeNeuf = new QAction("-- 16:9",this);
+    seizeNeuf->setDisabled(true);
+    resolutionMenu->addAction(seizeNeuf);
+
+    QAction *setResolution4Action = new QAction("800 x 480  (WVGA)",this);
+    resolutionMenu->addAction(setResolution4Action);
+    groupResolution->addAction(setResolution4Action);
+
+    QAction *setResolution5Action = new QAction("1024 x 576 (16:9 PAL)",this);
+    resolutionMenu->addAction(setResolution5Action);
+    groupResolution->addAction(setResolution5Action);
+
+    QAction *setResolution6Action = new QAction("1280 x 720 (HD720)",this);
+    resolutionMenu->addAction(setResolution6Action);
+    groupResolution->addAction(setResolution6Action);
+
+    resolutionMenu->addSeparator();
+
+//    QAction *setCustomResolutionAction = new QAction("Custom Resolution",this);
+//    //connect(setCustomResolutionAction,SIGNAL(triggered(bool)),this,SLOT(setCustomResolution()));
+//    resolutionMenu->addAction(setCustomResolutionAction);
+
+    connect(groupResolution,SIGNAL(triggered(QAction*)),this,SLOT(setViewportSize(QAction*)));
 
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);
@@ -234,6 +282,15 @@ Window::Window(QWidget *parent) :
 
     windowToolBar->addSeparator();
     // Third group
+
+    QToolButton* viewportSizeButton = new QToolButton;
+    viewportSizeButton->setPopupMode(QToolButton::InstantPopup);
+    viewportSizeButton->setMenu(resolutionMenu);
+    viewportSizeButton->setIcon(resolutionMenu->icon());
+    viewportSizeButton->setToolTip(resolutionMenu->title());
+    viewportSizeButton->setFocusPolicy(Qt::NoFocus); // we do not want the button to have keyboard focus
+    windowToolBar->addWidget(viewportSizeButton);
+
     windowToolBar->addAction(save_screenshot_action);
     windowToolBar->addAction(fullscreen_action);
 
@@ -800,8 +857,20 @@ void Window::cycleShader(bool up) {
 // Resize the widget giving the canvas dimension
 // Useful for screenshot of given size.
 void Window::setCanvasSize(int w, int h) {
-    this->showNormal();
+    if (this->isFullScreen()) {
+        fullscreen_action->toggle();
+    }
     int dw = this->size().width() - canvas->size().width();
     int dh = this->size().height() - canvas->size().height();
     this->resize(w + dw, h + dh);
+}
+
+void Window::setViewportSize(QAction* act) {
+    QString t = act->text();
+    QRegExp rx = QRegExp("^\\s*(\\d+).+(\\d+).*");
+    rx.indexIn(t);
+    QStringList desc = rx.capturedTexts();
+    int w = desc.at(1).toInt();
+    int h = desc.at(2).toInt();
+    setCanvasSize(w, h);
 }

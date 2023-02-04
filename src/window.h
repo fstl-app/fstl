@@ -57,6 +57,7 @@ private slots:
     void on_fullscreen();
     void on_hide_menuBar();
     void on_drawModePrefs();
+    void setViewportSize(QAction* act);
 
 private:
     void rebuild_recent_files();
@@ -83,6 +84,7 @@ private:
     QAction* const hide_menuBar_action;
     QAction* const fullscreen_action;
     QAction* const resetTransformOnLoadAction;
+    QAction* const setGLSizeAction;
 
     QMenu* const recent_files;
     QMenu* draw_menu;

@@ -18,5 +18,6 @@
         <file>icons/reset_rotation_on_load.png</file>
         <file>icons/invert_zoom.png</file>
         <file>icons/auto_refresh.png</file>
+        <file>icons/resolution_1_32.png</file>
     </qresource>
 </RCC>
