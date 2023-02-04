@@ -11,5 +11,6 @@
         <file>icons/screenshot.png</file>
         <file>icons/view-fullscreen.png</file>
         <file>icons/view-refresh.png</file>
+        <file>icons/preferences-system.png</file>
     </qresource>
 </RCC>
