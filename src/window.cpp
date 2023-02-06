@@ -351,7 +351,12 @@ void Window::load_persist_settings(){
 
     resize(600, 400);
     restoreGeometry(settings.value(WINDOW_GEOM_KEY).toByteArray());
-}
+    if (this->isFullScreen()) {
+        fullscreen_action->blockSignals(true);
+        fullscreen_action->setChecked(true);
+        fullscreen_action->blockSignals(false);
+    }
+ }
 
 void Window::on_drawModePrefs() {
     // For now only one draw mode has settings
