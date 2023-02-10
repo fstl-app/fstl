@@ -1,8 +1,8 @@
-#version 120
+#version 330
 
 uniform float zoom;
 
-varying vec3 ec_pos;
+in vec3 ec_pos;
 
 void main() {
     vec3 base3 = vec3(0.99, 0.96, 0.89);

@@ -188,6 +188,7 @@ void Canvas::initializeGL()
     mesh_surfaceangle_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_surfaceangle.frag");
     mesh_surfaceangle_shader.link();
     mesh_meshlight_shader.addShader(mesh_vertshader);
+    qDebug() << "load frame" << mesh_meshlight_shader.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/gl/calc_altitudes.glsl");
     mesh_meshlight_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_light.frag");
     mesh_meshlight_shader.link();
 
@@ -282,6 +283,10 @@ void Canvas::draw_mesh()
         // -1,-1,0 Light from top right
         //glUniform3f(selected_mesh_shader->uniformLocation("directive_light_direction"),-1.0f,-1.0f,0.0f);
         glUniform3f(selected_mesh_shader->uniformLocation("directive_light_direction"),listDir.at(currentLightDirection).x(), listDir.at(currentLightDirection).y(), listDir.at(currentLightDirection).z());
+        glUniform1i(selected_mesh_shader->uniformLocation("useWire"),true);
+        glUniform1f(selected_mesh_shader->uniformLocation("wireWidth"),1.0);
+        glUniform2f(selected_mesh_shader->uniformLocation("portSize"),(float)this->width(),(float)this->height());
+        glUniform3f(selected_mesh_shader->uniformLocation("wireColor"),1.0,0.5,0.0);
     }
 
     // Find and enable the attribute location for vertex position
