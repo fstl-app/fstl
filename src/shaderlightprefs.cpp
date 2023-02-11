@@ -70,6 +70,7 @@ ShaderLightPrefs::ShaderLightPrefs(QWidget *parent, Canvas *_canvas) : QDialog(p
     // Fill in directions
 
     comboDirections = new QComboBox;
+    comboDirections->setFocusPolicy(Qt::NoFocus);
     middleLayout->addWidget(comboDirections,2,1,1,2);
     comboDirections->addItems(canvas->getNameDir());
     comboDirections->setCurrentIndex(canvas->getCurrentLightDirection());
@@ -79,6 +80,41 @@ ShaderLightPrefs::ShaderLightPrefs(QWidget *parent, Canvas *_canvas) : QDialog(p
     middleLayout->addWidget(buttonResetDirection,2,3);
     buttonResetDirection->setFocusPolicy(Qt::NoFocus);
     connect(buttonResetDirection,SIGNAL(clicked(bool)),this,SLOT(resetDirection()));
+
+    checkboxUseWireFrame = new QCheckBox("Add wireframe");
+    checkboxUseWireFrame->setChecked(canvas->getUseWire());
+    middleLayout->addWidget(checkboxUseWireFrame,3,0);
+    checkboxUseWireFrame->setFocusPolicy(Qt::NoFocus);
+    connect(checkboxUseWireFrame,SIGNAL(stateChanged(int)),this,SLOT(checkboxUseWireFrameChanged()));
+
+    QLabel* labelWireColor = new QLabel("Wire Color");
+    middleLayout->addWidget(labelWireColor,4,0);
+    dummy.fill(canvas->getWireColor());
+    buttonWireColor = new QPushButton;
+    buttonWireColor->setIcon(QIcon(dummy));
+    middleLayout->addWidget(buttonWireColor,4,1);
+    buttonWireColor->setFocusPolicy(Qt::NoFocus);
+    QPushButton* buttonResetWireColor = new QPushButton("Reset");
+    buttonResetWireColor->setFocusPolicy(Qt::NoFocus);
+    middleLayout->addWidget(buttonResetWireColor,4,3);
+    connect(buttonWireColor,SIGNAL(clicked(bool)),this,SLOT(buttonWireColorClicked()));
+    connect(buttonResetWireColor,SIGNAL(clicked(bool)),this,SLOT(resetWireColorClicked()));
+
+    labelWireWidth = new QLabel(QString("Wire Width : %1").arg((int)canvas->getWireWidth()));
+    middleLayout->addWidget(labelWireWidth,5,0);
+    sliderWireWidth = new QSlider(Qt::Horizontal);
+    sliderWireWidth->setFocusPolicy(Qt::NoFocus);
+    sliderWireWidth->setRange(1,10);
+    sliderWireWidth->setTickPosition(QSlider::TicksBelow);
+    sliderWireWidth->setSingleStep(1);
+    sliderWireWidth->setPageStep(1);
+    sliderWireWidth->setValue((int)canvas->getWireWidth());
+    middleLayout->addWidget(sliderWireWidth,5,1,1,2);
+    connect(sliderWireWidth,SIGNAL(valueChanged(int)),this,SLOT(sliderWireWidthChanged()));
+    QPushButton* buttonResetLineWidth = new QPushButton("Reset");
+    buttonResetLineWidth->setFocusPolicy(Qt::NoFocus);
+    middleLayout->addWidget(buttonResetLineWidth,5,3);
+    connect(buttonResetLineWidth,SIGNAL(clicked(bool)),this,SLOT(resetWireWidthClicked()));
 
 
     // Ok button
@@ -177,4 +213,40 @@ void ShaderLightPrefs::moveEvent(QMoveEvent *event)
     QSettings().setValue(PREFS_GEOM, saveGeometry());
 }
 
+void ShaderLightPrefs::checkboxUseWireFrameChanged() {
+    bool state = checkboxUseWireFrame->isChecked();
+    canvas->setUseWire(state);
+    canvas->update();
+}
 
+void ShaderLightPrefs::buttonWireColorClicked() {
+    QColor newColor = QColorDialog::getColor(canvas->getWireColor(), this, QString("Choose color"),QColorDialog::DontUseNativeDialog);
+    if (newColor.isValid() == true)
+    {
+        canvas->setWireColor(newColor);
+        QPixmap dummy(20, 20);
+        dummy.fill(canvas->getWireColor());
+        buttonWireColor->setIcon(QIcon(dummy));
+        canvas->update();
+    }
+}
+
+void ShaderLightPrefs::resetWireColorClicked() {
+    canvas->resetWireColor();
+    QPixmap dummy(20, 20);
+    dummy.fill(canvas->getWireColor());
+    buttonWireColor->setIcon(QIcon(dummy));
+    canvas->update();
+}
+
+void ShaderLightPrefs::sliderWireWidthChanged() {
+    int lw = sliderWireWidth->value();
+    canvas->setWireWidth((double) lw);
+    labelWireWidth->setText(QString("Wire Width : %1").arg(lw));
+    canvas->update();
+}
+
+void ShaderLightPrefs::resetWireWidthClicked() {
+    canvas->resetWireWidth();
+    sliderWireWidth->setValue((int)canvas->getWireWidth());
+}

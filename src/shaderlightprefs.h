@@ -7,6 +7,8 @@ class Canvas;
 class QLabel;
 class QLineEdit;
 class QComboBox;
+class QCheckBox;
+class QSlider;
 
 class ShaderLightPrefs : public QDialog
 {
@@ -30,6 +32,12 @@ private slots:
     void comboDirectionsChanged(int ind);
     void resetDirection();
 
+    void checkboxUseWireFrameChanged();
+    void buttonWireColorClicked();
+    void resetWireColorClicked();
+    void sliderWireWidthChanged();
+    void resetWireWidthClicked();
+
     void okButtonClicked();
 
 private:
@@ -39,6 +47,11 @@ private:
     QPushButton* buttonDirectiveColor;
     QLineEdit* editDirectiveFactor;
     QComboBox* comboDirections;
+
+    QCheckBox* checkboxUseWireFrame;
+    QPushButton* buttonWireColor;
+    QLabel* labelWireWidth;
+    QSlider* sliderWireWidth;
 
     const static QString PREFS_GEOM;
 };
