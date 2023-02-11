@@ -25,8 +25,6 @@ void main() {
 
     if (useWire) {
         float d = min(min(altitude.x, altitude.y),altitude.z);
-
-        float coef = exp2(-0.01*d*d);
         float mixVal = smoothstep(wireWidth-1.0, wireWidth+1.0,d);
         color = mix(wireColor,color,mixVal);
     }
