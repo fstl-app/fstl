@@ -22,11 +22,11 @@ const QString Canvas::WIRE_COLOR = "wireColor";
 
 const QColor Canvas::defaultAmbientColor = QColor::fromRgbF(0.22,0.8,1.0);
 const QColor Canvas::defaultDirectiveColor = QColor(255,255,255);
-const float Canvas::defaultAmbientFactor = 0.67;
-const float Canvas::defaultDirectiveFactor = 0.5;
+const double Canvas::defaultAmbientFactor = 0.67;
+const double Canvas::defaultDirectiveFactor = 0.5;
 const int Canvas::defaultCurrentLightDirection = 1;
 const bool Canvas::defaultUseWire = false;
-const float Canvas::defaultWireWidth = 1.0;
+const double Canvas::defaultWireWidth = 1.0;
 const QColor Canvas::defaultWireColor = QColor(255,128,0);
 
 Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
@@ -548,4 +548,46 @@ void Canvas::setCurrentLightDirection(int ind) {
 
 void Canvas::resetCurrentLightDirection() {
     setCurrentLightDirection(defaultCurrentLightDirection);
+}
+
+bool Canvas::getUseWire() {
+    return useWire;
+}
+
+void Canvas::setUseWire(bool b) {
+    useWire = b;
+    QSettings settings;
+    settings.setValue(USE_WIRE,useWire);
+}
+
+void Canvas::resetUseWire() {
+    setUseWire(defaultUseWire);
+}
+
+double Canvas::getWireWidth() {
+    return (double) wireWidth;
+}
+
+void Canvas::setWireWidth(double w) {
+    wireWidth = (float) w;
+    QSettings settings;
+    settings.setValue(WIRE_WIDTH,w);
+}
+
+void Canvas::resetWireWidth() {
+    setWireWidth(defaultWireWidth);
+}
+
+QColor Canvas::getWireColor() {
+    return wireColor;
+}
+
+void Canvas::setWireColor(QColor c) {
+    wireColor = c;
+    QSettings settings;
+    settings.setValue(WIRE_COLOR,wireColor);
+}
+
+void Canvas::resetWireColor() {
+    setWireColor(defaultWireColor);
 }

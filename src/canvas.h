@@ -46,6 +46,18 @@ public:
     void setCurrentLightDirection(int ind);
     void resetCurrentLightDirection();
 
+    bool getUseWire();
+    void setUseWire(bool b);
+    void resetUseWire();
+
+    double getWireWidth();
+    void setWireWidth(double w);
+    void resetWireWidth();
+
+    QColor getWireColor();
+    void setWireColor(QColor c);
+    void resetWireColor();
+
 public slots:
     void set_status(const QString& s);
     void clear_status();
@@ -94,11 +106,11 @@ private:
 
     const static QColor defaultAmbientColor;
     const static QColor defaultDirectiveColor;
-    const static float defaultAmbientFactor;
-    const static float defaultDirectiveFactor;
+    const static double defaultAmbientFactor;
+    const static double defaultDirectiveFactor;
     const static int defaultCurrentLightDirection;
     const static bool defaultUseWire;
-    const static float defaultWireWidth;
+    const static double defaultWireWidth;
     const static QColor defaultWireColor;
 
     const static QString AMBIENT_COLOR;
