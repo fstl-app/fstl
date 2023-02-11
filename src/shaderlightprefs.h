@@ -9,6 +9,7 @@ class QLineEdit;
 class QComboBox;
 class QCheckBox;
 class QSlider;
+class QFrame;
 
 class ShaderLightPrefs : public QDialog
 {
@@ -39,6 +40,7 @@ private slots:
     void resetWireWidthClicked();
 
     void okButtonClicked();
+    void onFallbackGlslUpdated(bool b);
 
 private:
     Canvas* canvas;
@@ -48,6 +50,7 @@ private:
     QLineEdit* editDirectiveFactor;
     QComboBox* comboDirections;
 
+    QFrame* groupWireFrame;
     QCheckBox* checkboxUseWireFrame;
     QPushButton* buttonWireColor;
     QLabel* labelWireWidth;

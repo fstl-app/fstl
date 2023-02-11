@@ -1,10 +1,10 @@
-#version 330
+#version 120
 attribute vec3 vertex_position;
 
 uniform mat4 transform_matrix;
 uniform mat4 view_matrix;
 
-out vec3 ec_pos;
+varying vec3 ec_pos;
 
 void main() {
     gl_Position = view_matrix*transform_matrix*

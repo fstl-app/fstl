@@ -42,6 +42,7 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     currentTransform = QMatrix4x4();
     resetTransform();
 
+    fallbackGlsl = false;
     QSettings settings;
     ambientColor = settings.value(AMBIENT_COLOR,defaultAmbientColor).value<QColor>();
     directiveColor = settings.value(DIRECTIVE_COLOR,defaultDirectiveColor).value<QColor>();
@@ -76,6 +77,7 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     }
 
     anim.setDuration(100);
+
 }
 
 Canvas::~Canvas()
@@ -185,6 +187,12 @@ void Canvas::initializeGL()
 {
     initializeOpenGLFunctions();
 
+
+    double glslVersion = QString((char*)glGetString(GL_SHADING_LANGUAGE_VERSION)).toDouble();
+    //double glslVersion = QString("3.30").toDouble();
+    fallbackGlsl = glslVersion <= 3.29 ? true : false;
+    emit fallbackGlslUpdated(fallbackGlsl);
+
     mesh_vertshader = new QOpenGLShader(QOpenGLShader::Vertex);
     mesh_vertshader->compileSourceFile(":/gl/mesh.vert");
     mesh_shader.addShader(mesh_vertshader);
@@ -197,8 +205,16 @@ void Canvas::initializeGL()
     mesh_surfaceangle_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_surfaceangle.frag");
     mesh_surfaceangle_shader.link();
     mesh_meshlight_shader.addShader(mesh_vertshader);
-    qDebug() << "load frame" << mesh_meshlight_shader.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/gl/calc_altitudes.glsl");
-    mesh_meshlight_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_light.frag");
+    // If glsl 330 is available
+    if (!fallbackGlsl) {
+        mesh_meshlight_shader.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/gl/calc_altitudes.glsl");
+        mesh_meshlight_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_light.frag");
+    } else {
+        // fallback to 120
+        mesh_meshlight_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_light_120.frag");
+        qDebug() << "Cannot load a shader using glsl version 330, fall back to another using version 120";
+        qDebug() << "Adding wireframe on top of meshlight shader will be disabled.";
+    }
     mesh_meshlight_shader.link();
 
     backdrop = new Backdrop();
@@ -292,10 +308,12 @@ void Canvas::draw_mesh()
         // -1,-1,0 Light from top right
         //glUniform3f(selected_mesh_shader->uniformLocation("directive_light_direction"),-1.0f,-1.0f,0.0f);
         glUniform3f(selected_mesh_shader->uniformLocation("directive_light_direction"),listDir.at(currentLightDirection).x(), listDir.at(currentLightDirection).y(), listDir.at(currentLightDirection).z());
-        glUniform1i(selected_mesh_shader->uniformLocation("useWire"),useWire);
-        glUniform1f(selected_mesh_shader->uniformLocation("wireWidth"),wireWidth);
-        glUniform2f(selected_mesh_shader->uniformLocation("portSize"),(float)this->width(),(float)this->height());
-        glUniform3f(selected_mesh_shader->uniformLocation("wireColor"),wireColor.redF(),wireColor.greenF(),wireColor.blueF());
+        if (!fallbackGlsl) {
+            glUniform1i(selected_mesh_shader->uniformLocation("useWire"),useWire);
+            glUniform1f(selected_mesh_shader->uniformLocation("wireWidth"),wireWidth);
+            glUniform2f(selected_mesh_shader->uniformLocation("portSize"),(float)this->width(),(float)this->height());
+            glUniform3f(selected_mesh_shader->uniformLocation("wireColor"),wireColor.redF(),wireColor.greenF(),wireColor.blueF());
+        }
     }
 
     // Find and enable the attribute location for vertex position
@@ -590,4 +608,8 @@ void Canvas::setWireColor(QColor c) {
 
 void Canvas::resetWireColor() {
     setWireColor(defaultWireColor);
+}
+
+bool Canvas::isFallbackGlsl() {
+    return fallbackGlsl;
 }

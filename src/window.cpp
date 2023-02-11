@@ -64,6 +64,7 @@ Window::Window(QWidget *parent) :
     
     canvas = new Canvas(format, this);
     setCentralWidget(canvas);
+    canvas->update();
 
     meshlightprefs = new ShaderLightPrefs(this, canvas);
 

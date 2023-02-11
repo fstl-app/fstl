@@ -58,6 +58,8 @@ public:
     void setWireColor(QColor c);
     void resetWireColor();
 
+    bool isFallbackGlsl();
+
 public slots:
     void set_status(const QString& s);
     void clear_status();
@@ -75,6 +77,9 @@ protected:
     
     void set_perspective(float p);
     void view_anim(float v);
+
+signals:
+    void fallbackGlslUpdated(bool b);
 
 private:
     void draw_mesh();
@@ -103,6 +108,7 @@ private:
     bool useWire;
     float wireWidth;
     QColor wireColor;
+    bool fallbackGlsl;
 
     const static QColor defaultAmbientColor;
     const static QColor defaultDirectiveColor;

@@ -11,5 +11,6 @@
         <file>colored_lines.vert</file>
         <file>sphere.stl</file>
         <file>calc_altitudes.glsl</file>
+        <file>mesh_light_120.frag</file>
     </qresource>
 </RCC>
