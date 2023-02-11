@@ -5,7 +5,7 @@ uniform vec4 ambient_light_color;
 uniform vec4 directive_light_color;
 uniform vec3 directive_light_direction;
 
-in vec3 ec_pos;
+varying vec3 ec_pos;
 
 void main() {
     // Normalize light direction

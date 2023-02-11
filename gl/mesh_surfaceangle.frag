@@ -2,7 +2,7 @@
 
 uniform float zoom;
 
-in vec3 ec_pos;
+varying vec3 ec_pos;
 
 void main() {
     vec3 ec_normal = normalize(cross(dFdx(ec_pos), dFdy(ec_pos)));
