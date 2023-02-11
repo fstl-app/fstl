@@ -16,12 +16,18 @@ const QString Canvas::AMBIENT_FACTOR = "ambientFactor";
 const QString Canvas::DIRECTIVE_COLOR = "directiveColor";
 const QString Canvas::DIRECTIVE_FACTOR = "directiveFactor";
 const QString Canvas::CURRENT_LIGHT_DIRECTION = "currentLightDirection";
+const QString Canvas::USE_WIRE = "useWire";
+const QString Canvas::WIRE_WIDTH = "wireWidth";
+const QString Canvas::WIRE_COLOR = "wireColor";
 
 const QColor Canvas::defaultAmbientColor = QColor::fromRgbF(0.22,0.8,1.0);
 const QColor Canvas::defaultDirectiveColor = QColor(255,255,255);
 const float Canvas::defaultAmbientFactor = 0.67;
 const float Canvas::defaultDirectiveFactor = 0.5;
 const int Canvas::defaultCurrentLightDirection = 1;
+const bool Canvas::defaultUseWire = false;
+const float Canvas::defaultWireWidth = 1.0;
+const QColor Canvas::defaultWireColor = QColor(255,128,0);
 
 Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     : QOpenGLWidget(parent), mesh(nullptr),
@@ -41,6 +47,9 @@ Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     directiveColor = settings.value(DIRECTIVE_COLOR,defaultDirectiveColor).value<QColor>();
     ambientFactor = settings.value(AMBIENT_FACTOR,defaultAmbientFactor).value<float>();
     directiveFactor = settings.value(DIRECTIVE_FACTOR,defaultDirectiveFactor).value<float>();
+    useWire = settings.value(USE_WIRE,defaultUseWire).value<bool>();
+    wireWidth = settings.value(WIRE_WIDTH,defaultWireWidth).value<float>();
+    wireColor = settings.value(WIRE_COLOR,defaultWireColor).value<QColor>();
 
     // Fill direction list
     // Fill in directions
@@ -283,10 +292,10 @@ void Canvas::draw_mesh()
         // -1,-1,0 Light from top right
         //glUniform3f(selected_mesh_shader->uniformLocation("directive_light_direction"),-1.0f,-1.0f,0.0f);
         glUniform3f(selected_mesh_shader->uniformLocation("directive_light_direction"),listDir.at(currentLightDirection).x(), listDir.at(currentLightDirection).y(), listDir.at(currentLightDirection).z());
-        glUniform1i(selected_mesh_shader->uniformLocation("useWire"),true);
-        glUniform1f(selected_mesh_shader->uniformLocation("wireWidth"),1.0);
+        glUniform1i(selected_mesh_shader->uniformLocation("useWire"),useWire);
+        glUniform1f(selected_mesh_shader->uniformLocation("wireWidth"),wireWidth);
         glUniform2f(selected_mesh_shader->uniformLocation("portSize"),(float)this->width(),(float)this->height());
-        glUniform3f(selected_mesh_shader->uniformLocation("wireColor"),1.0,0.5,0.0);
+        glUniform3f(selected_mesh_shader->uniformLocation("wireColor"),wireColor.redF(),wireColor.greenF(),wireColor.blueF());
     }
 
     // Find and enable the attribute location for vertex position

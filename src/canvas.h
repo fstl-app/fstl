@@ -88,17 +88,27 @@ private:
     QList<QString> nameDir;
     QList<QVector3D> listDir;
     int currentLightDirection;
+    bool useWire;
+    float wireWidth;
+    QColor wireColor;
 
     const static QColor defaultAmbientColor;
     const static QColor defaultDirectiveColor;
     const static float defaultAmbientFactor;
     const static float defaultDirectiveFactor;
     const static int defaultCurrentLightDirection;
+    const static bool defaultUseWire;
+    const static float defaultWireWidth;
+    const static QColor defaultWireColor;
+
     const static QString AMBIENT_COLOR;
     const static QString AMBIENT_FACTOR;
     const static QString DIRECTIVE_COLOR;
     const static QString DIRECTIVE_FACTOR;
     const static QString CURRENT_LIGHT_DIRECTION;
+    const static QString USE_WIRE;
+    const static QString WIRE_WIDTH;
+    const static QString WIRE_COLOR;
 
 
     GLMesh* mesh;
