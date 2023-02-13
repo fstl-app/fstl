@@ -104,6 +104,8 @@ private:
     const static QString DRAW_MODE_KEY;
     const static QString WINDOW_GEOM_KEY;
     const static QString RESET_TRANSFORM_ON_LOAD_KEY;
+    const static QString HIDE_MENU_BAR;
+
 
     const static QKeySequence shortcutOpen;
     const static QKeySequence shortcutReload;

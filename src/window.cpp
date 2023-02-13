@@ -13,6 +13,7 @@ const QString Window::PROJECTION_KEY = "projection";
 const QString Window::DRAW_MODE_KEY = "drawMode";
 const QString Window::WINDOW_GEOM_KEY = "windowGeometry";
 const QString Window::RESET_TRANSFORM_ON_LOAD_KEY = "resetTransformOnLoad";
+const QString Window::HIDE_MENU_BAR = "hideMenuBar";
 
 const QKeySequence Window::shortcutOpen = Qt::Key_O;
 const QKeySequence Window::shortcutReload = Qt::Key_R;
@@ -350,6 +351,13 @@ void Window::load_persist_settings(){
     dm_acts[draw_mode]->setChecked(true);
     on_drawMode(dm_acts[draw_mode]);
 
+    // menu bar
+    bool hideMenu = settings.value(HIDE_MENU_BAR, false).toBool();
+    hide_menuBar_action->blockSignals(true);
+    hide_menuBar_action->setChecked(hideMenu);
+    on_hide_menuBar();
+    hide_menuBar_action->blockSignals(false);
+
     resize(600, 400);
     restoreGeometry(settings.value(WINDOW_GEOM_KEY).toByteArray());
     if (this->isFullScreen()) {
@@ -585,6 +593,8 @@ void Window::on_hide_menuBar()
 {
     menuBar()->setVisible(!hide_menuBar_action->isChecked());
     windowToolBar->setVisible(!hide_menuBar_action->isChecked());
+    QSettings settings;
+    settings.setValue(HIDE_MENU_BAR,hide_menuBar_action->isChecked());
 }
 
 void Window::rebuild_recent_files()
