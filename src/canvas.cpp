@@ -187,9 +187,13 @@ void Canvas::initializeGL()
 {
     initializeOpenGLFunctions();
 
-
-    double glslVersion = QString((char*)glGetString(GL_SHADING_LANGUAGE_VERSION)).toDouble();
-    //double glslVersion = QString("3.30").toDouble();
+    double glslVersion = 0.0;
+    QString glslVersionString = QString((char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+    QRegularExpression re("^.*(\\d+\\.\\d+).*$");
+    QRegularExpressionMatch match = re.match(glslVersionString);
+    if (match.hasMatch()) {
+        glslVersion = match.captured(1).toDouble();
+    }
     fallbackGlsl = glslVersion <= 3.29 ? true : false;
     emit fallbackGlslUpdated(fallbackGlsl);
 
