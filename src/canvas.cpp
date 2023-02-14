@@ -187,15 +187,7 @@ void Canvas::initializeGL()
 {
     initializeOpenGLFunctions();
 
-    double glslVersion = 0.0;
-    QString glslVersionString = QString((char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
-    QRegularExpression re("^.*(\\d+\\.\\d+).*$");
-    QRegularExpressionMatch match = re.match(glslVersionString);
-    if (match.hasMatch()) {
-        glslVersion = match.captured(1).toDouble();
-    }
-    fallbackGlsl = glslVersion <= 3.29 ? true : false;
-    emit fallbackGlslUpdated(fallbackGlsl);
+    fallbackGlsl = false;
 
     mesh_vertshader = new QOpenGLShader(QOpenGLShader::Vertex);
     mesh_vertshader->compileSourceFile(":/gl/mesh.vert");
@@ -209,16 +201,16 @@ void Canvas::initializeGL()
     mesh_surfaceangle_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_surfaceangle.frag");
     mesh_surfaceangle_shader.link();
     mesh_meshlight_shader.addShader(mesh_vertshader);
-    // If glsl 330 is available
-    if (!fallbackGlsl) {
-        mesh_meshlight_shader.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/gl/calc_altitudes.glsl");
-        mesh_meshlight_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_light.frag");
-    } else {
+    bool loadSuccess330 = mesh_meshlight_shader.addShaderFromSourceFile(QOpenGLShader::Geometry, ":/gl/calc_altitudes.glsl") &&
+                          mesh_meshlight_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_light.frag");
+    if (!loadSuccess330) {
         // fallback to 120
+        fallbackGlsl = true;
         mesh_meshlight_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_light_120.frag");
         qDebug() << "Cannot load a shader using glsl version 330, fall back to another using version 120";
         qDebug() << "Adding wireframe on top of meshlight shader will be disabled.";
     }
+    emit fallbackGlslUpdated(fallbackGlsl);
     mesh_meshlight_shader.link();
 
     backdrop = new Backdrop();
