@@ -16,6 +16,7 @@ class ShaderLightPrefs : public QDialog
     Q_OBJECT
 public:
     ShaderLightPrefs(QWidget* parent, Canvas* _canvas);
+    void toggleUseWire();
 
 protected:
     void resizeEvent(QResizeEvent *event) override;

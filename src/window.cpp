@@ -835,6 +835,10 @@ void Window::keyPressEvent(QKeyEvent* event)
     } else if (event->key() == Qt::Key_Escape && !menuBar()->isVisible()) { // this is if user did not noticed the hide menu key
         hide_menuBar_action->toggle();
         return;
+    } else if (event->key() == Qt::Key_W) {
+        if (dm_acts.at(getCurrentShader()) == meshlight_action) {
+            meshlightprefs->toggleUseWire();
+        }
     }
 
     QMainWindow::keyPressEvent(event);

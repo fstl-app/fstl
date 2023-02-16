@@ -262,3 +262,7 @@ void ShaderLightPrefs::resetWireWidthClicked() {
 void ShaderLightPrefs::onFallbackGlslUpdated(bool b) {
         groupWireFrame->setDisabled(b);
 }
+
+void ShaderLightPrefs::toggleUseWire() {
+    checkboxUseWireFrame->toggle();
+}
