@@ -264,5 +264,7 @@ void ShaderLightPrefs::onFallbackGlslUpdated(bool b) {
 }
 
 void ShaderLightPrefs::toggleUseWire() {
-    checkboxUseWireFrame->toggle();
+    // toggle if enable, no sense to do so otherwise
+    if (checkboxUseWireFrame->isEnabled())
+        checkboxUseWireFrame->toggle();
 }
