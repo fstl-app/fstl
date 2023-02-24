@@ -461,7 +461,13 @@ void Canvas::wheelEvent(QWheelEvent *event)
 {
     // Find GL position before the zoom operation
     // (to zoom about mouse cursor)
+// event->pos() obsolete since introduction of event->position() in 5.14
+// but we still want to be able compile with 5.12 which is the minimum requirement in CmakeLists.txt
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    auto p = event->pos();
+#else
     auto p = event->position();
+#endif
     QVector3D v(1 - p.x() / (0.5*width()),
                 p.y() / (0.5*height()) - 1, 0);
     QVector3D a = transform_matrix().inverted() *

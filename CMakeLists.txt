@@ -54,7 +54,7 @@ set(Icon_Resource exe/fstl.rc)
 set(OpenGL_GL_PREFERENCE GLVND)
 
 #find required packages. 
-find_package(Qt5 5.14 REQUIRED COMPONENTS Core Gui Widgets OpenGL)
+find_package(Qt5 5.12 REQUIRED COMPONENTS Core Gui Widgets OpenGL)
 find_package(OpenGL REQUIRED)
 find_package(Threads REQUIRED)
 
