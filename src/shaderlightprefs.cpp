@@ -214,11 +214,13 @@ void ShaderLightPrefs::resetDirection() {
 void ShaderLightPrefs::resizeEvent(QResizeEvent *event)
 {
     QSettings().setValue(PREFS_GEOM, saveGeometry());
+    QWidget::resizeEvent(event);
 }
 
 void ShaderLightPrefs::moveEvent(QMoveEvent *event)
 {
     QSettings().setValue(PREFS_GEOM, saveGeometry());
+    QWidget::moveEvent(event);
 }
 
 void ShaderLightPrefs::checkboxUseWireFrameChanged() {
