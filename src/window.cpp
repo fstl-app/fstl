@@ -3,6 +3,8 @@
 #include "window.h"
 #include "canvas.h"
 #include "loader.h"
+#include <sys/stat.h>
+#include <unistd.h>
 
 const QString Window::RECENT_FILE_KEY = "recentFiles";
 const QString Window::INVERT_ZOOM_KEY = "invertZoom";
@@ -438,6 +440,18 @@ void Window::on_reload()
 
 bool Window::load_stl(const QString& filename, bool is_reload)
 {
+    struct stat st;
+    int file_size,  file_size_old;
+    QByteArray ba=filename.toLatin1();
+    stat(ba.data(), &st);
+    file_size = st.st_size;
+    do { // wait until file size does not change anymore within 10 ms
+        file_size_old = file_size;
+        usleep(10000);
+        stat(ba.data(), &st);
+        file_size = st.st_size;
+    }
+    while(file_size != file_size_old);
     if (!open_action->isEnabled())  return false;
 
     canvas->set_status("Loading " + filename);
