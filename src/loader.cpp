@@ -120,7 +120,7 @@ Mesh* Loader::load_stl()
     file_size = file.size();
     do {
         file_size_old = file_size;
-        usleep(100000);
+        QThread::usleep(100000);
         file_size = file.size();
     }
     while(file_size != file_size_old);
