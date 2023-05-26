@@ -116,6 +116,15 @@ Mesh* Loader::load_stl()
         return NULL;
     }
 
+    qint64 file_size, file_size_old;
+    file_size = file.size();
+    do {
+        file_size_old = file_size;
+        usleep(100000);
+        file_size = file.size();
+    }
+    while(file_size != file_size_old);
+
     // First, try to read the stl as an ASCII file
     if (file.read(5) == "solid")
     {
