@@ -5,6 +5,7 @@
 #include "loader.h"
 
 #include <sys/stat.h>
+#include <thread>
 
 const QString Window::RECENT_FILE_KEY = "recentFiles";
 const QString Window::INVERT_ZOOM_KEY = "invertZoom";
