@@ -86,18 +86,55 @@ void Canvas::view_anim(float v)
     anim.start();
 }
 
-void Canvas::common_view_change(enum ViewPoint c){
-  switch (c) {
-    break; default: return ;
-    break; case centerview: scale = default_scale; center = default_center; zoom = 1;
-    break; case topview:    yaw = 0;   tilt = 0;
-    break; case bottomview: yaw = 0;   tilt = 180;
-    break; case leftview:   yaw = -90; tilt = 90;
-    break; case rightview : yaw = 90;  tilt = 90;
-    break; case frontview:  yaw = 0;   tilt = 90;
-    break; case backview:   yaw = 180; tilt = 90;
-  }
-  update();
+void Canvas::common_view_change(enum ViewPoint c)
+{
+    currentTransform.setToIdentity();
+    currentTransform.rotate(180.0, QVector3D(0, 0, 1));
+
+    switch (c)
+    {
+    case centerview:
+        {
+            scale = default_scale;
+            center = default_center;
+            zoom = 1;
+        }
+        break;
+
+    case topview:
+        {
+            currentTransform.rotate(180, QVector3D(1, 0, 0));
+        }
+        break;
+    case leftview:
+        {
+            currentTransform.rotate(180, QVector3D(1, 0, 0));
+            currentTransform.rotate(90, QVector3D(0, 0, 1));
+            currentTransform.rotate(90, QVector3D(0, 1, 0));
+        }
+        break;
+    case rightview:
+        {
+            currentTransform.rotate(180, QVector3D(1, 0, 0));
+            currentTransform.rotate(-90.0, QVector3D(0, 1, 0));
+            currentTransform.rotate(-90, QVector3D(1, 0, 0));
+        }
+        break;
+    case frontview:
+        {
+            currentTransform.rotate(90, QVector3D(1, 0, 0));
+        }
+        break;
+    case backview:
+        {
+            currentTransform.rotate(90, QVector3D(1, 0, 0));
+            currentTransform.rotate(180, QVector3D(0, 0, 1));
+        }
+    [[fallthrough]] case bottomview:
+    default:
+        break;
+    }
+    update();
 }
 
 void Canvas::view_perspective(float p, bool animate){

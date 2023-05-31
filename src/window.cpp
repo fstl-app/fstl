@@ -102,7 +102,7 @@ Window::Window(QWidget *parent) :
     
     rebuild_recent_files();
 
-    auto file_menu = menuBar()->addMenu("File");
+    const auto file_menu = menuBar()->addMenu("File");
     file_menu->addAction(open_action);
     file_menu->addMenu(recent_files);
     file_menu->addSeparator();
@@ -111,11 +111,11 @@ Window::Window(QWidget *parent) :
     file_menu->addAction(save_screenshot_action);
     file_menu->addAction(quit_action);
 
-    auto view_menu = menuBar()->addMenu("View");
-    auto projection_menu = view_menu->addMenu("Projection");
+    const auto view_menu = menuBar()->addMenu("View");
+    const auto projection_menu = view_menu->addMenu("Projection");
     projection_menu->addAction(perspective_action);
     projection_menu->addAction(orthographic_action);
-    auto projections = new QActionGroup(projection_menu);
+    const auto projections = new QActionGroup(projection_menu);
     for (auto p : {perspective_action, orthographic_action})
     {
         projections->addAction(p);
@@ -125,12 +125,12 @@ Window::Window(QWidget *parent) :
     QObject::connect(projections, &QActionGroup::triggered,
                      this, &Window::on_projection);
 
-    auto draw_menu = view_menu->addMenu("Draw Mode");
+    const auto draw_menu = view_menu->addMenu("Draw Mode");
     draw_menu->addAction(shaded_action);
     draw_menu->addAction(wireframe_action);
     draw_menu->addAction(surfaceangle_action);
     draw_menu->addAction(meshlight_action);
-    auto drawModes = new QActionGroup(draw_menu);
+    const auto drawModes = new QActionGroup(draw_menu);
     for (auto p : {shaded_action, wireframe_action, surfaceangle_action, meshlight_action})
     {
         drawModes->addAction(p);
@@ -141,6 +141,26 @@ Window::Window(QWidget *parent) :
                      this, &Window::on_drawMode);
     view_menu->addAction(drawModePrefs_action);
     drawModePrefs_action->setDisabled(true);
+
+    const auto common_menu = view_menu->addMenu("Viewpoint");
+    common_menu->addAction(common_view_center_action);
+    common_menu->addAction(common_view_top_action);
+    common_menu->addAction(common_view_bottom_action);
+    common_menu->addAction(common_view_left_action);
+    common_menu->addAction(common_view_right_action);
+    common_menu->addAction(common_view_front_action);
+    common_menu->addAction(common_view_back_action);
+    const auto common_views = new QActionGroup(common_menu);
+    common_views->addAction(common_view_center_action);
+    common_views->addAction(common_view_top_action);
+    common_views->addAction(common_view_bottom_action);
+    common_views->addAction(common_view_left_action);
+    common_views->addAction(common_view_right_action);
+    common_views->addAction(common_view_front_action);
+    common_views->addAction(common_view_back_action);
+    QObject::connect(common_views, &QActionGroup::triggered,
+        this, &Window::on_common_view_change);
+
     view_menu->addAction(axes_action);
     axes_action->setCheckable(true);
     QObject::connect(axes_action, &QAction::triggered,
@@ -163,24 +183,6 @@ Window::Window(QWidget *parent) :
             this, &Window::on_hide_menuBar);
     this->addAction(hide_menuBar_action);
 
-    auto common_menu = view_menu->addMenu("Viewpoint");
-    common_menu->addAction(common_view_center_action);
-    common_menu->addAction(common_view_top_action);
-    common_menu->addAction(common_view_bottom_action);
-    common_menu->addAction(common_view_left_action);
-    common_menu->addAction(common_view_right_action);
-    common_menu->addAction(common_view_front_action);
-    common_menu->addAction(common_view_back_action);
-    auto common_views = new QActionGroup(common_menu);
-    common_views->addAction(common_view_center_action);
-    common_views->addAction(common_view_top_action);
-    common_views->addAction(common_view_bottom_action);
-    common_views->addAction(common_view_left_action);
-    common_views->addAction(common_view_right_action);
-    common_views->addAction(common_view_front_action);
-    common_views->addAction(common_view_back_action);
-    QObject::connect(common_views, &QActionGroup::triggered,
-                     this, &Window::on_common_view_change);
     view_menu->addAction(fullscreen_action);
     fullscreen_action->setShortcut(Qt::Key_F11);
     fullscreen_action->setCheckable(true);

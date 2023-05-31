@@ -11,7 +11,7 @@ class Backdrop;
 class Axis;
 
 enum ViewPoint {centerview, topview, bottomview, leftview, rightview, frontview, backview};
-enum DrawMode {shaded, wireframe, surfaceangle, DRAWMODECOUNT};
+enum DrawMode {shaded, wireframe, surfaceangle, meshlight, DRAWMODECOUNT};
 
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
