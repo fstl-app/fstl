@@ -3,6 +3,7 @@
 #include "window.h"
 #include "canvas.h"
 #include "loader.h"
+#include "shaderlightprefs.h"
 
 const QString Window::RECENT_FILE_KEY = "recentFiles";
 const QString Window::INVERT_ZOOM_KEY = "invertZoom";
@@ -23,6 +24,8 @@ Window::Window(QWidget *parent) :
     shaded_action(new QAction("Shaded", this)),
     wireframe_action(new QAction("Wireframe", this)),
     surfaceangle_action(new QAction("Surface Angle", this)),
+    meshlight_action(new QAction("Shaded ambient and directive light source", this)),
+    drawModePrefs_action(new QAction("Draw Mode Settings")),
     axes_action(new QAction("Draw Axes", this)),
     invert_zoom_action(new QAction("Invert Zoom", this)),
     reload_action(new QAction("Reload", this)),
@@ -51,6 +54,10 @@ Window::Window(QWidget *parent) :
     
     canvas = new Canvas(format, this);
     setCentralWidget(canvas);
+
+    meshlightprefs = new ShaderLightPrefs(this, canvas);
+
+    QObject::connect(drawModePrefs_action, &QAction::triggered,this,&Window::on_drawModePrefs);
 
     QObject::connect(watcher, &QFileSystemWatcher::fileChanged,
                      this, &Window::on_watched_change);
@@ -115,8 +122,9 @@ Window::Window(QWidget *parent) :
     draw_menu->addAction(shaded_action);
     draw_menu->addAction(wireframe_action);
     draw_menu->addAction(surfaceangle_action);
+    draw_menu->addAction(meshlight_action);
     auto drawModes = new QActionGroup(draw_menu);
-    for (auto p : {shaded_action, wireframe_action, surfaceangle_action})
+    for (auto p : {shaded_action, wireframe_action, surfaceangle_action, meshlight_action})
     {
         drawModes->addAction(p);
         p->setCheckable(true);
@@ -124,6 +132,8 @@ Window::Window(QWidget *parent) :
     drawModes->setExclusive(true);
     QObject::connect(drawModes, &QActionGroup::triggered,
                      this, &Window::on_drawMode);
+    view_menu->addAction(drawModePrefs_action);
+    drawModePrefs_action->setDisabled(true);
     view_menu->addAction(axes_action);
     axes_action->setCheckable(true);
     QObject::connect(axes_action, &QAction::triggered,
@@ -191,12 +201,23 @@ void Window::load_persist_settings(){
     {
         draw_mode = shaded;
     }
-    canvas->set_drawMode(draw_mode);
-    QAction* (dm_acts[]) = {shaded_action, wireframe_action, surfaceangle_action};
+    QAction* (dm_acts[]) = {shaded_action, wireframe_action, surfaceangle_action, meshlight_action};
     dm_acts[draw_mode]->setChecked(true);
+    on_drawMode(dm_acts[draw_mode]);
 
     resize(600, 400);
     restoreGeometry(settings.value(WINDOW_GEOM_KEY).toByteArray());
+}
+
+void Window::on_drawModePrefs() {
+    // For now only one draw mode has settings
+    // when settings for other draw mode will be available
+    // we will need to check the current mode
+    if (meshlightprefs->isVisible()) {
+        meshlightprefs->hide();
+    } else {
+        meshlightprefs->show();
+    }
 }
 
 void Window::on_open()
@@ -291,18 +312,29 @@ void Window::on_projection(QAction* proj)
 
 void Window::on_drawMode(QAction* act)
 {
+    // On mode change hide prefs first
+    meshlightprefs->hide();
+
     DrawMode mode;
     if (act == shaded_action)
     {
+        drawModePrefs_action->setEnabled(false);
         mode = shaded;
     }
     else if (act == wireframe_action)
     {
+        drawModePrefs_action->setEnabled(false);
         mode = wireframe;
     }
-    else
+    else if (act == surfaceangle_action)
     {
+        drawModePrefs_action->setEnabled(false);
         mode = surfaceangle;
+    }
+    else if (act == meshlight_action)
+    {
+        drawModePrefs_action->setEnabled(true);
+        mode = meshlight;
     }
     canvas->set_drawMode(mode);
     QSettings().setValue(DRAW_MODE_KEY, mode);

@@ -7,6 +7,7 @@
 #include <QCollator>
 
 class Canvas;
+class ShaderLightPrefs;
 
 class Window : public QMainWindow
 {
@@ -51,6 +52,7 @@ private slots:
     void on_save_screenshot();
     void on_fullscreen();
     void on_hide_menuBar();
+    void on_drawModePrefs();
 
 private:
     void rebuild_recent_files();
@@ -67,6 +69,8 @@ private:
     QAction* const shaded_action;
     QAction* const wireframe_action;
     QAction* const surfaceangle_action;
+    QAction* const meshlight_action;
+    QAction* const drawModePrefs_action;
     QAction* const axes_action;
     QAction* const invert_zoom_action;
     QAction* const reload_action;
@@ -96,6 +100,8 @@ private:
     QFileSystemWatcher* watcher;
 
     Canvas* canvas;
+
+    ShaderLightPrefs* meshlightprefs;
 };
 
 #endif // WINDOW_H
