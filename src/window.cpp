@@ -20,6 +20,13 @@ Window::Window(QWidget *parent) :
     about_action(new QAction("About", this)),
     quit_action(new QAction("Quit", this)),
     perspective_action(new QAction("Perspective", this)),
+    common_view_center_action(new QAction("Center the model", this)),
+    common_view_top_action(new QAction("Top", this)),
+    common_view_bottom_action(new QAction("Bottom", this)),
+    common_view_left_action(new QAction("Left", this)),
+    common_view_right_action(new QAction("Right", this)),
+    common_view_front_action(new QAction("Front", this)),
+    common_view_back_action(new QAction("Back", this)),
     orthographic_action(new QAction("Orthographic", this)),
     shaded_action(new QAction("Shaded", this)),
     wireframe_action(new QAction("Wireframe", this)),
@@ -95,7 +102,7 @@ Window::Window(QWidget *parent) :
     
     rebuild_recent_files();
 
-    auto file_menu = menuBar()->addMenu("File");
+    const auto file_menu = menuBar()->addMenu("File");
     file_menu->addAction(open_action);
     file_menu->addMenu(recent_files);
     file_menu->addSeparator();
@@ -104,11 +111,11 @@ Window::Window(QWidget *parent) :
     file_menu->addAction(save_screenshot_action);
     file_menu->addAction(quit_action);
 
-    auto view_menu = menuBar()->addMenu("View");
-    auto projection_menu = view_menu->addMenu("Projection");
+    const auto view_menu = menuBar()->addMenu("View");
+    const auto projection_menu = view_menu->addMenu("Projection");
     projection_menu->addAction(perspective_action);
     projection_menu->addAction(orthographic_action);
-    auto projections = new QActionGroup(projection_menu);
+    const auto projections = new QActionGroup(projection_menu);
     for (auto p : {perspective_action, orthographic_action})
     {
         projections->addAction(p);
@@ -118,12 +125,12 @@ Window::Window(QWidget *parent) :
     QObject::connect(projections, &QActionGroup::triggered,
                      this, &Window::on_projection);
 
-    auto draw_menu = view_menu->addMenu("Draw Mode");
+    const auto draw_menu = view_menu->addMenu("Draw Mode");
     draw_menu->addAction(shaded_action);
     draw_menu->addAction(wireframe_action);
     draw_menu->addAction(surfaceangle_action);
     draw_menu->addAction(meshlight_action);
-    auto drawModes = new QActionGroup(draw_menu);
+    const auto drawModes = new QActionGroup(draw_menu);
     for (auto p : {shaded_action, wireframe_action, surfaceangle_action, meshlight_action})
     {
         drawModes->addAction(p);
@@ -134,6 +141,26 @@ Window::Window(QWidget *parent) :
                      this, &Window::on_drawMode);
     view_menu->addAction(drawModePrefs_action);
     drawModePrefs_action->setDisabled(true);
+
+    const auto common_menu = view_menu->addMenu("Viewpoint");
+    common_menu->addAction(common_view_center_action);
+    common_menu->addAction(common_view_top_action);
+    common_menu->addAction(common_view_bottom_action);
+    common_menu->addAction(common_view_left_action);
+    common_menu->addAction(common_view_right_action);
+    common_menu->addAction(common_view_front_action);
+    common_menu->addAction(common_view_back_action);
+    const auto common_views = new QActionGroup(common_menu);
+    common_views->addAction(common_view_center_action);
+    common_views->addAction(common_view_top_action);
+    common_views->addAction(common_view_bottom_action);
+    common_views->addAction(common_view_left_action);
+    common_views->addAction(common_view_right_action);
+    common_views->addAction(common_view_front_action);
+    common_views->addAction(common_view_back_action);
+    QObject::connect(common_views, &QActionGroup::triggered,
+        this, &Window::on_common_view_change);
+
     view_menu->addAction(axes_action);
     axes_action->setCheckable(true);
     QObject::connect(axes_action, &QAction::triggered,
@@ -466,6 +493,17 @@ void Window::on_reload()
     {
         load_stl(fs[0], true);
     }
+}
+
+void Window::on_common_view_change(QAction* common)
+{
+  if (common == common_view_center_action) canvas->common_view_change(centerview);
+  if (common == common_view_top_action) canvas->common_view_change(topview);
+  if (common == common_view_bottom_action) canvas->common_view_change(bottomview);
+  if (common == common_view_left_action) canvas->common_view_change(leftview);
+  if (common == common_view_right_action) canvas->common_view_change(rightview);
+  if (common == common_view_front_action) canvas->common_view_change(frontview);
+  if (common == common_view_back_action) canvas->common_view_change(backview);
 }
 
 bool Window::load_stl(const QString& filename, bool is_reload)

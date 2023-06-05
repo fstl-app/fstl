@@ -86,6 +86,57 @@ void Canvas::view_anim(float v)
     anim.start();
 }
 
+void Canvas::common_view_change(enum ViewPoint c)
+{
+    currentTransform.setToIdentity();
+    currentTransform.rotate(180.0, QVector3D(0, 0, 1));
+
+    switch (c)
+    {
+    case centerview:
+        {
+            scale = default_scale;
+            center = default_center;
+            zoom = 1;
+        }
+        break;
+
+    case topview:
+        {
+            currentTransform.rotate(180, QVector3D(1, 0, 0));
+        }
+        break;
+    case leftview:
+        {
+            currentTransform.rotate(180, QVector3D(1, 0, 0));
+            currentTransform.rotate(90, QVector3D(0, 0, 1));
+            currentTransform.rotate(90, QVector3D(0, 1, 0));
+        }
+        break;
+    case rightview:
+        {
+            currentTransform.rotate(180, QVector3D(1, 0, 0));
+            currentTransform.rotate(-90.0, QVector3D(0, 1, 0));
+            currentTransform.rotate(-90, QVector3D(1, 0, 0));
+        }
+        break;
+    case frontview:
+        {
+            currentTransform.rotate(90, QVector3D(1, 0, 0));
+        }
+        break;
+    case backview:
+        {
+            currentTransform.rotate(90, QVector3D(1, 0, 0));
+            currentTransform.rotate(180, QVector3D(0, 0, 1));
+        }
+    [[fallthrough]] case bottomview:
+    default:
+        break;
+    }
+    update();
+}
+
 void Canvas::view_perspective(float p, bool animate){
     if(animate)
     {
@@ -131,8 +182,8 @@ void Canvas::load_mesh(Mesh* m, bool is_reload)
     QVector3D upper(m->xmax(), m->ymax(), m->zmax());
     if (!is_reload)
     {
-        center = (lower + upper) / 2;
-        scale = 2 / (upper - lower).length();
+        default_center = center = (lower + upper) / 2;
+        default_scale = scale = 2 / (upper - lower).length();
 
         // Reset other camera parameters
         zoom = 1;
