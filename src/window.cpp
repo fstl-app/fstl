@@ -74,7 +74,8 @@ Window::Window(QWidget *parent) :
                      this, &Window::on_open);
     this->addAction(open_action);
 
-    quit_action->setShortcut(QKeySequence::Quit);
+    QList<QKeySequence> quitShortcuts = { QKeySequence::Quit, QKeySequence::Close };
+    quit_action->setShortcuts(quitShortcuts);
     QObject::connect(quit_action, &QAction::triggered,
                      this, &Window::close);
     this->addAction(quit_action);
