@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=fstl
+GenericName=Fast STL Viewer
+Exec=fstl %U
+Terminal=false
+Icon=fstlapp-fstl
+Type=Application
+MimeType=model/stl;
+Categories=Utility;
