@@ -101,6 +101,13 @@ void Canvas::common_view_change(enum ViewPoint c)
 
     switch (c)
     {
+    case isoview:
+        {
+            currentTransform.rotate(90, QVector3D(1, 0, 0));
+            currentTransform.rotate(-45, QVector3D(0, 0, 1));
+            currentTransform.rotate(35.264, QVector3D(1, 1, 0));
+        }
+        break;
     case topview:
         {
             currentTransform.rotate(180, QVector3D(1, 0, 0));

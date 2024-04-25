@@ -21,6 +21,7 @@ Window::Window(QWidget *parent) :
     quit_action(new QAction("Quit", this)),
     perspective_action(new QAction("Perspective", this)),
     common_view_center_action(new QAction("Center the model", this)),
+    common_view_iso_action(new QAction("Isometric", this)),
     common_view_top_action(new QAction("Top", this)),
     common_view_bottom_action(new QAction("Bottom", this)),
     common_view_left_action(new QAction("Left", this)),
@@ -144,6 +145,7 @@ Window::Window(QWidget *parent) :
     drawModePrefs_action->setDisabled(true);
 
     const auto common_menu = view_menu->addMenu("Viewpoint");
+    common_menu->addAction(common_view_iso_action);
     common_menu->addAction(common_view_top_action);
     common_menu->addAction(common_view_bottom_action);
     common_menu->addAction(common_view_front_action);
@@ -152,6 +154,7 @@ Window::Window(QWidget *parent) :
     common_menu->addAction(common_view_right_action);
     common_menu->addAction(common_view_center_action);
     const auto common_views = new QActionGroup(common_menu);
+    common_views->addAction(common_view_iso_action);
     common_views->addAction(common_view_top_action);
     common_views->addAction(common_view_bottom_action);
     common_views->addAction(common_view_front_action);
@@ -159,6 +162,7 @@ Window::Window(QWidget *parent) :
     common_views->addAction(common_view_left_action);
     common_views->addAction(common_view_right_action);
     common_views->addAction(common_view_center_action);
+    common_view_iso_action->setShortcut(Qt::Key_0);
     common_view_top_action->setShortcut(Qt::Key_1);
     common_view_bottom_action->setShortcut(Qt::Key_2);
     common_view_front_action->setShortcut(Qt::Key_3);
@@ -506,6 +510,7 @@ void Window::on_reload()
 void Window::on_common_view_change(QAction* common)
 {
   if (common == common_view_center_action) canvas->common_view_change(centerview);
+  if (common == common_view_iso_action) canvas->common_view_change(isoview);
   if (common == common_view_top_action) canvas->common_view_change(topview);
   if (common == common_view_bottom_action) canvas->common_view_change(bottomview);
   if (common == common_view_left_action) canvas->common_view_change(leftview);
