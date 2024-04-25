@@ -144,21 +144,28 @@ Window::Window(QWidget *parent) :
     drawModePrefs_action->setDisabled(true);
 
     const auto common_menu = view_menu->addMenu("Viewpoint");
-    common_menu->addAction(common_view_center_action);
     common_menu->addAction(common_view_top_action);
     common_menu->addAction(common_view_bottom_action);
-    common_menu->addAction(common_view_left_action);
-    common_menu->addAction(common_view_right_action);
     common_menu->addAction(common_view_front_action);
     common_menu->addAction(common_view_back_action);
+    common_menu->addAction(common_view_left_action);
+    common_menu->addAction(common_view_right_action);
+    common_menu->addAction(common_view_center_action);
     const auto common_views = new QActionGroup(common_menu);
-    common_views->addAction(common_view_center_action);
     common_views->addAction(common_view_top_action);
     common_views->addAction(common_view_bottom_action);
-    common_views->addAction(common_view_left_action);
-    common_views->addAction(common_view_right_action);
     common_views->addAction(common_view_front_action);
     common_views->addAction(common_view_back_action);
+    common_views->addAction(common_view_left_action);
+    common_views->addAction(common_view_right_action);
+    common_views->addAction(common_view_center_action);
+    common_view_top_action->setShortcut(Qt::Key_1);
+    common_view_bottom_action->setShortcut(Qt::Key_2);
+    common_view_front_action->setShortcut(Qt::Key_3);
+    common_view_back_action->setShortcut(Qt::Key_4);
+    common_view_left_action->setShortcut(Qt::Key_5);
+    common_view_right_action->setShortcut(Qt::Key_6);
+    common_view_center_action->setShortcut(Qt::Key_9);
     QObject::connect(common_views, &QActionGroup::triggered,
         this, &Window::on_common_view_change);
 
