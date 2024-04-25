@@ -88,19 +88,19 @@ void Canvas::view_anim(float v)
 
 void Canvas::common_view_change(enum ViewPoint c)
 {
+    if (c == centerview) {
+        scale = default_scale;
+        center = default_center;
+        zoom = 1;
+        update();
+        return;
+    }
+
     currentTransform.setToIdentity();
     currentTransform.rotate(180.0, QVector3D(0, 0, 1));
 
     switch (c)
     {
-    case centerview:
-        {
-            scale = default_scale;
-            center = default_center;
-            zoom = 1;
-        }
-        break;
-
     case topview:
         {
             currentTransform.rotate(180, QVector3D(1, 0, 0));
