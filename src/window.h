@@ -67,6 +67,7 @@ private:
     QAction* const quit_action;
     QAction* const perspective_action;
     QAction* const common_view_center_action;
+    QAction* const common_view_iso_action;
     QAction* const common_view_top_action;
     QAction* const common_view_bottom_action;
     QAction* const common_view_left_action;
