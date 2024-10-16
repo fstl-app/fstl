@@ -137,7 +137,8 @@ void Canvas::common_view_change(enum ViewPoint c)
             currentTransform.rotate(90, QVector3D(1, 0, 0));
             currentTransform.rotate(180, QVector3D(0, 0, 1));
         }
-    [[fallthrough]] case bottomview:
+    case bottomview:
+        [[fallthrough]];
     default:
         break;
     }

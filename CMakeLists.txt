@@ -1,6 +1,6 @@
 #### Fast .stl viewer #####
-# Original Project Author: Matt Keeter Copyright 2014 -2017
-# Author: Paul Tsouchlos Copyright 2017
+# Original Project Author: Matt Keeter Copyright 2014-2024
+# Author: Paul Tsouchlos Copyright 2017-2024
 
 cmake_minimum_required(VERSION 3.3)
 
@@ -13,7 +13,7 @@ set(CXX_STANDARD_REQUIRED ON)
 
 # Set the version number
 set (FSTL_VERSION_MAJOR "0")
-set (FSTL_VERSION_MINOR "10")
+set (FSTL_VERSION_MINOR "11")
 set (FSTL_VERSION_PATCH "0")
 set (PROJECT_VERSION "${FSTL_VERSION_MAJOR}.${FSTL_VERSION_MINOR}.${FSTL_VERSION_PATCH}")
 
