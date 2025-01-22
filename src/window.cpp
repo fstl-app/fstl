@@ -293,8 +293,20 @@ void Window::on_open_external() const
         return;
     }
 
-	QString program = open_external_action->data().toString();
-	QProcess::startDetached(program, QStringList(current_file));
+
+    QString program = open_external_action->data().toString();
+    if (program.isEmpty()) {
+        program = QFileDialog::getOpenFileName((QWidget*) this, "Select program to open with", QDir::rootPath());
+        if (!program.isEmpty()) {
+            QSettings settings;
+            settings.setValue(OPEN_EXTERNAL_KEY, program);
+            QString displayName = program.mid(program.lastIndexOf(QDir::separator()) + 1);
+            open_external_action->setText("Open with " + displayName);
+            open_external_action->setData(program);
+        }
+    }
+
+    QProcess::startDetached(program, QStringList(current_file));
 }
 
 void Window::on_about()
