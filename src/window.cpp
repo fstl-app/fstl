@@ -242,10 +242,14 @@ void Window::load_persist_settings(){
         orthographic_action->setChecked(true);
     }
 
-	QString fullPath = QStandardPaths::findExecutable(settings.value(OPEN_EXTERNAL_KEY, "cura5").toString());
-	QString displayName = fullPath.mid(fullPath.lastIndexOf(QDir::separator()) + 1);
+	QString path = settings.value(OPEN_EXTERNAL_KEY, "cura5").toString();
+	if (!QDir::isAbsolutePath(path))
+	{
+		path = QStandardPaths::findExecutable(path);
+	}
+	QString displayName = path.mid(path.lastIndexOf(QDir::separator()) + 1);
 	open_external_action->setText("Open with " + displayName);
-	open_external_action->setData(fullPath);
+	open_external_action->setData(path);
 
     DrawMode draw_mode = (DrawMode)settings.value(DRAW_MODE_KEY, DRAWMODECOUNT).toInt();
     
