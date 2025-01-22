@@ -5,6 +5,7 @@
 #include "loader.h"
 #include "shaderlightprefs.h"
 
+const QString Window::OPEN_EXTERNAL_KEY = "externalCmd";
 const QString Window::RECENT_FILE_KEY = "recentFiles";
 const QString Window::INVERT_ZOOM_KEY = "invertZoom";
 const QString Window::AUTORELOAD_KEY = "autoreload";
@@ -17,6 +18,7 @@ const QString Window::RESET_TRANSFORM_ON_LOAD_KEY = "resetTransformOnLoad";
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
     open_action(new QAction("Open", this)),
+	open_external_action(new QAction("Open with", this)),
     about_action(new QAction("About", this)),
     quit_action(new QAction("Quit", this)),
     perspective_action(new QAction("Perspective", this)),
@@ -75,6 +77,11 @@ Window::Window(QWidget *parent) :
                      this, &Window::on_open);
     this->addAction(open_action);
 
+	open_external_action->setShortcut(QKeySequence::Open);
+	QObject::connect(open_external_action, &QAction::triggered, this, &Window::on_open_external);
+	this->addAction(open_external_action);
+	open_external_action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_S));
+
     QList<QKeySequence> quitShortcuts = { QKeySequence::Quit, QKeySequence::Close };
     quit_action->setShortcuts(quitShortcuts);
     QObject::connect(quit_action, &QAction::triggered,
@@ -106,6 +113,7 @@ Window::Window(QWidget *parent) :
 
     const auto file_menu = menuBar()->addMenu("File");
     file_menu->addAction(open_action);
+	file_menu->addAction(open_external_action);
     file_menu->addMenu(recent_files);
     file_menu->addSeparator();
     file_menu->addAction(reload_action);
@@ -234,6 +242,11 @@ void Window::load_persist_settings(){
         orthographic_action->setChecked(true);
     }
 
+	QString fullPath = QStandardPaths::findExecutable(settings.value(OPEN_EXTERNAL_KEY, "cura5").toString());
+	QString displayName = fullPath.mid(fullPath.lastIndexOf(QDir::separator()) + 1);
+	open_external_action->setText("Open with " + displayName);
+	open_external_action->setData(fullPath);
+
     DrawMode draw_mode = (DrawMode)settings.value(DRAW_MODE_KEY, DRAWMODECOUNT).toInt();
     
     if(draw_mode >= DRAWMODECOUNT)
@@ -267,6 +280,17 @@ void Window::on_open()
     {
         load_stl(filename);
     }
+}
+
+void Window::on_open_external() const
+{
+	if (current_file.isEmpty())
+	{
+		return;
+	}
+
+	QString program = open_external_action->data().toString();
+	QProcess::startDetached(program, QStringList(current_file));
 }
 
 void Window::on_about()
