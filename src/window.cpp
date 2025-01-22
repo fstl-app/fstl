@@ -18,7 +18,7 @@ const QString Window::RESET_TRANSFORM_ON_LOAD_KEY = "resetTransformOnLoad";
 Window::Window(QWidget *parent) :
     QMainWindow(parent),
     open_action(new QAction("Open", this)),
-	open_external_action(new QAction("Open with", this)),
+    open_external_action(new QAction("Open with", this)),
     about_action(new QAction("About", this)),
     quit_action(new QAction("Quit", this)),
     perspective_action(new QAction("Perspective", this)),
@@ -77,10 +77,10 @@ Window::Window(QWidget *parent) :
                      this, &Window::on_open);
     this->addAction(open_action);
 
-	open_external_action->setShortcut(QKeySequence::Open);
-	QObject::connect(open_external_action, &QAction::triggered, this, &Window::on_open_external);
-	this->addAction(open_external_action);
-	open_external_action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_S));
+    open_external_action->setShortcut(QKeySequence::Open);
+    QObject::connect(open_external_action, &QAction::triggered, this, &Window::on_open_external);
+    this->addAction(open_external_action);
+    open_external_action->setShortcut(QKeySequence(Qt::ALT + Qt::Key_S));
 
     QList<QKeySequence> quitShortcuts = { QKeySequence::Quit, QKeySequence::Close };
     quit_action->setShortcuts(quitShortcuts);
@@ -113,7 +113,7 @@ Window::Window(QWidget *parent) :
 
     const auto file_menu = menuBar()->addMenu("File");
     file_menu->addAction(open_action);
-	file_menu->addAction(open_external_action);
+    file_menu->addAction(open_external_action);
     file_menu->addMenu(recent_files);
     file_menu->addSeparator();
     file_menu->addAction(reload_action);
@@ -242,14 +242,14 @@ void Window::load_persist_settings(){
         orthographic_action->setChecked(true);
     }
 
-	QString path = settings.value(OPEN_EXTERNAL_KEY, "cura5").toString();
-	if (!QDir::isAbsolutePath(path))
-	{
-		path = QStandardPaths::findExecutable(path);
-	}
-	QString displayName = path.mid(path.lastIndexOf(QDir::separator()) + 1);
-	open_external_action->setText("Open with " + displayName);
-	open_external_action->setData(path);
+    QString path = settings.value(OPEN_EXTERNAL_KEY, "").toString();
+    if (!QDir::isAbsolutePath(path) && !path.isEmpty())
+    {
+        path = QStandardPaths::findExecutable(path);
+    }
+    QString displayName = path.mid(path.lastIndexOf(QDir::separator()) + 1);
+    open_external_action->setText("Open with " + displayName);
+    open_external_action->setData(path);
 
     DrawMode draw_mode = (DrawMode)settings.value(DRAW_MODE_KEY, DRAWMODECOUNT).toInt();
     
@@ -288,10 +288,10 @@ void Window::on_open()
 
 void Window::on_open_external() const
 {
-	if (current_file.isEmpty())
-	{
-		return;
-	}
+    if (current_file.isEmpty())
+    {
+        return;
+    }
 
 	QString program = open_external_action->data().toString();
 	QProcess::startDetached(program, QStringList(current_file));
