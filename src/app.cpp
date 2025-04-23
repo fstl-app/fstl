@@ -9,7 +9,8 @@ App::App(int& argc, char *argv[]) :
     QApplication(argc, argv), window(new Window())
 {
     if (argc > 1) {
-        QString filename = argv[1];
+        const auto args = QCoreApplication::arguments();
+        QString filename = args.at(1);
         if (filename.startsWith("~")) {
             filename.replace(0, 1, QDir::homePath());
         }
