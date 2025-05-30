@@ -40,7 +40,9 @@ public slots:
 
 private slots:
     void on_projection(QAction* proj);
+    void on_wheelmode(QAction* mode);
     void on_drawMode(QAction* mode);
+    void on_cuttingplane(bool d);
     void on_drawAxes(bool d);
     void on_invertZoom(bool d);
     void on_resetTransformOnLoad(bool d);
@@ -81,6 +83,9 @@ private:
     QAction* const wireframe_action;
     QAction* const surfaceangle_action;
     QAction* const meshlight_action;
+    QAction* const cuttingplane_action;
+    QAction* const wheelmode_cut_action;
+    QAction* const wheelmode_zoom_action;
     QAction* const drawModePrefs_action;
     QAction* const axes_action;
     QAction* const invert_zoom_action;
@@ -101,7 +106,9 @@ private:
     const static QString AUTORELOAD_KEY;
     const static QString DRAW_AXES_KEY;
     const static QString PROJECTION_KEY;
+    const static QString WHEELMODE_KEY;
     const static QString DRAW_MODE_KEY;
+    const static QString CUTTING_PLANE_KEY;
     const static QString WINDOW_GEOM_KEY;
     const static QString RESET_TRANSFORM_ON_LOAD_KEY;
 

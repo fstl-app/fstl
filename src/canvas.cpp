@@ -225,6 +225,16 @@ void Canvas::set_drawMode(enum DrawMode mode)
     update();
 }
 
+void Canvas::set_enableCut(bool d) {
+	enableCut = d;
+	update();
+}
+
+void Canvas::set_wheelMode(enum WheelMode mode) {
+	wheelMode = mode;
+	update();
+}
+
 void Canvas::clear_status()
 {
     status = "";
@@ -235,8 +245,16 @@ void Canvas::initializeGL()
 {
     initializeOpenGLFunctions();
 
+    cutting_quad_fragshader = new QOpenGLShader(QOpenGLShader::Fragment);
+    cutting_quad_fragshader->compileSourceFile(":/gl/cutting_quad.frag");
+
     mesh_vertshader = new QOpenGLShader(QOpenGLShader::Vertex);
     mesh_vertshader->compileSourceFile(":/gl/mesh.vert");
+
+    cutting_quad_shaderprog.addShader(mesh_vertshader);
+    cutting_quad_shaderprog.addShader(cutting_quad_fragshader);
+    cutting_quad_shaderprog.link();
+
     mesh_shader.addShader(mesh_vertshader);
     mesh_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh.frag");
     mesh_shader.link();
@@ -249,7 +267,7 @@ void Canvas::initializeGL()
     mesh_meshlight_shader.addShader(mesh_vertshader);
     mesh_meshlight_shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/mesh_light.frag");
     mesh_meshlight_shader.link();
-
+    
     backdrop = new Backdrop();
     axis = new Axis();
 }
@@ -336,8 +354,88 @@ void Canvas::draw_mesh()
     const GLuint vp = selected_mesh_shader->attributeLocation("vertex_position");
     glEnableVertexAttribArray(vp);
 
-    // Then draw the mesh with that vertex position
-    mesh->draw(vp);
+    if (enableCut) {
+        glUniformMatrix4fv(
+                selected_mesh_shader->uniformLocation("cutting_plane_matrix"),
+                1, GL_FALSE, cutting_plane_matrix().data());
+        // Calculate clipping plane
+        glEnable(GL_CLIP_DISTANCE0);
+        glEnable(GL_STENCIL_TEST);
+        glEnable(GL_CULL_FACE);
+        glClear(GL_STENCIL_BUFFER_BIT);
+        glDisable(GL_DEPTH_TEST);
+        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+        glStencilFunc(GL_ALWAYS, 0, 0);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
+        glCullFace(GL_FRONT); // render back faces
+        mesh -> draw(vp);
+
+        glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
+        glCullFace(GL_BACK); // render front faces
+        mesh -> draw(vp);
+
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+        glDisable(GL_CULL_FACE);
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_CLIP_DISTANCE0);
+        glStencilFunc(GL_NOTEQUAL, 0, ~0);
+
+        // Rendering the mesh
+        glDisable(GL_STENCIL_TEST);
+        glEnable(GL_CLIP_DISTANCE0);
+        glUniformMatrix4fv(
+                selected_mesh_shader->uniformLocation("transform_matrix"),
+                1, GL_FALSE, transform_matrix().data());
+
+        mesh->draw(vp);
+
+        // reload shader program to draw the colored clipping plane
+        selected_mesh_shader->release();
+        selected_mesh_shader = &cutting_quad_shaderprog;
+        selected_mesh_shader->bind();
+
+        glUniform1f(selected_mesh_shader->uniformLocation("zoom"), 1/zoom);
+        glUniformMatrix4fv(
+                selected_mesh_shader->uniformLocation("transform_matrix"),
+                1, GL_FALSE, cutting_plane_matrix().data());
+        glUniformMatrix4fv(
+                selected_mesh_shader->uniformLocation("view_matrix"),
+                1, GL_FALSE, view_matrix().data());
+
+        glEnable(GL_STENCIL_TEST);
+        glDisable(GL_CLIP_DISTANCE0);
+
+        // Define a BIG quad to render. It should be big to assure covering of clip area
+        unsigned int VBO;
+        float vertices[] = {
+            -1000.0f,  1000.0f, 0.0f,
+            -1000.0f, -1000.0f, 0.0f,
+            1000.0f, -1000.0f, 0.0f,
+            1000.0f, 1000.0f, 0.0f};
+
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glEnableVertexAttribArray(0);
+
+        // render quad
+        glDrawArrays(GL_QUADS, 0, 4);
+
+        // release buffers
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glDeleteBuffers(1, &VBO);
+
+        glDisable(GL_STENCIL_TEST);
+        glEnable(GL_CLIP_DISTANCE0);
+    }
+    else
+    {
+        glDisable(GL_CLIP_DISTANCE0);
+
+        // Then draw the mesh with that vertex position
+        mesh->draw(vp);
+    }
 
     // Reset draw mode for the background and anything else that needs to be drawn
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -346,11 +444,13 @@ void Canvas::draw_mesh()
     glDisableVertexAttribArray(vp);
     selected_mesh_shader->release();
 }
+
 QMatrix4x4 Canvas::orient_matrix() const
 {
     QMatrix4x4 m = currentTransform;
     return m;
 }
+
 QMatrix4x4 Canvas::transform_matrix() const
 {
     QMatrix4x4 m = orient_matrix();
@@ -376,6 +476,20 @@ QMatrix4x4 Canvas::view_matrix() const
     QMatrix4x4 m = aspect_matrix();
     m.scale(zoom, zoom, 1);
     m(3, 2) = perspective;
+    return m;
+}
+
+QMatrix4x4 Canvas::cutting_plane_matrix() const
+{
+    QMatrix4x4 m =  QMatrix4x4(
+    1.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 1.0f, 0.0f,
+    0.0f, 0.0f, 0.0f, 1.0f);
+    
+    m.rotate(cp_tilt, QVector3D(1, 0, 0));
+    m.rotate(cp_yaw,  QVector3D(0, 1, 0));
+    m.translate(0, 0, cp_shift);
     return m;
 }
 
@@ -458,20 +572,27 @@ void Canvas::mouseMoveEvent(QMouseEvent* event)
     auto d = p - mouse_pos;
     
 
-    if (event->buttons() & Qt::LeftButton)
+    if (event->modifiers() & Qt::ControlModifier)
+    {
+        if (event->buttons() & Qt::LeftButton)
+        {
+            cp_yaw = fmod(cp_yaw - d.x(), 360);
+            cp_tilt = fmod(cp_tilt - d.y(), 360);
+            update();
+        }
+    } else if (event->buttons() & Qt::LeftButton)
     {
         QPointF p1r = changeMouseCoordinates(mouse_pos);
         QPointF p2r = changeMouseCoordinates(p);
         calcArcballTransform(p1r,p2r);
 
         update();
-    }
-    else if (event->buttons() & Qt::RightButton)
+    } else if (event->buttons() & Qt::RightButton)
     {
         center = transform_matrix().inverted() *
-                 view_matrix().inverted() *
-                 QVector3D(-d.x() / (0.5*width()),
-                            d.y() / (0.5*height()), 0);
+            view_matrix().inverted() *
+            QVector3D(-d.x() / (0.5*width()),
+                    d.y() / (0.5*height()), 0);
         update();
     }
     mouse_pos = p;
@@ -487,27 +608,32 @@ void Canvas::wheelEvent(QWheelEvent *event)
     QVector3D a = transform_matrix().inverted() *
                   view_matrix().inverted() * v;
 
-    if (event->angleDelta().y() < 0)
+    if (event->modifiers() & Qt::ControlModifier || wheelMode == wheelcut)
+        cp_shift += (event->delta())/10000.0f;
+    else
     {
-        for (int i=0; i > event->angleDelta().y(); --i)
-            if (invertZoom)
-                zoom /= 1.001;
-            else 
-                zoom *= 1.001;
-    }
-    else if (event->angleDelta().y() > 0)
-    {
-        for (int i=0; i < event->angleDelta().y(); ++i)
-            if (invertZoom) 
-                zoom *= 1.001;
-            else 
-                zoom /= 1.001;
+        if (event->angleDelta().y() < 0)
+        {
+            for (int i=0; i > event->angleDelta().y(); --i)
+                if (invertZoom)
+                    zoom /= 1.001;
+                else
+                    zoom *= 1.001;
+        }
+        else if (event->angleDelta().y() > 0)
+        {
+            for (int i=0; i < event->angleDelta().y(); ++i)
+                if (invertZoom)
+                    zoom *= 1.001;
+                else
+                    zoom /= 1.001;
+        }
+        // Then find the cursor's GL position post-zoom and adjust center.
+        QVector3D b = transform_matrix().inverted() *
+            view_matrix().inverted() * v;
+        center += b - a;
     }
 
-    // Then find the cursor's GL position post-zoom and adjust center.
-    QVector3D b = transform_matrix().inverted() *
-                  view_matrix().inverted() * v;
-    center += b - a;
     update();
 }
 

@@ -11,7 +11,9 @@ const QString Window::INVERT_ZOOM_KEY = "invertZoom";
 const QString Window::AUTORELOAD_KEY = "autoreload";
 const QString Window::DRAW_AXES_KEY = "drawAxes";
 const QString Window::PROJECTION_KEY = "projection";
+const QString Window::WHEELMODE_KEY = "wheelMode";
 const QString Window::DRAW_MODE_KEY = "drawMode";
+const QString Window::CUTTING_PLANE_KEY = "cuttingplane";
 const QString Window::WINDOW_GEOM_KEY = "windowGeometry";
 const QString Window::RESET_TRANSFORM_ON_LOAD_KEY = "resetTransformOnLoad";
 
@@ -35,6 +37,9 @@ Window::Window(QWidget *parent) :
     wireframe_action(new QAction("Wireframe", this)),
     surfaceangle_action(new QAction("Surface Angle", this)),
     meshlight_action(new QAction("Shaded ambient and directive light source", this)),
+    cuttingplane_action(new QAction("Enable cutting plane", this)),
+    wheelmode_cut_action(new QAction("Wheel controls cut", this)),
+    wheelmode_zoom_action(new QAction("Wheel controls zoom", this)),
     drawModePrefs_action(new QAction("Draw Mode Settings")),
     axes_action(new QAction("Draw Axes", this)),
     invert_zoom_action(new QAction("Invert Zoom", this)),
@@ -135,6 +140,19 @@ Window::Window(QWidget *parent) :
     QObject::connect(projections, &QActionGroup::triggered,
                      this, &Window::on_projection);
 
+    const auto wheel_menu = view_menu->addMenu("Wheel Mode");
+    wheel_menu->addAction(wheelmode_cut_action);
+    wheel_menu->addAction(wheelmode_zoom_action);
+    const auto wheelmodes = new QActionGroup(wheel_menu);
+    for (auto p : {wheelmode_cut_action, wheelmode_zoom_action})
+    {
+        wheelmodes->addAction(p);
+        p->setCheckable(true);
+    }
+    wheelmodes->setExclusive(true);
+    QObject::connect(wheelmodes, &QActionGroup::triggered,
+            this, &Window::on_wheelmode);
+
     const auto draw_menu = view_menu->addMenu("Draw Mode");
     draw_menu->addAction(shaded_action);
     draw_menu->addAction(wireframe_action);
@@ -186,6 +204,11 @@ Window::Window(QWidget *parent) :
     QObject::connect(axes_action, &QAction::triggered,
             this, &Window::on_drawAxes);
 
+    view_menu->addAction(cuttingplane_action);
+    cuttingplane_action->setCheckable(true);
+    QObject::connect(cuttingplane_action, &QAction::triggered,
+            this, &Window::on_cuttingplane);
+
     view_menu->addAction(invert_zoom_action);
     invert_zoom_action->setCheckable(true);
     QObject::connect(invert_zoom_action, &QAction::triggered,
@@ -233,6 +256,10 @@ void Window::load_persist_settings(){
     canvas->draw_axes(draw_axes);
     axes_action->setChecked(draw_axes);
 
+	bool cuttingplane_b = settings.value(CUTTING_PLANE_KEY, false).toBool();
+	cuttingplane_action->setChecked(cuttingplane_b);
+	canvas->set_enableCut(cuttingplane_b);
+	
     QString projection = settings.value(PROJECTION_KEY, "perspective").toString();
     if(projection == "perspective"){
         canvas->view_perspective(Canvas::P_PERSPECTIVE, false);
@@ -242,6 +269,12 @@ void Window::load_persist_settings(){
         orthographic_action->setChecked(true);
     }
 
+	QString wheelmode = settings.value(WHEELMODE_KEY, "wheelMode").toString();
+	if(wheelmode == "wheelzoom")
+		wheelmode_zoom_action->trigger();
+	else
+		wheelmode_cut_action->trigger();
+	
     QString path = settings.value(OPEN_EXTERNAL_KEY, "").toString();
     if (!QDir::isAbsolutePath(path) && !path.isEmpty())
     {
@@ -389,6 +422,21 @@ void Window::on_projection(QAction* proj)
     }
 }
 
+void Window::on_wheelmode(QAction* mode)
+{
+    if (mode == wheelmode_cut_action)
+    {
+        canvas->set_wheelMode(wheelcut);
+        QSettings().setValue(WHEELMODE_KEY, "wheelcut");
+    }
+    else
+    {
+        canvas->set_wheelMode(wheelzoom);
+        QSettings().setValue(WHEELMODE_KEY, "wheelzoom");
+    }
+}
+
+
 void Window::on_drawMode(QAction* act)
 {
     // On mode change hide prefs first
@@ -415,8 +463,15 @@ void Window::on_drawMode(QAction* act)
         drawModePrefs_action->setEnabled(true);
         mode = meshlight;
     }
+
     canvas->set_drawMode(mode);
     QSettings().setValue(DRAW_MODE_KEY, mode);
+}
+
+void Window::on_cuttingplane(bool d)
+{
+    canvas->set_enableCut(d);
+    QSettings().setValue(CUTTING_PLANE_KEY, d);
 }
 
 void Window::on_drawAxes(bool d)
