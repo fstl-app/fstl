@@ -27,7 +27,7 @@ namespace {
     /**
      * Abstract differences between accessing QWheelEvent position data for different versions of Qt.
      */
-    QPoint position(const QWheelEvent *const event) {
+    auto position(const QWheelEvent *const event) {
         #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
             return event->pos();
         #else
