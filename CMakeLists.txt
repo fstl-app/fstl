@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.5)
 project(fstl)
 
 # Setting -std=c++11
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 # Setting standard to required, as requisted by DeveloperPaul123 on github
 set(CXX_STANDARD_REQUIRED ON)
 
