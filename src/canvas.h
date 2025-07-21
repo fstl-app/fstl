@@ -12,6 +12,7 @@ class Axis;
 
 enum ViewPoint {centerview, isoview, topview, bottomview, leftview, rightview, frontview, backview};
 enum DrawMode {shaded, wireframe, surfaceangle, meshlight, DRAWMODECOUNT};
+enum WheelMode {wheelzoom, wheelcut};
 
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -28,6 +29,8 @@ public:
     void draw_axes(bool d);
     void invert_zoom(bool d);
     void set_drawMode(enum DrawMode mode);
+    void set_enableCut(bool d);
+    void set_wheelMode(enum WheelMode mode);
     void common_view_change(enum ViewPoint c);
     void setResetTransformOnLoad(bool d);
 
@@ -73,9 +76,14 @@ private:
     QMatrix4x4 transform_matrix() const;
     QMatrix4x4 aspect_matrix() const;
     QMatrix4x4 view_matrix() const;
+    QMatrix4x4 cutting_plane_matrix() const;
+
     void resetTransform();
     QPointF changeMouseCoordinates(QPoint p);
     void calcArcballTransform(QPointF p1, QPointF p2);
+
+    QOpenGLShader* cutting_quad_fragshader;
+    QOpenGLShaderProgram cutting_quad_shaderprog;
 
     QOpenGLShader* mesh_vertshader;
     QOpenGLShaderProgram mesh_shader;
@@ -112,9 +120,17 @@ private:
     float zoom;
     QMatrix4x4 currentTransform;
 
+
+    float cp_tilt;
+    float cp_yaw;
+    float cp_shift;
+
     float perspective;
     enum DrawMode drawMode;
+    enum WheelMode wheelMode;
+
     bool drawAxes;
+    bool enableCut;
     bool invertZoom;
     bool resetTransformOnLoad;
     Q_PROPERTY(float perspective MEMBER perspective WRITE set_perspective);
