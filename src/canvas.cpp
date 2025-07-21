@@ -23,6 +23,19 @@ const float Canvas::defaultAmbientFactor = 0.67;
 const float Canvas::defaultDirectiveFactor = 0.5;
 const int Canvas::defaultCurrentLightDirection = 1;
 
+namespace {
+    /**
+     * Abstract differences between accessing QWheelEvent position data for different versions of Qt.
+     */
+    auto position(const QWheelEvent *const event) {
+        #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+            return event->pos();
+        #else
+            return event->position();
+        #endif
+    }
+}
+
 Canvas::Canvas(const QSurfaceFormat& format, QWidget *parent)
     : QOpenGLWidget(parent), mesh(nullptr),
       scale(1), zoom(1),
@@ -481,7 +494,7 @@ void Canvas::wheelEvent(QWheelEvent *event)
 {
     // Find GL position before the zoom operation
     // (to zoom about mouse cursor)
-    auto p = event->position();
+    auto p = position(event);
     QVector3D v(1 - p.x() / (0.5*width()),
                 p.y() / (0.5*height()) - 1, 0);
     QVector3D a = transform_matrix().inverted() *

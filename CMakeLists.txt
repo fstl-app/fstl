@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.5)
 project(fstl)
 
 # Setting -std=c++11
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 # Setting standard to required, as requisted by DeveloperPaul123 on github
 set(CXX_STANDARD_REQUIRED ON)
 
@@ -54,7 +54,7 @@ set(Icon_Resource exe/fstl.rc)
 set(OpenGL_GL_PREFERENCE GLVND)
 
 #find required packages. 
-find_package(Qt5 5.14 REQUIRED COMPONENTS Core Gui Widgets OpenGL)
+find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets OpenGL)
 find_package(OpenGL REQUIRED)
 find_package(Threads REQUIRED)
 
