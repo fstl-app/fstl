@@ -26,7 +26,7 @@ if(FSTL_CHECK_FORMAT)
         gl/*.cpp
         exe/*.h
         exe/*.cpp
-        CMakeLists.txt)
+    )
 
     add_custom_target(check-format
         COMMAND ${CLANG_FORMAT_EXE}
