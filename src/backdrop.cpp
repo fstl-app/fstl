@@ -8,11 +8,7 @@ Backdrop::Backdrop()
     shader.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/gl/quad.frag");
     shader.link();
 
-    float vbuf[] = {
-        -1, -1, 0.00, 0.10, 0.15,
-        -1,  1, 0.03, 0.21, 0.26,
-         1, -1, 0.00, 0.12, 0.18,
-         1,  1, 0.06, 0.26, 0.30};
+    float vbuf[] = {-1, -1, 0.00, 0.10, 0.15, -1, 1, 0.03, 0.21, 0.26, 1, -1, 0.00, 0.12, 0.18, 1, 1, 0.06, 0.26, 0.30};
 
     vertices.create();
     vertices.bind();
@@ -31,11 +27,8 @@ void Backdrop::draw()
     glEnableVertexAttribArray(vp);
     glEnableVertexAttribArray(vc);
 
-    glVertexAttribPointer(vp, 2, GL_FLOAT, false,
-                          5 * sizeof(GLfloat), 0);
-    glVertexAttribPointer(vc, 3, GL_FLOAT, false,
-                          5 * sizeof(GLfloat),
-                          (GLvoid*)(2 * sizeof(GLfloat)));
+    glVertexAttribPointer(vp, 2, GL_FLOAT, false, 5 * sizeof(GLfloat), 0);
+    glVertexAttribPointer(vc, 3, GL_FLOAT, false, 5 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 8);
 

@@ -15,8 +15,8 @@ public:
     ShaderLightPrefs(QWidget* parent, Canvas* _canvas);
 
 protected:
-    void resizeEvent(QResizeEvent *event) override;
-    void moveEvent(QMoveEvent *event) override;
+    void resizeEvent(QResizeEvent* event) override;
+    void moveEvent(QMoveEvent* event) override;
 
 private slots:
     void buttonAmbientColorClicked();

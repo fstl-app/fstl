@@ -2,7 +2,7 @@
 
 #include "app.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     // Force C locale to force decimal point
     QLocale::setDefault(QLocale::c());
