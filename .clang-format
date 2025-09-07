@@ -1,0 +1,21 @@
+# see https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+---
+BasedOnStyle: LLVM
+Language: Cpp
+Standard: Cpp11
+
+ColumnLimit: 135
+
+AccessModifierOffset: -4
+IndentWidth: 4
+UseTab: Never
+
+BreakBeforeBraces: Linux
+AlignEscapedNewlines: Left
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortLambdasOnASingleLine: Empty
+AlwaysBreakTemplateDeclarations: true
+BreakConstructorInitializers: AfterColon
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+IndentPPDirectives: AfterHash
+PointerAlignment: Left
