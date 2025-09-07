@@ -1,24 +1,24 @@
 #ifndef CANVAS_H
 #define CANVAS_H
 
-#include <QtOpenGL>
-#include <QSurfaceFormat>
 #include <QOpenGLShaderProgram>
+#include <QSurfaceFormat>
+#include <QtOpenGL>
 
 class GLMesh;
 class Mesh;
 class Backdrop;
 class Axis;
 
-enum ViewPoint {centerview, isoview, topview, bottomview, leftview, rightview, frontview, backview};
-enum DrawMode {shaded, wireframe, surfaceangle, meshlight, DRAWMODECOUNT};
+enum ViewPoint { centerview, isoview, topview, bottomview, leftview, rightview, frontview, backview };
+enum DrawMode { shaded, wireframe, surfaceangle, meshlight, DRAWMODECOUNT };
 
 class Canvas : public QOpenGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
 
 public:
-    explicit Canvas(const QSurfaceFormat& format, QWidget* parent=0);
+    explicit Canvas(const QSurfaceFormat& format, QWidget* parent = 0);
     ~Canvas();
 
     const static float P_PERSPECTIVE;
@@ -62,7 +62,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void wheelEvent(QWheelEvent* event) override;
-    
+
     void set_perspective(float p);
     void view_anim(float v);
 
@@ -101,7 +101,6 @@ private:
     const static QString DIRECTIVE_COLOR;
     const static QString DIRECTIVE_FACTOR;
     const static QString CURRENT_LIGHT_DIRECTION;
-
 
     GLMesh* mesh;
     Backdrop* backdrop;

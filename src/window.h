@@ -1,10 +1,10 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include <QMainWindow>
 #include <QActionGroup>
-#include <QFileSystemWatcher>
 #include <QCollator>
+#include <QFileSystemWatcher>
+#include <QMainWindow>
 
 class Canvas;
 class ShaderLightPrefs;
@@ -13,16 +13,16 @@ class Window : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit Window(QWidget* parent=0);
-    bool load_stl(const QString& filename, bool is_reload=false);
+    explicit Window(QWidget* parent = 0);
+    bool load_stl(const QString& filename, bool is_reload = false);
     bool load_prev(void);
     bool load_next(void);
 
 protected:
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
-    void resizeEvent(QResizeEvent *event) override;
-    void moveEvent(QMoveEvent *event) override;
+    void resizeEvent(QResizeEvent* event) override;
+    void moveEvent(QMoveEvent* event) override;
     void keyPressEvent(QKeyEvent* event) override;
 
 public slots:
@@ -94,7 +94,7 @@ private:
     QMenu* const recent_files;
     QActionGroup* const recent_files_group;
     QAction* const recent_files_clear_action;
-    const static int MAX_RECENT_FILES=8;
+    const static int MAX_RECENT_FILES = 8;
     static const QString OPEN_EXTERNAL_KEY;
     const static QString RECENT_FILE_KEY;
     const static QString INVERT_ZOOM_KEY;

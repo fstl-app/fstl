@@ -2,14 +2,15 @@
 #define BACKDROP_H
 
 #include <QOpenGLBuffer>
-#include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
+#include <QOpenGLShaderProgram>
 
 class Backdrop : protected QOpenGLFunctions
 {
 public:
     Backdrop();
     void draw();
+
 private:
     QOpenGLShaderProgram shader;
     QOpenGLBuffer vertices;

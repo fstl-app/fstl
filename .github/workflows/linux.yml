@@ -1,0 +1,45 @@
+name: Build
+
+on:
+    push:
+        branches: [main, master]
+    pull_request:
+        branches: [main, master]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                compiler: [gcc, clang]
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Install dependencies
+              run: |
+                sudo apt-get update
+                sudo apt-get install -y qt5-qmake qtbase5-dev build-essential clang clang-format
+
+            - name: Set compiler
+              run: |
+                if [ "${{ matrix.compiler }}" = "clang" ]; then
+                    export CC=clang
+                    export CXX=clang++
+                else
+                    export CC=gcc
+                    export CXX=g++
+                fi
+                echo "CC=$CC" >> $GITHUB_ENV
+                echo "CXX=$CXX" >> $GITHUB_ENV
+
+            - name: Build 
+              run: |
+                cmake -S . -B build -DFSTL_CHECK_FORMAT=ON
+                cmake --build build --target fstl --config Release -- -j$(nproc)
+            
+            - name: Check format
+              run: |
+                # Print the version for troubleshooting purposes
+                clang-format --version
+                cmake --build build --target check-format

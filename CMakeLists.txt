@@ -2,14 +2,50 @@
 # Original Project Author: Matt Keeter Copyright 2014-2024
 # Author: Paul Tsouchlos Copyright 2017-2024
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 
 project(fstl)
 
-# Setting -std=c++11
+# Setting -std=c++14
 set(CMAKE_CXX_STANDARD 14)
-# Setting standard to required, as requisted by DeveloperPaul123 on github
 set(CXX_STANDARD_REQUIRED ON)
+
+option(FSTL_CHECK_FORMAT "Check source code formatting with clang-format" OFF)
+if(FSTL_CHECK_FORMAT)
+    find_program(CLANG_FORMAT_EXE NAMES clang-format-10 clang-format-9 clang-format-8 clang-format)
+    if(NOT CLANG_FORMAT_EXE)
+        message(FATAL_ERROR "Could not find clang-format executable!")
+    endif()
+
+    file(GLOB_RECURSE ALL_SOURCE_FILES CONFIGURE_DEPENDS
+        src/*.h
+        src/*.cpp
+        qt/*.h
+        qt/*.cpp
+        gl/*.h
+        gl/*.cpp
+        exe/*.h
+        exe/*.cpp
+    )
+
+    add_custom_target(check-format
+        COMMAND ${CLANG_FORMAT_EXE}
+            --Werror
+            --style=file
+            --dry-run
+            ${ALL_SOURCE_FILES}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Checking source code formatting"
+        VERBATIM)
+    add_custom_target(fix-format
+        COMMAND ${CLANG_FORMAT_EXE}
+            --style=file
+            -i
+            ${ALL_SOURCE_FILES}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Fixing source code formatting"
+        VERBATIM)
+endif()
 
 # Set the version number
 set (FSTL_VERSION_MAJOR "0")
