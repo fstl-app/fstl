@@ -12,7 +12,7 @@ set(CXX_STANDARD_REQUIRED ON)
 
 option(FSTL_CHECK_FORMAT "Check source code formatting with clang-format" OFF)
 if(FSTL_CHECK_FORMAT)
-    find_program(CLANG_FORMAT_EXE NAMES clang-format-10 clang-format-9 clang-format-8 clang-format)
+    find_program(CLANG_FORMAT_EXE NAMES clang-format)
     if(NOT CLANG_FORMAT_EXE)
         message(FATAL_ERROR "Could not find clang-format executable!")
     endif()
