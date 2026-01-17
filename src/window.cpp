@@ -17,36 +17,36 @@ const QString Window::RESET_TRANSFORM_ON_LOAD_KEY = "resetTransformOnLoad";
 
 Window::Window(QWidget* parent) :
     QMainWindow(parent),
-    open_action(new QAction("Open", this)),
-    open_external_action(new QAction("Open with", this)),
-    about_action(new QAction("About", this)),
-    quit_action(new QAction("Quit", this)),
-    perspective_action(new QAction("Perspective", this)),
-    common_view_center_action(new QAction("Center the model", this)),
-    common_view_iso_action(new QAction("Isometric", this)),
-    common_view_top_action(new QAction("Top", this)),
-    common_view_bottom_action(new QAction("Bottom", this)),
-    common_view_left_action(new QAction("Left", this)),
-    common_view_right_action(new QAction("Right", this)),
-    common_view_front_action(new QAction("Front", this)),
-    common_view_back_action(new QAction("Back", this)),
-    orthographic_action(new QAction("Orthographic", this)),
-    shaded_action(new QAction("Shaded", this)),
-    wireframe_action(new QAction("Wireframe", this)),
-    surfaceangle_action(new QAction("Surface Angle", this)),
-    meshlight_action(new QAction("Shaded ambient and directive light source", this)),
-    drawModePrefs_action(new QAction("Draw Mode Settings")),
-    axes_action(new QAction("Draw Axes", this)),
-    invert_zoom_action(new QAction("Invert Zoom", this)),
-    reload_action(new QAction("Reload", this)),
-    autoreload_action(new QAction("Autoreload", this)),
-    save_screenshot_action(new QAction("Save Screenshot", this)),
-    hide_menuBar_action(new QAction("Hide Menu Bar", this)),
-    fullscreen_action(new QAction("Toggle Fullscreen", this)),
+    open_action(new QAction("&Open", this)),
+    open_external_action(new QAction("Open w&ith", this)),
+    about_action(new QAction("&About", this)),
+    quit_action(new QAction("&Quit", this)),
+    perspective_action(new QAction("&Perspective", this)),
+    common_view_center_action(new QAction("&Center the model", this)),
+    common_view_iso_action(new QAction("&Isometric", this)),
+    common_view_top_action(new QAction("&Top", this)),
+    common_view_bottom_action(new QAction("&Bottom", this)),
+    common_view_left_action(new QAction("&Left", this)),
+    common_view_right_action(new QAction("&Right", this)),
+    common_view_front_action(new QAction("&Front", this)),
+    common_view_back_action(new QAction("B&ack", this)),
+    orthographic_action(new QAction("&Orthographic", this)),
+    shaded_action(new QAction("&Shaded", this)),
+    wireframe_action(new QAction("&Wireframe", this)),
+    surfaceangle_action(new QAction("Surface A&ngle", this)),
+    meshlight_action(new QAction("Shaded &ambient and directive light source", this)),
+    drawModePrefs_action(new QAction("Draw Mode &Settings")),
+    axes_action(new QAction("Draw &Axes", this)),
+    invert_zoom_action(new QAction("Invert &Zoom", this)),
+    reload_action(new QAction("Re&load", this)),
+    autoreload_action(new QAction("&Autoreload", this)),
+    save_screenshot_action(new QAction("Save &Screenshot", this)),
+    hide_menuBar_action(new QAction("Hide &Menu Bar", this)),
+    fullscreen_action(new QAction("Toggle &Fullscreen", this)),
     resetTransformOnLoadAction(new QAction("Reset rotation on load", this)),
-    recent_files(new QMenu("Open recent", this)),
+    recent_files(new QMenu("Open &recent", this)),
     recent_files_group(new QActionGroup(this)),
-    recent_files_clear_action(new QAction("Clear recent files", this)),
+    recent_files_clear_action(new QAction("&Clear recent files", this)),
     watcher(new QFileSystemWatcher(this))
 
 {
@@ -102,7 +102,7 @@ Window::Window(QWidget* parent) :
 
     rebuild_recent_files();
 
-    const auto file_menu = menuBar()->addMenu("File");
+    const auto file_menu = menuBar()->addMenu("&File");
     file_menu->addAction(open_action);
     file_menu->addAction(open_external_action);
     file_menu->addMenu(recent_files);
@@ -112,8 +112,8 @@ Window::Window(QWidget* parent) :
     file_menu->addAction(save_screenshot_action);
     file_menu->addAction(quit_action);
 
-    const auto view_menu = menuBar()->addMenu("View");
-    const auto projection_menu = view_menu->addMenu("Projection");
+    const auto view_menu = menuBar()->addMenu("&View");
+    const auto projection_menu = view_menu->addMenu("&Projection");
     projection_menu->addAction(perspective_action);
     projection_menu->addAction(orthographic_action);
     const auto projections = new QActionGroup(projection_menu);
@@ -124,7 +124,7 @@ Window::Window(QWidget* parent) :
     projections->setExclusive(true);
     QObject::connect(projections, &QActionGroup::triggered, this, &Window::on_projection);
 
-    const auto draw_menu = view_menu->addMenu("Draw Mode");
+    const auto draw_menu = view_menu->addMenu("&Draw Mode");
     draw_menu->addAction(shaded_action);
     draw_menu->addAction(wireframe_action);
     draw_menu->addAction(surfaceangle_action);
@@ -139,7 +139,7 @@ Window::Window(QWidget* parent) :
     view_menu->addAction(drawModePrefs_action);
     drawModePrefs_action->setDisabled(true);
 
-    const auto common_menu = view_menu->addMenu("Viewpoint");
+    const auto common_menu = view_menu->addMenu("&Viewpoint");
     common_menu->addAction(common_view_iso_action);
     common_menu->addAction(common_view_top_action);
     common_menu->addAction(common_view_bottom_action);
@@ -191,7 +191,7 @@ Window::Window(QWidget* parent) :
     QObject::connect(fullscreen_action, &QAction::toggled, this, &Window::on_fullscreen);
     this->addAction(fullscreen_action);
 
-    auto help_menu = menuBar()->addMenu("Help");
+    auto help_menu = menuBar()->addMenu("&Help");
     help_menu->addAction(about_action);
 
     load_persist_settings();
@@ -228,7 +228,7 @@ void Window::load_persist_settings()
         path = QStandardPaths::findExecutable(path);
     }
     QString displayName = path.mid(path.lastIndexOf(QDir::separator()) + 1);
-    open_external_action->setText("Open with " + displayName);
+    open_external_action->setText("Open w&ith " + displayName);
     open_external_action->setData(path);
 
     DrawMode draw_mode = (DrawMode)settings.value(DRAW_MODE_KEY, DRAWMODECOUNT).toInt();
@@ -277,7 +277,7 @@ void Window::on_open_external() const
             QSettings settings;
             settings.setValue(OPEN_EXTERNAL_KEY, program);
             QString displayName = program.mid(program.lastIndexOf(QDir::separator()) + 1);
-            open_external_action->setText("Open with " + displayName);
+            open_external_action->setText("Open w&ith " + displayName);
             open_external_action->setData(program);
         }
     }
