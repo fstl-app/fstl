@@ -1,9 +1,7 @@
 #include <QApplication>
+#include <QCommandLineParser>
 
 #include "app.h"
-
-#include <iostream>
-#include <cstring>
 
 int main(int argc, char* argv[])
 {
@@ -15,17 +13,27 @@ int main(int argc, char* argv[])
     QCoreApplication::setApplicationName("fstl");
     QCoreApplication::setApplicationVersion(FSTL_VERSION);
 
-    // If user asked for the version, print and exit immediately.
-    // Use raw argv comparison to avoid any QString conversion edge-cases.
-    for (int i = 1; i < argc; ++i) {
-        if (std::strcmp(argv[i], "--version") == 0 || std::strcmp(argv[i], "-V") == 0 || std::strcmp(argv[i], "-v") == 0) {
-            std::cout << QCoreApplication::applicationName().toStdString() << " "
-                      << QCoreApplication::applicationVersion().toStdString() << std::endl;
-            return 0;
-        }
-    }
-
     App a(argc, argv);
+
+    // Set up QCommandLineParser to handle --help, --version, and file argument
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Fast .stl file viewer");
+    parser.addHelpOption();
+    
+    // Add custom version option with both -V (uppercase, POSIX) and --version
+    QCommandLineOption versionOption(QStringList() << "V" << "version", "Displays version information.");
+    parser.addOption(versionOption);
+    
+    parser.addPositionalArgument("file", "STL file to open (optional)", "[file]");
+    parser.process(a);
+    
+    // Handle version option manually since we use custom -V
+    if (parser.isSet(versionOption)) {
+        printf("%s %s\n", 
+               QCoreApplication::applicationName().toStdString().c_str(),
+               QCoreApplication::applicationVersion().toStdString().c_str());
+        return 0;
+    }
 
     return a.exec();
 }

@@ -122,21 +122,13 @@ target_compile_definitions(fstl PRIVATE -DFSTL_VERSION="${PROJECT_VERSION}")
 # Escape dots in PROJECT_VERSION so version is matched literally in the regex. Use character class to avoid backslash escaping issues.
 string(REPLACE "." "[.]" PROJECT_VERSION_ESCAPED "${PROJECT_VERSION}")
 
-if(NOT WIN32)
-    enable_testing()
-    add_test(NAME version_check COMMAND $<TARGET_FILE:fstl> --version)
-    set_tests_properties(version_check PROPERTIES PASS_REGULAR_EXPRESSION "fstl ${PROJECT_VERSION_ESCAPED}")
+enable_testing()
+add_test(NAME version_check COMMAND $<TARGET_FILE:fstl> --version)
+set_tests_properties(version_check PROPERTIES PASS_REGULAR_EXPRESSION "fstl ${PROJECT_VERSION_ESCAPED}")
 
-    # Also validate the short alias `-V` produces the same output.
-    add_test(NAME version_check_short COMMAND $<TARGET_FILE:fstl> -V)
-    set_tests_properties(version_check_short PROPERTIES PASS_REGULAR_EXPRESSION "fstl ${PROJECT_VERSION_ESCAPED}")
-
-    # Validate lowercase `-v` also produces the same output.
-    add_test(NAME version_check_v COMMAND $<TARGET_FILE:fstl> -v)
-    set_tests_properties(version_check_v PROPERTIES PASS_REGULAR_EXPRESSION "fstl ${PROJECT_VERSION_ESCAPED}")
-else()
-    message(STATUS "Skipping version_check tests on WIN32 (GUI targets may not provide stdout)")
-endif()
+# Also validate the POSIX-compliant short alias `-V` produces the same output.
+add_test(NAME version_check_V COMMAND $<TARGET_FILE:fstl> -V)
+set_tests_properties(version_check_V PROPERTIES PASS_REGULAR_EXPRESSION "fstl ${PROJECT_VERSION_ESCAPED}")
 
 #installer information that is platform independent
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Fast .stl file viewer.")
