@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
     parser.addHelpOption();
     
     // Add custom version option with both -V (uppercase, POSIX) and --version
-    QCommandLineOption versionOption(QStringList() << "V" << "version", "Displays version information.");
+    QCommandLineOption versionOption(QStringList{"V", "version"}, "Displays version information.");
     parser.addOption(versionOption);
     
     parser.addPositionalArgument("file", "STL file to open (optional)", "[file]");
