@@ -1,3 +1,4 @@
+#include <iostream>
 #include <QApplication>
 #include <QCommandLineParser>
 
@@ -29,9 +30,8 @@ int main(int argc, char* argv[])
     
     // Handle version option manually since we use custom -V
     if (parser.isSet(versionOption)) {
-        printf("%s %s\n", 
-               QCoreApplication::applicationName().toStdString().c_str(),
-               QCoreApplication::applicationVersion().toStdString().c_str());
+        std::cout << QCoreApplication::applicationName().toStdString() << " "
+                  << QCoreApplication::applicationVersion().toStdString() << "\n";
         return 0;
     }
 
