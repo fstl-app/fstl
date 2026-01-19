@@ -118,6 +118,18 @@ target_link_libraries(fstl Qt5::Widgets Qt5::Core Qt5::Gui Qt5::OpenGL ${OPENGL_
 # Add version definitions to use within the code. 
 target_compile_definitions(fstl PRIVATE -DFSTL_VERSION="${PROJECT_VERSION}")
 
+# Enable a simple test that validates the CLI `--version` output is exact.
+# Escape dots in PROJECT_VERSION so version is matched literally in the regex. Use character class to avoid backslash escaping issues.
+string(REPLACE "." "[.]" PROJECT_VERSION_ESCAPED "${PROJECT_VERSION}")
+
+enable_testing()
+add_test(NAME version_check COMMAND $<TARGET_FILE:fstl> --version)
+set_tests_properties(version_check PROPERTIES PASS_REGULAR_EXPRESSION "fstl ${PROJECT_VERSION_ESCAPED}")
+
+# Also validate the POSIX-compliant short alias `-V` produces the same output.
+add_test(NAME version_check_V COMMAND $<TARGET_FILE:fstl> -V)
+set_tests_properties(version_check_V PROPERTIES PASS_REGULAR_EXPRESSION "fstl ${PROJECT_VERSION_ESCAPED}")
+
 #installer information that is platform independent
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Fast .stl file viewer.")
 set(CPACK_PACKAGE_VERSION_MAJOR ${FSTL_VERSION_MAJOR})
