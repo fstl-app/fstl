@@ -11,6 +11,7 @@ int main(int argc, char* argv[])
     QCoreApplication::setOrganizationDomain("https://github.com/fstl-app/fstl");
     QCoreApplication::setApplicationName("fstl");
     QCoreApplication::setApplicationVersion(FSTL_VERSION);
+    QGuiApplication::setDesktopFileName("fstlapp-fstl.desktop");
     App a(argc, argv);
 
     return a.exec();
